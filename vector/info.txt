@@ -1,0 +1,3 @@
+Essa é uma classe de vetores baseada, mas não idêntica à vista em https://www.youtube.com/watch?v=o_eXCu30l5o&list=PLSwCokO0cV86rDRBZmx-XbPIMYgzqIMZr&index=7&ab_channel=PixelPhysics
+
+Escrevi em C++. Tive alguns problemas com os overloads de operadores, mas acabei conseguindo fazer tudo.

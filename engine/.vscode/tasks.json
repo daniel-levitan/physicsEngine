@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "This is the BUILD task",
+            "type": "shell",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-Wall",
+                "-g",
+                "-D_THREAD_SAFE",
+                "-std=c++11",
+                "./src/main.cpp",
+                "../vector/vector2.cpp",
+                "../graphics/drawing.cpp",
+                "../graphics/shape.cpp",
+                "../graphics/circle.cpp",
+                "-o",
+                "engine",                
+                "-I/opt/homebrew/include/SDL2",
+                "-L/opt/homebrew/lib",
+                "-lSDL2"
+            ],
+            "group": "build"
+        }
+    ]
+}

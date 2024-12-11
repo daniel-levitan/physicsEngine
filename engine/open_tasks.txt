@@ -1,0 +1,4 @@
+1. Transformar o programa todo em OO.
+	1.1 Passar tudo por referência.
+2. Para os métodos dentro das classes, garantir que há os elementos básicos e conferir erros.
+3. Tornar a classe Shape abstrata.

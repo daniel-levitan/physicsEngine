@@ -1,0 +1,2 @@
+Essa é uma classe de formas(shapes) baseada, mas não idêntica à vista em 
+

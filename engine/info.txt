@@ -1,0 +1,6 @@
+Essa é a base para a criação de um motor de física em C/C++. Estou me baseando na lista 2D Physics Engine Tutorial https://youtu.be/D3oQ8mUF_84?si=UCfUcV2FHuknAqF-
+
+Esta lista foi escrita para JavaScript, por isso estou adaptando para C++. 
+
+Para cada etapa, talvez eu tenha de fazer testes separados.
+
