@@ -20,7 +20,7 @@ GRAPHICS_INCLUDE=-I../graphics
 TARGET=engine
 
 # Source files
-CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/graphics.cpp ../graphics/shape.cpp ../graphics/rectangle.cpp ../graphics/circle.cpp  ../graphics/polygon.cpp
+CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/graphics.cpp ../input_manager/input_manager.cpp ../graphics/shape.cpp ../graphics/rectangle.cpp ../graphics/circle.cpp  ../graphics/polygon.cpp
 # CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/drawing.cpp ../graphics/shape.cpp ../graphics/circle.cpp ../graphics/polygon.cpp ../graphics/rectangle.cpp 
 
 # Object files

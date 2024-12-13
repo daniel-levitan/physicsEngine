@@ -5,6 +5,7 @@
 #include <memory>
 #include "../graphics/graphics.h"
 #include "../graphics/shape.h"
+#include "../input_manager/input_manager.h"
 
 
 class Engine {
@@ -13,6 +14,7 @@ private:
 	unsigned int last_frame_time;
 
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
+    std::unique_ptr<InputManager> input_manager;
 
 	std::vector<std::unique_ptr<Shape>> shapes;
 
