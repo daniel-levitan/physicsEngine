@@ -18,6 +18,10 @@ class Rectangle : public Polygon {
 public:
     Rectangle(const Vector2& position, int width, int height);
 
+    // // Override getType to return the specific type of shape
+    const char* getType() const override {
+      return "Rectangle";
+    }
 };
 
 #endif

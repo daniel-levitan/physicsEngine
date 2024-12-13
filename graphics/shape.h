@@ -19,6 +19,9 @@ protected:
 public:
     Shape(const std::vector<Vector2>& verticesC) : vertices(verticesC) {};
 
+    // Virtual method to return the type of shape (override in derived classes)
+    virtual const char* getType() const = 0;
+
     virtual void draw(SDL_Renderer* renderer) const;    
     const std::vector<Vector2>& getVertices() const;
 

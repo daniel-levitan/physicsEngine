@@ -24,6 +24,11 @@ public:
 
     void draw(SDL_Renderer* renderer) const override;
 
+    // Override getType to return the specific type of shape
+    const char* getType() const override {
+        return "Circle";
+    }
+
 };
 
 #endif

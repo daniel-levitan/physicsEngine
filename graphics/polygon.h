@@ -17,6 +17,11 @@ public:
      Polygon(const std::vector<Vector2>& vertices) : Shape(vertices) {}
 
      void draw(SDL_Renderer* renderer) const override;
+
+     // Override getType to return the specific type of shape
+     const char* getType() const override {
+          return "Polygon";
+     }
 };
 
 #endif
