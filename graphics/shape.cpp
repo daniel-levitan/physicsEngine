@@ -23,6 +23,6 @@ const std::vector<Vector2>& Shape::getVertices() const {
     return vertices;
 }
 
-Shape::~Shape() {
-}
+// Shape::~Shape() {
+// }
 

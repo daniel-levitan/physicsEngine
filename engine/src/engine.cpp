@@ -3,56 +3,26 @@
 #include "engine.h"
 #include "constants.h"
 
-Engine::Engine() 
-    : window(nullptr, SDL_DestroyWindow),     // Custom deleter for SDL_Window
-      renderer(nullptr, SDL_DestroyRenderer)   // Custom deleter for SDL_Renderer
-{	
-	engine_is_running = initialization();
-	if (!engine_is_running) {
-		// In case the program was not able to start, we return an error
-		throw std::runtime_error("Engine initialization failed");
-	}	
+// Engine::Engine() 
+// 		: graphics(WINDOW_WIDTH, WINDOW_HEIGHT, "Game Window")
+// {	
+// 	engine_is_running = true;
+// 	last_frame_time = 0;
+// }
+
+Engine::Engine() : engine_is_running(false) { 
+	try {
+    	graphics = std::make_unique<Graphics>(WINDOW_WIDTH, WINDOW_HEIGHT, "Game Window");
+        engine_is_running = true;  // If no exception, graphics initialization is successful
+        last_frame_time = 0;
+    } catch (const std::runtime_error& e) {
+        std::cerr << "Error initializing Graphics: " << e.what() << std::endl;
+        // engine_is_running remains false if an exception is thrown
+    }
 }
 
 bool Engine::initialization() {
 	last_frame_time = 0;
-	
-	// Initializing SDL
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		std::cerr << "Error initializing SDL:" << SDL_GetError() << std::endl;
-		return false;
-	}
-
-	// window = SDL_CreateWindow(
-	// 	NULL, 
-	// 	SDL_WINDOWPOS_CENTERED,
-	// 	SDL_WINDOWPOS_CENTERED,
-	// 	WINDOW_WIDTH,
-	// 	WINDOW_HEIGHT,
-	// 	SDL_WINDOW_SHOWN
-	// );
-	window.reset(SDL_CreateWindow(
-        NULL,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT,
-        SDL_WINDOW_SHOWN
-    ));
-	if (!window) {
-		std::cerr << "Error creating SDL Window:" << SDL_GetError() << std::endl;
-		return false;
-	}
-
-	// renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    // Initialize renderer using unique_ptr to handle cleanup
-    renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_PRESENTVSYNC));
-
-	if (!renderer) {
-		std::cerr << "Error creating SDL Renderer:" << SDL_GetError() << std::endl;
-		return false;
-	}
-	
 	return true;
 }
 
@@ -75,7 +45,6 @@ void Engine::input_processing() {
     // printf("(%d, %d): %d\n", mouse.x, mouse.y, mouse.buttons);   
 }
 
-
 void Engine::updating() {
 	/* Compute delta time */
 	// float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
@@ -85,39 +54,22 @@ void Engine::updating() {
 }
 
 void Engine::rendering() {
-	SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
-	SDL_RenderClear(renderer.get());
+	graphics->clearScreen(0, 0, 0, 255);  // Clear screen using the Graphics object
 
-    // Iterate through all shapes and render them
-    for (const Shape* shape : shapes) {
-        shape->draw(renderer.get());  // Pass the renderer to each shape's draw method
+    for (const auto& shape : shapes) {
+        shape->draw(graphics->getRenderer());  // Use Graphics renderer to draw shapes
     }
+    graphics->presentScreen();  // Present the screen using the Graphics object
 
-	SDL_RenderPresent(renderer.get());    
-}
-
-void Engine::cleanup() {
-	for (Shape* shape : shapes) {
-        delete shape;  // Delete dynamically allocated shapes
-    }
-	// if (renderer) 
-	// 	SDL_DestroyRenderer(renderer);
-
-	// if (window)
-	// 	SDL_DestroyWindow(window);
-
-	// SDL_Quit();	
 }
 
 bool Engine::is_game_running() {
 	return engine_is_running;
 }
 
-void Engine::add_shape(Shape* shape) {
-    shapes.push_back(shape);  // Add shape to the collection of shapes
+void Engine::add_shape(std::unique_ptr<Shape> shape) {
+    shapes.push_back(std::move(shape)); // Store shapes using move semantics
 }
 
-
 Engine::~Engine() {
-	cleanup();	
 }

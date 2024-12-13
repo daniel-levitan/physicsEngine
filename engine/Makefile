@@ -5,7 +5,7 @@
 CXX=g++
 
 # Compiler flags for C and C++
-CXXFLAGS=-Wall -std=c++11 -g -D_THREAD_SAFE
+CXXFLAGS=-Wall -std=c++14 -g -D_THREAD_SAFE
 
 # Directories for SDL2 include and libraries
 SDL2_INCLUDE=-I/opt/homebrew/include/SDL2
@@ -20,7 +20,7 @@ GRAPHICS_INCLUDE=-I../graphics
 TARGET=engine
 
 # Source files
-CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/shape.cpp ../graphics/rectangle.cpp ../graphics/circle.cpp  ../graphics/polygon.cpp
+CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/graphics.cpp ../graphics/shape.cpp ../graphics/rectangle.cpp ../graphics/circle.cpp  ../graphics/polygon.cpp
 # CXXSRC=$(wildcard ./src/*.cpp) ../vector/vector2.cpp ../graphics/drawing.cpp ../graphics/shape.cpp ../graphics/circle.cpp ../graphics/polygon.cpp ../graphics/rectangle.cpp 
 
 # Object files

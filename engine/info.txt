@@ -17,3 +17,8 @@ Cada função draw recebe um renderer como parâmetro, já que um renderer não 
 
 
 
+Tópicos para estudar:
+1. std::unique_ptr: Isso é técnica nova de C++.
+2. Lambda functions em C++.
+3. move semantics.
+

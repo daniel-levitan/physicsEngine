@@ -25,7 +25,7 @@ public:
     virtual void draw(SDL_Renderer* renderer) const;    
     const std::vector<Vector2>& getVertices() const;
 
-    virtual ~Shape(); // = default;  
+    virtual ~Shape() = default;  
 };
 
 #endif

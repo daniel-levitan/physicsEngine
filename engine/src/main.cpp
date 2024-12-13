@@ -21,14 +21,13 @@ void setup(Engine& engine) {
 	        Vector2(150, 200)   // Vertex 3
     };
 
-    Polygon* polygon = new Polygon(polygonVertices);
-    Rectangle *rect1 = new Rectangle(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80);   
-	Circle* circle = new Circle(Vector2(400, 300), 50);
+    auto polygon = std::make_unique<Polygon>(polygonVertices);
+	auto rectangle = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80);
+	auto circle = std::make_unique<Circle>(Vector2(400, 300), 50);
 
-    engine.add_shape(polygon);
-    engine.add_shape(rect1);
-    engine.add_shape(circle);
-
+	engine.add_shape(std::move(rectangle));  // Use move semantics
+	engine.add_shape(std::move(polygon));  // Use move semantics
+	engine.add_shape(std::move(circle));  // Use move semantics	
 }
 
 int main() {
