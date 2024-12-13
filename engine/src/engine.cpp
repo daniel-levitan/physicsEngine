@@ -3,7 +3,10 @@
 #include "engine.h"
 #include "constants.h"
 
-Engine::Engine() {	
+Engine::Engine() 
+    : window(nullptr, SDL_DestroyWindow),     // Custom deleter for SDL_Window
+      renderer(nullptr, SDL_DestroyRenderer)   // Custom deleter for SDL_Renderer
+{	
 	engine_is_running = initialization();
 	if (!engine_is_running) {
 		// In case the program was not able to start, we return an error
@@ -20,22 +23,31 @@ bool Engine::initialization() {
 		return false;
 	}
 
-	// Initializing window
-	window = SDL_CreateWindow(
-		NULL, 
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		WINDOW_WIDTH,
-		WINDOW_HEIGHT,
-		SDL_WINDOW_SHOWN
-	);
+	// window = SDL_CreateWindow(
+	// 	NULL, 
+	// 	SDL_WINDOWPOS_CENTERED,
+	// 	SDL_WINDOWPOS_CENTERED,
+	// 	WINDOW_WIDTH,
+	// 	WINDOW_HEIGHT,
+	// 	SDL_WINDOW_SHOWN
+	// );
+	window.reset(SDL_CreateWindow(
+        NULL,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        SDL_WINDOW_SHOWN
+    ));
 	if (!window) {
 		std::cerr << "Error creating SDL Window:" << SDL_GetError() << std::endl;
 		return false;
 	}
 
-	// Initializing renderer
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+	// renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    // Initialize renderer using unique_ptr to handle cleanup
+    renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_PRESENTVSYNC));
+
 	if (!renderer) {
 		std::cerr << "Error creating SDL Renderer:" << SDL_GetError() << std::endl;
 		return false;
@@ -73,25 +85,28 @@ void Engine::updating() {
 }
 
 void Engine::rendering() {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+	SDL_RenderClear(renderer.get());
 
     // Iterate through all shapes and render them
     for (const Shape* shape : shapes) {
-        shape->draw(renderer);  // Pass the renderer to each shape's draw method
+        shape->draw(renderer.get());  // Pass the renderer to each shape's draw method
     }
 
-	SDL_RenderPresent(renderer);    
+	SDL_RenderPresent(renderer.get());    
 }
 
 void Engine::cleanup() {
-	if (renderer) 
-		SDL_DestroyRenderer(renderer);
+	for (Shape* shape : shapes) {
+        delete shape;  // Delete dynamically allocated shapes
+    }
+	// if (renderer) 
+	// 	SDL_DestroyRenderer(renderer);
 
-	if (window)
-		SDL_DestroyWindow(window);
+	// if (window)
+	// 	SDL_DestroyWindow(window);
 
-	SDL_Quit();	
+	// SDL_Quit();	
 }
 
 bool Engine::is_game_running() {
@@ -104,8 +119,5 @@ void Engine::add_shape(Shape* shape) {
 
 
 Engine::~Engine() {
-	cleanup();
-	for (Shape* shape : shapes) {
-        delete shape;  // Delete dynamically allocated shapes
-    }
+	cleanup();	
 }

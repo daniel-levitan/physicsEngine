@@ -21,8 +21,11 @@ private:
 	bool engine_is_running;
 	unsigned int last_frame_time;
 
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	// SDL_Window* window;
+	// SDL_Renderer* renderer;
+	// Using unique_ptr with a custom deleter to manage SDL resources
+    std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window;
+    std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)> renderer;
 	
     std::vector<Shape*> shapes;  // Vector to hold shapes (polymorphic)
 
