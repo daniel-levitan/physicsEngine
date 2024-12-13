@@ -9,28 +9,15 @@
 #define _rectangle_h
 
 #include <iostream>
-#include "polygon.h"
+#include <vector>
 #include "../vector/vector2.h"
+#include "shape.h"
+#include "polygon.h"
 
-// Derived class: Rectangle
 class Rectangle : public Polygon {
-private:
-    Vector2 position;
-    float width;
-    float height;    
-
 public:
-     // Constructor
-    Rectangle();
-    Rectangle(SDL_Renderer* rendererC, const Vector2& positionC, float widthC, float heightC);
+    Rectangle(const Vector2& position, int width, int height);
 
-    // Draw method implementation
-    void draw() const override;
-
-    // Getters for center and radius
-    Vector2 getPosition() const;
-    float getWidth() const;
-    float getHeight() const;
 };
 
 #endif

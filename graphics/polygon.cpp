@@ -2,19 +2,11 @@
 #include "polygon.h"
 #include "shape.h"
 
-
-// Constructor
-Polygon::Polygon() : Shape() {}
-
-Polygon::Polygon(SDL_Renderer* rendererC, const std::vector<Vector2>& verticesC) :
-    Shape(rendererC, verticesC) {}
-
-
-// Draw method
-void Polygon::draw() const {
-    Shape::draw();
-}
-
-const std::vector<Vector2>& Polygon::getVertices() const {
-    return Shape::getVertices();
+void Polygon::draw(SDL_Renderer* renderer) const {
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        const Vector2& start = vertices[i];
+        const Vector2& end = vertices[(i + 1) % vertices.size()]; // Loop back to the start
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
+        SDL_RenderDrawLine(renderer, start.getX(), start.getY(), end.getX(), end.getY());
+    }
 }

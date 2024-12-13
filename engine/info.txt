@@ -4,3 +4,16 @@ Esta lista foi escrita para JavaScript, por isso estou adaptando para C++.
 
 Para cada etapa, talvez eu tenha de fazer testes separados.
 
+
+Fiz diversas modificações no código para se encaixar em Orientação a Objeto.
+
+1. Primeiro o que foi feito foi criar as classes shape, polygon, rectangle e circle em seus arquivos separadamente. A classe shape tem o método draw determinado como virtual, que permite que as classes derivadas sobrescrevam este método. Usa-se a palavra override nas funções das classes herdeiras para informar ao compilador o que está acontecendo e para dar maior visibilidade no código.
+
+Cada função draw recebe um renderer como parâmetro, já que um renderer não é criado na classe e não precisa ser armazenado nela.
+
+2. Criei uma classe engine para encapsular o motor. Isso provê a separação de temas no projeto.
+
+3. Fiz o encapsulamento das funções SDL. Isso vai me permitir usar smart pointers para lidar com gerenciamento de memória.
+
+
+

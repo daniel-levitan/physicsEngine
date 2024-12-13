@@ -12,19 +12,11 @@
 #include "shape.h"
 #include "../vector/vector2.h"
 
-// Derived class: Circle
 class Polygon : public Shape {
-private:
-
 public:
-     // Constructor
-    Polygon();
-    Polygon(SDL_Renderer* rendererC, const std::vector<Vector2>& verticesC);
+     Polygon(const std::vector<Vector2>& vertices) : Shape(vertices) {}
 
-    // Draw method implementation
-    void draw() const override;
-
-    const std::vector<Vector2>& getVertices() const;
+     void draw(SDL_Renderer* renderer) const override;
 };
 
 #endif

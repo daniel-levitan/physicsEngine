@@ -19,16 +19,11 @@ private:
     float radius;
 
 public:
-     // Constructor
-    Circle();
-    Circle(SDL_Renderer* rendererC, const Vector2& centerC, float radiusC);
+    Circle(const Vector2& center, int radius)
+        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }), center(center), radius(radius) {}
 
-    // Draw method implementation
-    void draw() const override;
+    void draw(SDL_Renderer* renderer) const override;
 
-    // Getters for center and radius
-    Vector2 getCenter() const;
-    float getRadius() const;
 };
 
 #endif
