@@ -30,9 +30,18 @@ public:
 	 * --------------------------------
 	 * These methods return the x and y coordinates of the vector.
 	 */
-
 	float getX() const;
 	float getY() const;
+
+	/**
+	 * Methods: setX, setY
+	 * Usage: vector.setX(value);
+	 * --------------------------------
+	 * Insert a coordinate to the vector.
+	 */
+	void setX(float xc);
+	void setY(float yc);
+
 
 	/**
 	 * Method: length2
@@ -40,7 +49,6 @@ public:
 	 * --------------------------------
 	 * This method returns the length of the vector to the power of 2.
 	 */
-
 	double length2();
 	
 	/**
@@ -49,7 +57,6 @@ public:
 	 * --------------------------------
 	 * This method returns the length of the vector.
 	 */
-
 	double length();
 
 	/**
@@ -58,7 +65,6 @@ public:
 	 * --------------------------------
 	 * This method normalizes the vector.
 	 */
-
 	void normalize();
 
 	/**
@@ -67,7 +73,6 @@ public:
 	 * --------------------------------
 	 * This method returns the normal vector.
 	 */
-
 	Vector2 getNormal();
 
 	/**
@@ -76,7 +81,6 @@ public:
 	 * --------------------------------
 	 * This method returns the dotProduct with another vector.
 	 */
-
 	double dotProduct(Vector2 other);
 
 	/**
@@ -93,7 +97,6 @@ public:
 	 * ---------------------------------------
 	 * Returns a copy of the original vector.
 	 * */
-
 	Vector2 copy();
 
 	/**
@@ -102,7 +105,6 @@ public:
 	 * ---------------------------------------
 	 * Add the coordinates of this vector and the other vector.
 	 * */
-
 	void add(Vector2 other);
 
 	/**
@@ -111,7 +113,6 @@ public:
 	 * ---------------------------------------
 	 * Subtract the coordinates of this vector from the other vector.
 	 * */
-
 	void sub(Vector2 other);
 
 	/**
@@ -120,11 +121,7 @@ public:
 	 * ---------------------------------------
 	 * Scales the vector by scalar.
 	 * */
-
 	void scale(float scalar);
-
-	// Method to return a new scaled vector (does not mutate the original)
-    Vector2 Scale(float scalar);
 
 
 	/**
@@ -133,7 +130,6 @@ public:
 	 * ---------------------------------------
 	 * ???
 	 * */
-
 	float cross(Vector2 other);
 
 
@@ -178,6 +174,6 @@ Vector2 sub(const Vector2& v1, const Vector2& v2);
  * ---------------------------------------------------------
  * Scales the vector by scalar.
  * */
-Vector2 scale(const Vector2& v1, float scalar);
+Vector2 Scale(const Vector2& v1, float scalar);
 
 #endif

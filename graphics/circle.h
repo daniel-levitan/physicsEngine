@@ -20,15 +20,19 @@ private:
 
 public:
     Circle(const Vector2& center, int radius)
-        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }), center(center), radius(radius) {}
+        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }), center(center), radius(radius) {
+            centroid = center;
+    }
 
     void draw(SDL_Renderer* renderer) const override;
 
-    // Override getType to return the specific type of shape
     const char* getType() const override {
         return "Circle";
     }
+    const float getRadius() const;
 
+    void setCentroid(const Vector2& newCentroid) override; 
+
+    void move(Vector2 delta) override;
 };
-
 #endif

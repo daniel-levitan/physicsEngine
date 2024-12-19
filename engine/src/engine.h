@@ -3,20 +3,27 @@
 
 #include <SDL.h>
 #include <memory>
-#include "../graphics/graphics.h"
-#include "../graphics/shape.h"
-#include "../input_manager/input_manager.h"
-
+#include "../../graphics/graphics.h"
+#include "../../graphics/shape.h"
+#include "../../collision/manifold.h"
+#include "../../input_manager/input_manager.h"
 
 class Engine {
 private:
 	bool engine_is_running;
 	unsigned int last_frame_time;
 
+	// Arrow control (it may be figure A or player 1)
+	bool move_left, move_right, move_up, move_down, rotate_left, rotate_right;
+
+	// Arrow control (it may be figure B or player 2)
+	bool move_leftB, move_rightB, move_upB, move_downB, rotate_leftB, rotate_rightB;
+
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
     std::unique_ptr<InputManager> input_manager;
 
 	std::vector<std::unique_ptr<Shape>> shapes;
+	std::vector<std::unique_ptr<Manifold>> manifolds;
 
 public:
 	Engine();

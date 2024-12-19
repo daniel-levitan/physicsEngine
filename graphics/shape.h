@@ -11,21 +11,42 @@
 #include <iostream>
 #include <SDL.h>
 #include "../vector/vector2.h"
+#include "helper.h"
 
 class Shape {
 protected:
     std::vector<Vector2> vertices; // A collection of vertices
+    Vector2 centroid;
+    Color color;
     
 public:
-    Shape(const std::vector<Vector2>& verticesC) : vertices(verticesC) {};
-
-    // Virtual method to return the type of shape (override in derived classes)
-    virtual const char* getType() const = 0;
-
-    virtual void draw(SDL_Renderer* renderer) const;    
-    const std::vector<Vector2>& getVertices() const;
-
+    Shape(const std::vector<Vector2>& verticesC) : vertices(verticesC) {
+        centroid = calculateCentroid();
+        Color newColor = {255, 255, 255};
+        setColor(newColor);
+    };
     virtual ~Shape() = default;  
+
+    // getters
+    virtual Vector2 getCentroid() const; 
+    virtual const char* getType() const = 0;
+    const std::vector<Vector2>& getVertices() const;
+    Color const getColor() const;
+
+    // setters
+    virtual void setCentroid(const Vector2& newCentroid);
+    void setColor(Color newColor);
+
+    // manipulation and calculation
+    Vector2 calculateCentroid() const;
+    float calculateArea() const;
+    const Vector2 rotateAroundPoint(Vector2 vec, Vector2 point, float angle) const;
+    virtual void move(Vector2 delta);
+    void rotate(float radiansDelta);
+
+
+    // drawing
+    virtual void draw(SDL_Renderer* renderer) const;
 };
 
 #endif

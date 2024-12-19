@@ -18,6 +18,14 @@ float Vector2::getX() const { return x; }
 
 float Vector2::getY() const { return y; }
 
+void Vector2::setX(float xc) {
+	x = xc;
+}
+
+void Vector2::setY(float yc) {
+	y = yc;
+}
+
 double Vector2::length2() { 
 	return pow(x, 2) + pow(y, 2); 
 }
@@ -59,11 +67,6 @@ void Vector2::scale(float scalar) {
 	y *= scalar;
 }
 
-// Method to return a new scaled vector (does not mutate the original)
-Vector2 Vector2::Scale(float scalar) {
-	return Vector2(x * scalar, y * scalar);
-}
-
 
 float Vector2::cross(Vector2 other) {
 	return x * other.y - y * other.x;
@@ -98,8 +101,12 @@ Vector2 sub(const Vector2& v1, const Vector2& v2) {
     return Vector2(v1.getX() - v2.getX(), v1.getY() - v2.getY());
 }
 
-Vector2 scale(const Vector2& v1, float scalar) {
-    return Vector2(v1.getX() * scalar, v1.getY() * 2);
+Vector2 Scale(const Vector2& v1, float scalar) {
+    return Vector2(v1.getX() * scalar, v1.getY() * scalar);
 }
 
+// // Method to return a new scaled vector (does not mutate the original)
+// Vector2 Vector2::scale(float scalar) {
+// 	return Vector2(x * scalar, y * scalar);
+// }
 

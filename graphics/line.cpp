@@ -1,8 +1,8 @@
 #include <iostream>
-#include "polygon.h"
+#include "line.h"
 #include "shape.h"
 #include "drawing.h"
 
-void Polygon::draw(SDL_Renderer* renderer) const {
+void Line::draw(SDL_Renderer* renderer) const {
     Shape::draw(renderer);
 }
