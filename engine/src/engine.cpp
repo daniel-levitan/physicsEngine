@@ -12,8 +12,15 @@ Engine::Engine()
 	try {
     	graphics = std::make_unique<Graphics>(WINDOW_WIDTH, WINDOW_HEIGHT, "Game Window");
         engine_is_running = true;  // If no exception, graphics initialization is successful
+
+        f1 = f2 = f3 = false;
+        debugMode = false;
+
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
+        move_leftB = move_rightB = move_upB = move_downB = false;
+        rotate_leftB = rotate_rightB = false;
+        
         last_frame_time = 0;
     } catch (const std::runtime_error& e) {
         std::cerr << "Error initializing Graphics: " << e.what() << std::endl;
@@ -32,6 +39,30 @@ void Engine::input_processing() {
     if (input_manager->isKeyDown(SDLK_ESCAPE)) {
         std::cout << "Escape key is pressed!" << std::endl;
         engine_is_running = false;
+    }
+
+    if (input_manager->isKeyDown(SDLK_F1)) {
+        f1 = true;
+    }
+    if (input_manager->isKeyUp(SDLK_F1)) {
+        f1 = false;
+    }
+
+    // Check collision mode
+    if (input_manager->isKeyDown(SDLK_F2)) {
+        f2 = true;
+    }
+    if (input_manager->isKeyUp(SDLK_F2)) {
+        f2 = false;
+    }
+
+    // Debug Mode
+    if (input_manager->isKeyDown(SDLK_F3)) {
+        f3 = true;
+        debugMode = !debugMode;
+    }
+    if (input_manager->isKeyUp(SDLK_F3)) {
+        f3 = false;
     }
     
     // Arrow control (it may be figure A or player 1)
@@ -131,15 +162,20 @@ void Engine::updating() {
     float rotate_speed = 15.0f; 
     float rotate_delta = 0.0f, rotate_deltaB = 0.0f;
 
-    // auto *circleA = &shapes[0];
-    // auto *circleB = &shapes[1];
+    // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
+    // Rectangle* rect = dynamic_cast<Rectangle*>(shapes[0].get());
+    // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
+    // Polygon* pentagon = dynamic_cast<Polygon*>(shapes[0].get());
+    // Polygon* triangle = dynamic_cast<Polygon*>(shapes[1].get());
 
-    Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
-    Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
-
+    Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
+    Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
+    
     // Manifold* circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // std::unique_ptr<Manifold> circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // auto circleCollision = std::make_unique<Manifold>(Collision::checkCircleCircle(*circleA, *circleB));
+
+    /*
     manifolds.clear();
     auto circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
 
@@ -150,7 +186,7 @@ void Engine::updating() {
 
         // If I use only this, the circle moves gently back
         // circleB->move(circleCollision->getNormal());
-        
+
         Vector2 push = circleCollision->getNormal();
         push.scale(circleCollision->getDepth());
         circleB->move(push);
@@ -168,6 +204,92 @@ void Engine::updating() {
         circleA->setColor(newColor);
         circleB->setColor(newColor);
     }
+    */
+            
+    Color red = {255, 0, 0};
+    Color white = {255, 255, 255};
+    for (size_t i = 0; i < shapes.size(); i++) {
+        for (size_t j = 0; j < shapes.size(); j++) {
+            if (shapes[i] == shapes[j]) continue;
+                
+            auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+            auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+            
+            auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
+
+
+            if (result) {
+                // if (debugMode) 
+                //     std::cout << *result << std::endl;
+                // const Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
+                // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
+                // std::cout << *result << std::endl;
+                // if (polygon1IsPusher) {
+                //     std::cout << "Pol1 pushing" << std::endl;
+                //     polygon2->setColor(red);
+                // }
+                // else {
+                //     polygon1->setColor(red);
+                //     std::cout << "Pol2 pushing" << std::endl;
+                // }
+
+                Vector2 push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.5);
+                polygon2->move(push);
+                
+                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.5);
+                polygon1->move(push);
+
+             
+                
+                // manifolds.push_back(std::move(result));
+            } else {
+                polygon1->setColor(white);
+                polygon2->setColor(white);
+                // manifolds.clear();
+            }
+                
+        }
+    }
+
+    // auto &shapes = get_shapes();
+    // size_t length = shapes.size();    
+    // for (size_t i = 0; i < length; i++) {
+    //     for (size_t j = 0; j < length; j++) {
+    //         if (shapes[i] == shapes[j])
+    //             continue;
+    //         auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+    //         auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+    //         bool result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
+
+    //         if (result) {
+    //             polygon1->setColor(red);
+    //         }
+    //     }
+    // }
+
+    // Menu/special keys
+    
+    if (f1) {
+        Vector2 position(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4);
+        float width = 200;
+        float height = 80;
+
+        std::vector<Vector2> newVertices = {Vector2(position.getX() - width / 2, position.getY() - height / 2),
+                                            Vector2(position.getX() + width / 2, position.getY() - height / 2),
+                                            Vector2(position.getX() + width / 2, position.getY() + height / 2),
+                                            Vector2(position.getX() - width / 2, position.getY() + height / 2)};
+        rect1->setVertices(newVertices);
+
+        Vector2 position2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4);
+        newVertices = {Vector2(position2.getX() - width / 2, position2.getY() - height / 2),
+                       Vector2(position2.getX() + width / 2, position2.getY() - height / 2),
+                       Vector2(position2.getX() + width / 2, position2.getY() + height / 2),
+                       Vector2(position2.getX() - width / 2, position2.getY() + height / 2)};
+        rect2->setVertices(newVertices);
+    }
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80);
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80);
 
     // Shape A/Player 1
     if (move_left) {
@@ -214,16 +336,29 @@ void Engine::updating() {
 
 
     // There must be a better way to do that
-    
     for (const auto& shape : shapes) {
-        if (circleA == &*shape) {
-            shape->move(deltaA);
-            shape->rotate(rotate_delta);
-        }
-        if (circleB == &*shape) {
-            shape->move(deltaB);
-            shape->rotate(rotate_deltaB);
-        }
+        if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
+
+            if (rect2 == &*shape) {
+            // if (pentagon == &*shape) {
+                shape->move(deltaB);
+                shape->rotate(rotate_deltaB);
+            }
+            // if (circleA == &*shape) {
+            //     shape->move(deltaA);
+            //     shape->rotate(rotate_delta);
+            // }
+            // if (circleB == &*shape) {
+            // if (triangle == &*shape) {
+            //     shape->move(deltaB);
+            //     shape->rotate(rotate_deltaB);
+            // }
+            if (rect1 == &*shape) {
+            // if (pentagon == &*shape) {
+                shape->move(deltaA);
+                shape->rotate(rotate_delta);
+            }
+        }    
     }
 
     last_frame_time = SDL_GetTicks();
@@ -239,7 +374,7 @@ void Engine::rendering() {
 
     for (const auto& manifold : manifolds) {
         manifold->draw(graphics->getRenderer());  // Draw the manifold (collision details)
-    }
+    }    
 
     graphics->presentScreen();  // Present the screen using the Graphics object
 }

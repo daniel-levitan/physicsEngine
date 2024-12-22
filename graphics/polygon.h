@@ -13,15 +13,26 @@
 #include "../vector/vector2.h"
 
 class Polygon : public Shape {
+private:
+     std::vector<Vector2> normals;
+
 public:
-     Polygon(const std::vector<Vector2>& vertices) : Shape(vertices) {}
+     Polygon(const std::vector<Vector2>& vertices) : Shape(vertices) {
+          normals = calculateNormals();
+     }
+
+     const std::vector<Vector2>& getNormals() const;
 
      void draw(SDL_Renderer* renderer) const override;
+
+     void rotate(float radiansDelta) override;
 
      // Override getType to return the specific type of shape
      const char* getType() const override {
           return "Polygon";
      }
+
+     std::vector<Vector2> calculateNormals() const;
 };
 
 #endif

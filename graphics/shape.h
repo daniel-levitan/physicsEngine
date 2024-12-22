@@ -42,7 +42,8 @@ public:
     float calculateArea() const;
     const Vector2 rotateAroundPoint(Vector2 vec, Vector2 point, float angle) const;
     virtual void move(Vector2 delta);
-    void rotate(float radiansDelta);
+    virtual void rotate(float radiansDelta);
+    virtual void setVertices(std::vector<Vector2>& verticesC);
 
 
     // drawing

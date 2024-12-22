@@ -2,16 +2,21 @@
 #define _collision_h
 
 #include "../graphics/circle.h"
+#include "../graphics/rectangle.h"
 #include "manifold.h"
+#include "supportPoint.h"
 
 namespace Collision {
+    // Circle vs Circle
     float calculatePenetrationDepthOfCircles(const Circle& c1, const Circle& c2);
-    
-    // bool checkCircleCircle(const Circle& c1, const Circle& c2);
     std::unique_ptr<Manifold> checkCircleCircle(const Circle& c1, const Circle& c2);
+    // bool checkCircleCircle(const Circle& c1, const Circle& c2); // This was the first version
 
-    // bool checkRectangleRectangle(const Rectangle& r1, const Rectangle& r2);
-    // bool checkPolygonPolygon(const Polygon& p1, const Polygon& p2);
+    // Polygon vs Polygon
+    std::unique_ptr<SupportPoint> findSupportPoint(Vector2 normalOnEdge, Vector2 pointOnEdge, std::vector<Vector2> otherPolygonVertices);
+    std::unique_ptr<Manifold> getContactPoint(const Polygon& pol1, const Polygon& pol2);
+    std::unique_ptr<Manifold> checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
+    // bool checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
 }
 
 #endif

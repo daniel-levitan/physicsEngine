@@ -19,6 +19,14 @@ private:
 	// Arrow control (it may be figure B or player 2)
 	bool move_leftB, move_rightB, move_upB, move_downB, rotate_leftB, rotate_rightB;
 
+	// Special Keys
+	// f1 -> Reset the position of the objects
+	// f2 -> change the collision detection for polygons
+	// f3 -> debugger on/off
+	bool f1, f2, f3;
+	bool debugMode;
+
+
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
     std::unique_ptr<InputManager> input_manager;
 
@@ -37,6 +45,9 @@ public:
 	
 	bool is_game_running();
     void add_shape(std::unique_ptr<Shape> shape); // Accept unique_ptr
+    std::vector<std::unique_ptr<Shape>>& get_shapes() {
+        return shapes;  // Return reference to the internal vector
+    }
 };
 
 #endif

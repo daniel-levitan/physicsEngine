@@ -10,6 +10,8 @@
 
 using namespace std;
 
+const Vector2 Vector2::Null(0.0f, 0.0f);
+
 Vector2::Vector2() : x(0), y(0) {}
 
 Vector2::Vector2(float xc, float yc) : x(xc), y(yc) {} 
@@ -27,7 +29,8 @@ void Vector2::setY(float yc) {
 }
 
 double Vector2::length2() { 
-	return pow(x, 2) + pow(y, 2); 
+	return x * x + y * y; 
+	// return pow(x, 2) + pow(y, 2); 
 }
 
 double Vector2::length() { 
@@ -36,15 +39,22 @@ double Vector2::length() {
 
 void Vector2::normalize() {
 	double len = length();
-	x /= len;
-	y /= len;
+	if (len == 0) {
+	    // Handle zero-length vector
+        x = 0;
+        y = 0;
+        return;
+    }
+    x /= len;
+    y /= len;
 }
 
-Vector2 Vector2::getNormal() {
-	return Vector2(y, -x);
+Vector2 Vector2::getNormal() const {
+	return Vector2(y, -1 * x);
 }
 
-double Vector2::dotProduct(Vector2 other) {
+// double Vector2::dotProduct(Vector2 other) {
+double Vector2::dotProduct(const Vector2 other) const {	
 	return x * other.x + y * other.y;
 }
 
@@ -78,6 +88,10 @@ string Vector2::toString() {
 
 bool Vector2::operator==(const Vector2& other) const {
     return (x == other.x && y == other.y);
+}
+
+bool Vector2::operator!=(const Vector2& other) const {
+    return !(*this == other);
 }
 
 Vector2 Vector2::operator+(const Vector2& other) const {

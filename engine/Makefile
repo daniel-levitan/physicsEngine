@@ -11,7 +11,7 @@ CXXFLAGS=-Wall -std=c++14 -g -D_THREAD_SAFE
 
 # Directories for SDL2 include and libraries
 SDL2_INCLUDE=-I/opt/homebrew/include/SDL2
-SDL2_LIB=-L/opt/homebrew/lib -lSDL2
+SDL2_LIB=-L/opt/homebrew/lib -lSDL2 
 
 # Include directory for vector.h (relative path to the ../vector/ folder)
 VECTOR_INCLUDE=-I../vector
@@ -37,8 +37,8 @@ CXXSRC=$(wildcard ./src/*.cpp) \
        ../graphics/polygon.cpp \
        ../graphics/line.cpp \
        ../collision/collision.cpp \
-       ../collision/manifold.cpp
-
+       ../collision/manifold.cpp \
+       ../collision/supportPoint.cpp
 
 # Object files
 CXXOBJS=$(CXXSRC:.cpp=.o)

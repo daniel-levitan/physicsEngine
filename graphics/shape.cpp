@@ -29,6 +29,14 @@ void Shape::setColor(Color newColor) {
     color = newColor;
 }
 
+void Shape::setVertices(std::vector<Vector2>& verticesC) {
+    vertices.clear();
+    for (const auto& vertice : verticesC) {
+        vertices.push_back(vertice);
+    }
+    centroid = calculateCentroid();
+}
+
 float Shape::calculateArea() const {
     float signedArea = 0.0f;
 

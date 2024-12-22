@@ -14,8 +14,11 @@ protected:
 public:
     Manifold(float depth, Vector2 normal, Vector2 penetrationPoint) :
         depth(depth), normal(normal), penetrationPoint(penetrationPoint) {};
-    
+
+    // Manifold() : depth(0.0f), normal(Vector2::Null), penetrationPoint(Vector2::Null) {}
     virtual ~Manifold() = default;  
+
+    // bool isNull() const; 
 
     // getters
     // virtual Vector2 getCentroid() const; 
@@ -31,6 +34,9 @@ public:
     // positionalCorrection()
     void draw(SDL_Renderer* renderer) const;
 
+    friend std::ostream& operator<<(std::ostream& os, const Manifold& manifold);
 };
+
+
 
 #endif

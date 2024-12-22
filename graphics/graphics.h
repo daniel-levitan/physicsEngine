@@ -2,6 +2,7 @@
 #define _graphics_h
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <memory>
 #include <string>
 
@@ -17,6 +18,11 @@ public:
     // Rendering functions
     void clearScreen(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void presentScreen();
+    // void renderText(const std::string& message, 
+        // const std::string& fontPath, 
+        // int fontSize, 
+        // SDL_Color color, int x, int y);
+
 
     // Accessors
     SDL_Renderer* getRenderer() const;
