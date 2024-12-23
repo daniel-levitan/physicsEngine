@@ -20,10 +20,9 @@ protected:
     Color color;
     
 public:
-    Shape(const std::vector<Vector2>& verticesC) : vertices(verticesC) {
-        centroid = calculateCentroid();
-        Color newColor = {255, 255, 255};
-        setColor(newColor);
+    Shape(const std::vector<Vector2>& verticesC, Color colorC) : 
+        vertices(verticesC), color(colorC) {
+        centroid = calculateCentroid();        
     };
     virtual ~Shape() = default;  
 
@@ -31,7 +30,7 @@ public:
     virtual Vector2 getCentroid() const; 
     virtual const char* getType() const = 0;
     const std::vector<Vector2>& getVertices() const;
-    Color const getColor() const;
+    Color getColor() const;
 
     // setters
     virtual void setCentroid(const Vector2& newCentroid);

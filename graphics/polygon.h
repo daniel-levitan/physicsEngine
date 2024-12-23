@@ -17,7 +17,7 @@ private:
      std::vector<Vector2> normals;
 
 public:
-     Polygon(const std::vector<Vector2>& vertices) : Shape(vertices) {
+     Polygon(const std::vector<Vector2>& vertices, Color color) : Shape(vertices, color) {
           normals = calculateNormals();
      }
 

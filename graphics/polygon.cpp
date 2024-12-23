@@ -5,12 +5,14 @@
 
 void Polygon::draw(SDL_Renderer* renderer) const {
     Shape::draw(renderer);
+    // Normals
     for (size_t i = 0; i < normals.size(); ++i) {
         // Vector2 start = (vertices[i] + vertices[(i + 1) % vertices.size()]);
         Vector2 direction = vertices[(i + 1) % vertices.size()] - vertices[i];
         Vector2 center = vertices[i] + Scale(direction, .5);
         Vector2 end = center + Scale(normals[i], 15);
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);  // White color
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255); 
+        // SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
         SDL_RenderDrawLine(renderer, center.getX(), center.getY(), end.getX(), end.getY());
     }
 }

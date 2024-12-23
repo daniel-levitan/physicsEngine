@@ -19,8 +19,8 @@ private:
     float radius;
 
 public:
-    Circle(const Vector2& center, int radius)
-        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }), center(center), radius(radius) {
+    Circle(const Vector2& center, int radius, Color color)
+        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color), center(center), radius(radius) {
             centroid = center;
     }
 

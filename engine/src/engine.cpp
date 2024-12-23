@@ -14,7 +14,9 @@ Engine::Engine()
         engine_is_running = true;  // If no exception, graphics initialization is successful
 
         f1 = f2 = f3 = false;
-        debugMode = false;
+        debugMode = previousF2State = previousF3State = false;
+
+        collisionMode = 0;
 
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
@@ -49,21 +51,25 @@ void Engine::input_processing() {
     }
 
     // Check collision mode
-    if (input_manager->isKeyDown(SDLK_F2)) {
-        f2 = true;
+    bool currentF2State = input_manager->isKeyDown(SDLK_F2);
+    int number_collision_modes = 2;
+    if (currentF2State && !previousF2State) {
+        // F3 was just pressed, toggle the debug mode
+        collisionMode = (collisionMode + 1) % number_collision_modes;
     }
-    if (input_manager->isKeyUp(SDLK_F2)) {
-        f2 = false;
-    }
+    // Update the previous state for the next frame
+    previousF2State = currentF2State;
 
+    
     // Debug Mode
-    if (input_manager->isKeyDown(SDLK_F3)) {
-        f3 = true;
+    bool currentF3State = input_manager->isKeyDown(SDLK_F3);
+    if (currentF3State && !previousF3State) {
+        // F3 was just pressed, toggle the debug mode
         debugMode = !debugMode;
     }
-    if (input_manager->isKeyUp(SDLK_F3)) {
-        f3 = false;
-    }
+    // Update the previous state for the next frame
+    previousF3State = currentF3State;
+
     
     // Arrow control (it may be figure A or player 1)
     if (input_manager->isKeyDown(SDLK_LEFT)) {
@@ -170,6 +176,18 @@ void Engine::updating() {
 
     Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
     Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
+
+    Text* text = texts[0].get();
+    Text* text1 = texts[1].get();
+    text1->setDirectionRightToLeft();
+    if (debugMode) {
+        text->setMessage("Debugging");
+    } else {
+        text->setMessage("Not debugging");
+        text1->setMessage(" ");
+    }
+
+
     
     // Manifold* circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // std::unique_ptr<Manifold> circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
@@ -205,9 +223,11 @@ void Engine::updating() {
         circleB->setColor(newColor);
     }
     */
-            
+    
+
     Color red = {255, 0, 0};
     Color white = {255, 255, 255};
+
     for (size_t i = 0; i < shapes.size(); i++) {
         for (size_t j = 0; j < shapes.size(); j++) {
             if (shapes[i] == shapes[j]) continue;
@@ -216,38 +236,30 @@ void Engine::updating() {
             auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
             
             auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
-
-
             if (result) {
-                // if (debugMode) 
-                //     std::cout << *result << std::endl;
-                // const Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
+                polygon1->setColor(red);
+                polygon2->setColor(red);
+
+                // Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
+                // text1->setMessage(str);
                 // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
-                // std::cout << *result << std::endl;
-                // if (polygon1IsPusher) {
-                //     std::cout << "Pol1 pushing" << std::endl;
-                //     polygon2->setColor(red);
-                // }
-                // else {
-                //     polygon1->setColor(red);
-                //     std::cout << "Pol2 pushing" << std::endl;
-                // }
-
-                Vector2 push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.5);
+                Vector2 push;
+                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
                 polygon2->move(push);
-                
-                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.5);
-                polygon1->move(push);
 
-             
-                
+                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
+                polygon1->move(push);   
+
+                std::string str = "Red";
+                text1->setMessage(str);
                 // manifolds.push_back(std::move(result));
             } else {
                 polygon1->setColor(white);
                 polygon2->setColor(white);
+                std::string str = "White";
+                text1->setMessage(str);
                 // manifolds.clear();
             }
-                
         }
     }
 
@@ -288,8 +300,6 @@ void Engine::updating() {
                        Vector2(position2.getX() - width / 2, position2.getY() + height / 2)};
         rect2->setVertices(newVertices);
     }
-    // auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80);
-    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80);
 
     // Shape A/Player 1
     if (move_left) {
@@ -339,11 +349,16 @@ void Engine::updating() {
     for (const auto& shape : shapes) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
 
+            if (rect1 == &*shape) {
+                shape->move(deltaA);
+                shape->rotate(rotate_delta);
+            }
+
             if (rect2 == &*shape) {
-            // if (pentagon == &*shape) {
                 shape->move(deltaB);
                 shape->rotate(rotate_deltaB);
             }
+
             // if (circleA == &*shape) {
             //     shape->move(deltaA);
             //     shape->rotate(rotate_delta);
@@ -353,11 +368,7 @@ void Engine::updating() {
             //     shape->move(deltaB);
             //     shape->rotate(rotate_deltaB);
             // }
-            if (rect1 == &*shape) {
-            // if (pentagon == &*shape) {
-                shape->move(deltaA);
-                shape->rotate(rotate_delta);
-            }
+            // if (pentagon == &*shape) {               
         }    
     }
 
@@ -367,14 +378,17 @@ void Engine::updating() {
 void Engine::rendering() {
 	graphics->clearScreen(0, 0, 0, 255);  // Clear screen using the Graphics object
 
-
     for (const auto& shape : shapes) {
         shape->draw(graphics->getRenderer());  // Use Graphics renderer to draw shapes
     }
 
     for (const auto& manifold : manifolds) {
         manifold->draw(graphics->getRenderer());  // Draw the manifold (collision details)
-    }    
+    }   
+
+    for (const auto& text : texts) {
+        text->render(graphics->getRenderer());  // Draw the manifold (collision details)
+    }   
 
     graphics->presentScreen();  // Present the screen using the Graphics object
 }
@@ -386,6 +400,11 @@ bool Engine::is_game_running() {
 void Engine::add_shape(std::unique_ptr<Shape> shape) {
     shapes.push_back(std::move(shape)); // Store shapes using move semantics
 }
+
+void Engine::add_text(std::unique_ptr<Text> text) {
+    texts.push_back(std::move(text));
+}
+
 
 Engine::~Engine() {
 }

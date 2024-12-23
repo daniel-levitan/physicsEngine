@@ -39,17 +39,25 @@ void setup(Engine& engine) {
 
 
     // auto line = std::make_unique<Line>(Vector2(325.0, 427.5),Vector2(250.0+25, 300.0));
-	// Color color = {255, 0, 0};
+	
     // line->setColor(color);
 	// engine.add_shape(std::move(line));  
-
-	auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80);
-	auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80);
+	Color whiteColor = {255, 255, 255};
+	auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80, whiteColor);
+	auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80, whiteColor);	
 	engine.add_shape(std::move(rect1));
 	engine.add_shape(std::move(rect2));
 
-	
 
+	SDL_Color white = {255, 255, 255, 255};
+	const std::string message = " ";
+	auto text = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message,
+										24, Vector2(10, 10), white);
+	engine.add_text(std::move(text));
+
+	auto text1 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message,
+		 								24, Vector2(WINDOW_WIDTH/2, 10), white);	
+	engine.add_text(std::move(text1));
 }
 
 int main() {

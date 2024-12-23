@@ -88,7 +88,6 @@ std::unique_ptr<Manifold> Collision::getContactPoint(const Polygon& pol1, const 
 			// std::cout << "Support point(" << i << ") " << *supportPoint << std::endl;  
 		}
 
-
 		if (supportPoint->getDepth() < minPenetrationDepth) {
 			minPenetrationDepth = supportPoint->getDepth();
 			contact = std::make_unique<Manifold>(minPenetrationDepth, normalOnEdge, supportPoint->getPenetrationPoint());

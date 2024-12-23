@@ -5,6 +5,7 @@
 #include <memory>
 #include "../../graphics/graphics.h"
 #include "../../graphics/shape.h"
+#include "../../graphics/text.h"
 #include "../../collision/manifold.h"
 #include "../../input_manager/input_manager.h"
 
@@ -24,14 +25,18 @@ private:
 	// f2 -> change the collision detection for polygons
 	// f3 -> debugger on/off
 	bool f1, f2, f3;
-	bool debugMode;
+	bool debugMode, previousF3State, previousF2State;
 
+	// Will determine type of collision detection
+	int collisionMode;
 
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
     std::unique_ptr<InputManager> input_manager;
 
 	std::vector<std::unique_ptr<Shape>> shapes;
 	std::vector<std::unique_ptr<Manifold>> manifolds;
+
+	std::vector<std::unique_ptr<Text>> texts;
 
 public:
 	Engine();
@@ -44,10 +49,16 @@ public:
 	void rendering();
 	
 	bool is_game_running();
-    void add_shape(std::unique_ptr<Shape> shape); // Accept unique_ptr
+
+    void add_shape(std::unique_ptr<Shape> shape); 
     std::vector<std::unique_ptr<Shape>>& get_shapes() {
-        return shapes;  // Return reference to the internal vector
+        return shapes;
     }
+    void add_text(std::unique_ptr<Text> text);
+    std::vector<std::unique_ptr<Text>>& get_texts() {
+        return texts;
+    }
+
 };
 
 #endif

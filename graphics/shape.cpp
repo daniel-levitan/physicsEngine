@@ -17,7 +17,7 @@ Vector2 Shape::getCentroid() const {
     return centroid;
 }
 
-Color const Shape::getColor() const {
+Color Shape::getColor() const {
     return color;
 }
 
@@ -99,8 +99,7 @@ void Shape::draw(SDL_Renderer* renderer) const {
     for (size_t i = 0; i < vertices.size(); ++i) {
         const Vector2& start = vertices[i];
         const Vector2& end = vertices[(i + 1) % vertices.size()]; // Loop back to the start
-        // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);  // White color
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);  
         SDL_RenderDrawLine(renderer, start.getX(), start.getY(), end.getX(), end.getY());
     }
     Vector2 centroid = getCentroid();

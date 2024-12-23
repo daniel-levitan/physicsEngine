@@ -10,8 +10,8 @@ CXX=g++
 CXXFLAGS=-Wall -std=c++14 -g -D_THREAD_SAFE
 
 # Directories for SDL2 include and libraries
-SDL2_INCLUDE=-I/opt/homebrew/include/SDL2
-SDL2_LIB=-L/opt/homebrew/lib -lSDL2 
+SDL2_INCLUDE=-I/opt/homebrew/include/SDL2 -I/opt/homebrew/include/SDL2_ttf
+SDL2_LIB=-L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
 
 # Include directory for vector.h (relative path to the ../vector/ folder)
 VECTOR_INCLUDE=-I../vector
@@ -22,6 +22,8 @@ INPUT_MANAGER_INCLUDE=-I../input_manager
 
 COLLISION_INCLUDE=-I../collision
 
+UTILS_INCLUDE=-I../utils
+
 # The build target executable
 TARGET=engine
 
@@ -30,6 +32,7 @@ CXXSRC=$(wildcard ./src/*.cpp) \
        ../vector/vector2.cpp \
        ../graphics/drawing.cpp \
        ../graphics/graphics.cpp \
+       ../graphics/text.cpp \
        ../input_manager/input_manager.cpp \
        ../graphics/shape.cpp \
        ../graphics/rectangle.cpp \
@@ -38,7 +41,8 @@ CXXSRC=$(wildcard ./src/*.cpp) \
        ../graphics/line.cpp \
        ../collision/collision.cpp \
        ../collision/manifold.cpp \
-       ../collision/supportPoint.cpp
+       ../collision/supportPoint.cpp \
+       ../utils/utils.cpp
 
 # Object files
 CXXOBJS=$(CXXSRC:.cpp=.o)
@@ -50,7 +54,8 @@ $(TARGET): $(CXXOBJS)
 # Pattern rule for compiling C++ files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(SDL2_INCLUDE) $(VECTOR_INCLUDE) $(DRAWING_INCLUDE)\
-	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) -c $< -o $@
+	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) \
+       $(UTILS_INCLUDE) -c $< -o $@
 
 # Clean target: remove object files and the executable
 clean:

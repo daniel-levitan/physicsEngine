@@ -34,6 +34,8 @@ public:
     // positionalCorrection()
     void draw(SDL_Renderer* renderer) const;
 
+    std::string toString();
+
     friend std::ostream& operator<<(std::ostream& os, const Manifold& manifold);
 };
 

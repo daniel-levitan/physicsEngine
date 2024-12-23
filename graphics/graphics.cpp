@@ -13,6 +13,10 @@ Graphics::Graphics(int width, int height, const std::string& title)
         throw std::runtime_error("Failed to initialize SDL: " + std::string(SDL_GetError()));
     }
 
+    if (TTF_Init() != 0) {
+        throw std::runtime_error("Failed to initialize TTF: " + std::string(TTF_GetError())); 
+    }
+
     // Initialize SDL_Window
     window.reset(SDL_CreateWindow(
         title.c_str(),
@@ -34,6 +38,7 @@ Graphics::Graphics(int width, int height, const std::string& title)
 }
 
 Graphics::~Graphics() {
+    TTF_Quit();
     SDL_Quit();
 }
 

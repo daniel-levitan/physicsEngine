@@ -9,7 +9,7 @@ class Line : public Shape {
 private:
 
 public:
-    Line(const Vector2 start, const Vector2 end) : Shape({start, end}) {
+    Line(const Vector2 start, const Vector2 end, Color color) : Shape({start, end}, color) {
 
     }
 
