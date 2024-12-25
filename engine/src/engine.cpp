@@ -250,14 +250,16 @@ void Engine::updating() {
                 push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
                 polygon1->move(push);   
 
-                std::string str = "Red";
-                text1->setMessage(str);
+                if (debugMode) {
+                    std::string str = result->toString();
+                    text1->setMessage(str);
+                }
                 // manifolds.push_back(std::move(result));
             } else {
                 polygon1->setColor(white);
                 polygon2->setColor(white);
-                std::string str = "White";
-                text1->setMessage(str);
+                // std::string str = "Red";
+                // text1->setMessage(str);
                 // manifolds.clear();
             }
         }
