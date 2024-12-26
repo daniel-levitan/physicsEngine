@@ -19,16 +19,13 @@ private:
     float radius;
 
 public:
-    Circle(const Vector2& center, int radius, Color color)
-        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color), center(center), radius(radius) {
+    Circle(const Vector2& center, int radius, Color color, std::string type)
+        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color, type), center(center), radius(radius) {
             centroid = center;
     }
 
     void draw(SDL_Renderer* renderer) const override;
 
-    const char* getType() const override {
-        return "Circle";
-    }
     const float getRadius() const;
 
     void setCentroid(const Vector2& newCentroid) override; 

@@ -9,17 +9,9 @@ class Line : public Shape {
 private:
 
 public:
-    Line(const Vector2 start, const Vector2 end, Color color) : Shape({start, end}, color) {
-
-    }
+    Line(const Vector2 start, const Vector2 end, Color color, std::string type) : Shape({start, end}, color, type) {}
 
     void draw(SDL_Renderer* renderer) const override;
-    
-    // Override getType to return the specific type of shape
-    const char* getType() const override {
-        return "Line";
-    }
-
 };
 
 #endif

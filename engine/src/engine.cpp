@@ -161,11 +161,14 @@ void Engine::input_processing() {
 void Engine::updating() {
 	float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
         
-    float movement_speed = 150.0f;  
+    // Calculating deltas
+    // float movement_speed = 150.0f;  
+    float movement_speed = 1.0f * MOVEMENT_SPEED;  
     float movement_delta_x = 0.0f, movement_delta_y = 0.0f;
     float movement_delta_xB = 0.0, movement_delta_yB = 0.0f;
 
-    float rotate_speed = 15.0f; 
+    // float rotate_speed = 15.0f; 
+    float rotate_speed = 1.0f * ROTATION_SPEED;
     float rotate_delta = 0.0f, rotate_deltaB = 0.0f;
 
     // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
@@ -173,10 +176,16 @@ void Engine::updating() {
     // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
     // Polygon* pentagon = dynamic_cast<Polygon*>(shapes[0].get());
     // Polygon* triangle = dynamic_cast<Polygon*>(shapes[1].get());
+    // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
 
-    Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
-    Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
+    // Shapes recovery
+    // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
+    // Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
+    Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
+    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
 
+
+    // Text recovery
     Text* text = texts[0].get();
     Text* text1 = texts[1].get();
     text1->setDirectionRightToLeft();
@@ -187,12 +196,11 @@ void Engine::updating() {
         text1->setMessage(" ");
     }
 
-
-    
     // Manifold* circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // std::unique_ptr<Manifold> circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // auto circleCollision = std::make_unique<Manifold>(Collision::checkCircleCircle(*circleA, *circleB));
 
+    // Checking for circle collisions
     /*
     manifolds.clear();
     auto circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
@@ -225,6 +233,7 @@ void Engine::updating() {
     */
     
 
+    // Checking for polygons collisions
     Color red = {255, 0, 0};
     Color white = {255, 255, 255};
 
@@ -265,42 +274,29 @@ void Engine::updating() {
         }
     }
 
-    // auto &shapes = get_shapes();
-    // size_t length = shapes.size();    
-    // for (size_t i = 0; i < length; i++) {
-    //     for (size_t j = 0; j < length; j++) {
-    //         if (shapes[i] == shapes[j])
-    //             continue;
-    //         auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
-    //         auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
 
-    //         bool result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
-
-    //         if (result) {
-    //             polygon1->setColor(red);
-    //         }
-    //     }
-    // }
-
-    // Menu/special keys
-    
+    // Menu/special keys    
     if (f1) {
-        Vector2 position(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4);
-        float width = 200;
-        float height = 80;
+        std::cout << "Set to initial position" << std::endl;
 
-        std::vector<Vector2> newVertices = {Vector2(position.getX() - width / 2, position.getY() - height / 2),
-                                            Vector2(position.getX() + width / 2, position.getY() - height / 2),
-                                            Vector2(position.getX() + width / 2, position.getY() + height / 2),
-                                            Vector2(position.getX() - width / 2, position.getY() + height / 2)};
-        rect1->setVertices(newVertices);
+        // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
+        // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
 
-        Vector2 position2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4);
-        newVertices = {Vector2(position2.getX() - width / 2, position2.getY() - height / 2),
-                       Vector2(position2.getX() + width / 2, position2.getY() - height / 2),
-                       Vector2(position2.getX() + width / 2, position2.getY() + height / 2),
-                       Vector2(position2.getX() - width / 2, position2.getY() + height / 2)};
-        rect2->setVertices(newVertices);
+        // Vector2 position(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4);
+        // float width = 200;
+        // float height = 80;
+        // std::vector<Vector2> newVertices = {Vector2(position.getX() - width / 2, position.getY() - height / 2),
+        //                                     Vector2(position.getX() + width / 2, position.getY() - height / 2),
+        //                                     Vector2(position.getX() + width / 2, position.getY() + height / 2),
+        //                                     Vector2(position.getX() - width / 2, position.getY() + height / 2)};
+        // shape1->setVertices(newVertices);
+
+        // Vector2 position2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4);
+        // newVertices = {Vector2(position2.getX() - width / 2, position2.getY() - height / 2),
+        //                Vector2(position2.getX() + width / 2, position2.getY() - height / 2),
+        //                Vector2(position2.getX() + width / 2, position2.getY() + height / 2),
+        //                Vector2(position2.getX() - width / 2, position2.getY() + height / 2)};
+        // shape2->setVertices(newVertices);
     }
 
     // Shape A/Player 1
@@ -351,12 +347,12 @@ void Engine::updating() {
     for (const auto& shape : shapes) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
 
-            if (rect1 == &*shape) {
+            if (shape1 == &*shape) {
                 shape->move(deltaA);
                 shape->rotate(rotate_delta);
             }
 
-            if (rect2 == &*shape) {
+            if (shape2 == &*shape) {
                 shape->move(deltaB);
                 shape->rotate(rotate_deltaB);
             }

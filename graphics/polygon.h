@@ -17,7 +17,7 @@ private:
      std::vector<Vector2> normals;
 
 public:
-     Polygon(const std::vector<Vector2>& vertices, Color color) : Shape(vertices, color) {
+     Polygon(const std::vector<Vector2>& vertices, Color color, std::string type) : Shape(vertices, color, type) {
           normals = calculateNormals();
      }
 
@@ -26,11 +26,6 @@ public:
      void draw(SDL_Renderer* renderer) const override;
 
      void rotate(float radiansDelta) override;
-
-     // Override getType to return the specific type of shape
-     const char* getType() const override {
-          return "Polygon";
-     }
 
      std::vector<Vector2> calculateNormals() const;
 };

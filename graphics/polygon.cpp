@@ -15,6 +15,7 @@ void Polygon::draw(SDL_Renderer* renderer) const {
         // SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
         SDL_RenderDrawLine(renderer, center.getX(), center.getY(), end.getX(), end.getY());
     }
+    
 }
 
 const std::vector<Vector2>& Polygon::getNormals() const {

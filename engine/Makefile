@@ -38,6 +38,7 @@ CXXSRC=$(wildcard ./src/*.cpp) \
        ../graphics/rectangle.cpp \
        ../graphics/circle.cpp \
        ../graphics/polygon.cpp \
+       ../graphics/polygonFactory.cpp \
        ../graphics/line.cpp \
        ../collision/collision.cpp \
        ../collision/manifold.cpp \

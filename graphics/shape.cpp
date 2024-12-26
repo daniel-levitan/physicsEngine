@@ -17,8 +17,12 @@ Vector2 Shape::getCentroid() const {
     return centroid;
 }
 
-Color Shape::getColor() const {
+Color Shape::getColor() {
     return color;
+}
+
+float Shape::getAngle() {
+    return angle;
 }
 
 void Shape::setCentroid(const Vector2& newCentroid) {
@@ -88,6 +92,7 @@ void Shape::move(Vector2 delta) {
 }
 
 void Shape::rotate(float radiansDelta) {
+    angle = radiansDelta;
     for (size_t i = 0; i < vertices.size(); i++) {
         Vector2 rotatedVertices = rotateAroundPoint(vertices[i], centroid, radiansDelta);         
         vertices[i] = rotatedVertices;
@@ -95,7 +100,7 @@ void Shape::rotate(float radiansDelta) {
 }
 
 // Default draw implementation
-void Shape::draw(SDL_Renderer* renderer) const {
+void Shape::draw(SDL_Renderer* renderer) const {    
     for (size_t i = 0; i < vertices.size(); ++i) {
         const Vector2& start = vertices[i];
         const Vector2& end = vertices[(i + 1) % vertices.size()]; // Loop back to the start
@@ -104,4 +109,10 @@ void Shape::draw(SDL_Renderer* renderer) const {
     }
     Vector2 centroid = getCentroid();
     Drawing::DrawFilledCircle(renderer, centroid.getX(), centroid.getY(), 2);
+    Vector2 vertice = vertices[0]; 
+    SDL_RenderDrawLine(renderer, centroid.getX(), centroid.getY(), vertice.getX(), vertice.getY());
 }   
+
+const std::string Shape::getType() const {
+    return type;
+}

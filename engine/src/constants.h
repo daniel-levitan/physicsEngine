@@ -2,3 +2,7 @@
 #define WINDOW_HEIGHT 600
 
 #define SPEED 150
+
+#define MOVEMENT_SPEED 150
+#define ROTATION_SPEED 5
+

@@ -1,10 +1,3 @@
-/**
- * File: shape.h 
- * --------------
- * This interface exports the Shape class, which represents a 
- * shape in the x-y plane.
- */
-
 #ifndef _shape_h
 #define _shape_h
 
@@ -18,19 +11,23 @@ protected:
     std::vector<Vector2> vertices; // A collection of vertices
     Vector2 centroid;
     Color color;
+    std::string type;
+    float angle;
     
 public:
-    Shape(const std::vector<Vector2>& verticesC, Color colorC) : 
-        vertices(verticesC), color(colorC) {
-        centroid = calculateCentroid();        
+    Shape(const std::vector<Vector2>& verticesC, Color colorC, std::string typeC) : 
+        vertices(verticesC), color(colorC), type(typeC) {
+        angle = 0;
+        centroid = calculateCentroid();
     };
     virtual ~Shape() = default;  
 
     // getters
     virtual Vector2 getCentroid() const; 
-    virtual const char* getType() const = 0;
+    const std::string getType() const;
     const std::vector<Vector2>& getVertices() const;
-    Color getColor() const;
+    Color getColor();
+    float getAngle();
 
     // setters
     virtual void setCentroid(const Vector2& newCentroid);
