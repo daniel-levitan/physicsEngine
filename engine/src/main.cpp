@@ -36,8 +36,9 @@ void setup(Engine& engine) {
 	engine.add_shape(std::move(pent));
 	auto tri = PolygonFactory::createPolygon(3, pos2, 50, whiteColor);
 	engine.add_shape(std::move(tri));
-	// auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80, whiteColor, "Rectangle");
-	// engine.add_shape(std::move(rect1));
+	
+	auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80, whiteColor, "Rectangle");
+	engine.add_shape(std::move(rect1));
 	// auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80, whiteColor, "Rectangle");	
 	// engine.add_shape(std::move(rect2));
 
@@ -48,6 +49,8 @@ void setup(Engine& engine) {
 	engine.add_text(std::move(text));
 	auto text1 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(WINDOW_WIDTH/2, 10), white);	
 	engine.add_text(std::move(text1));
+	auto text2 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, WINDOW_HEIGHT - 50), white);
+	engine.add_text(std::move(text2));
 }
 
 int main() {

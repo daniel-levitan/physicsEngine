@@ -21,7 +21,7 @@ private:
 public:
     Circle(const Vector2& center, int radius, Color color, std::string type)
         : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color, type), center(center), radius(radius) {
-            centroid = center;
+            initialCentroid = centroid = center;
     }
 
     void draw(SDL_Renderer* renderer) const override;

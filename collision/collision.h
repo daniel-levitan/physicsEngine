@@ -17,6 +17,12 @@ namespace Collision {
     std::unique_ptr<Manifold> getContactPoint(const Polygon& pol1, const Polygon& pol2);
     std::unique_ptr<Manifold> checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
     // bool checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
+
+    // New functions
+    bool checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
+    bool checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
+    bool resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
+    bool resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
 }
 
 #endif

@@ -13,12 +13,20 @@ protected:
     Color color;
     std::string type;
     float angle;
+    bool overlap;
     
+    std::vector<Vector2> initialVertices;
+    Vector2 initialCentroid;
+    float initialAngle;
+
 public:
     Shape(const std::vector<Vector2>& verticesC, Color colorC, std::string typeC) : 
-        vertices(verticesC), color(colorC), type(typeC) {
-        angle = 0;
-        centroid = calculateCentroid();
+        vertices(verticesC), color(colorC), type(typeC) {        
+        angle = initialAngle = 0;
+        centroid = initialCentroid = calculateCentroid();
+        overlap = false;
+
+        initialVertices.assign(vertices.begin(), vertices.end());
     };
     virtual ~Shape() = default;  
 
@@ -28,10 +36,13 @@ public:
     const std::vector<Vector2>& getVertices() const;
     Color getColor();
     float getAngle();
+    bool getOverlap();
 
     // setters
     virtual void setCentroid(const Vector2& newCentroid);
     void setColor(Color newColor);
+    void resetPosition();
+    void setOverlap(bool flag);
 
     // manipulation and calculation
     Vector2 calculateCentroid() const;

@@ -25,10 +25,9 @@ private:
 	// f2 -> change the collision detection for polygons
 	// f3 -> debugger on/off
 	bool f1, f2, f3;
-	bool debugMode, previousF3State, previousF2State;
-
-	// Will determine type of collision detection
-	int collisionMode;
+	bool debugMode, currentF2State, previousF2State, previousF3State;
+	// int number_collision_modes = 2;
+	int collisionMode; 	// Will determine type of collision detection
 
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
     std::unique_ptr<InputManager> input_manager;

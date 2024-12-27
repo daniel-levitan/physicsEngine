@@ -25,6 +25,10 @@ float Shape::getAngle() {
     return angle;
 }
 
+bool Shape::getOverlap() {
+    return overlap;
+}
+
 void Shape::setCentroid(const Vector2& newCentroid) {
     centroid = newCentroid;    
 }
@@ -39,6 +43,17 @@ void Shape::setVertices(std::vector<Vector2>& verticesC) {
         vertices.push_back(vertice);
     }
     centroid = calculateCentroid();
+}
+
+void Shape::setOverlap(bool flag) {
+    overlap = flag;
+}
+
+void Shape::resetPosition() {
+    vertices.clear();
+    vertices.assign(initialVertices.begin(), initialVertices.end());
+    centroid = initialCentroid;
+    angle = initialAngle;
 }
 
 float Shape::calculateArea() const {
@@ -100,15 +115,27 @@ void Shape::rotate(float radiansDelta) {
 }
 
 // Default draw implementation
-void Shape::draw(SDL_Renderer* renderer) const {    
+void Shape::draw(SDL_Renderer* renderer) const {
+    // Selecting the color depending on state
+    if (overlap) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
+    } else {
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+    }
+
+    // Draw shape
     for (size_t i = 0; i < vertices.size(); ++i) {
         const Vector2& start = vertices[i];
         const Vector2& end = vertices[(i + 1) % vertices.size()]; // Loop back to the start
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);  
         SDL_RenderDrawLine(renderer, start.getX(), start.getY(), end.getX(), end.getY());
     }
+
+    // Draw centroid
     Vector2 centroid = getCentroid();
     Drawing::DrawFilledCircle(renderer, centroid.getX(), centroid.getY(), 2);
+    
+
+    // Draw directional line
     Vector2 vertice = vertices[0]; 
     SDL_RenderDrawLine(renderer, centroid.getX(), centroid.getY(), vertice.getX(), vertice.getY());
 }   

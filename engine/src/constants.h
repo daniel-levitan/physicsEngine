@@ -6,3 +6,5 @@
 #define MOVEMENT_SPEED 150
 #define ROTATION_SPEED 5
 
+#define NUM_COLLISION_MODES 5
+

@@ -16,6 +16,7 @@ Engine::Engine()
         f1 = f2 = f3 = false;
         debugMode = previousF2State = previousF3State = false;
 
+        currentF2State = false;; 
         collisionMode = 0;
 
         move_left = move_right = move_up = move_down = false;
@@ -51,14 +52,21 @@ void Engine::input_processing() {
     }
 
     // Check collision mode
-    bool currentF2State = input_manager->isKeyDown(SDLK_F2);
-    int number_collision_modes = 2;
+    // bool currentF2State = input_manager->isKeyDown(SDLK_F2);
+    // int number_collision_modes = 2;
+    
+    currentF2State = input_manager->isKeyDown(SDLK_F2);
     if (currentF2State && !previousF2State) {
-        // F3 was just pressed, toggle the debug mode
-        collisionMode = (collisionMode + 1) % number_collision_modes;
+        f2 = true;
+        collisionMode = (collisionMode + 1) % NUM_COLLISION_MODES;
+        // collisionMode = (collisionMode + 1) % number_collision_modes;
     }
     // Update the previous state for the next frame
     previousF2State = currentF2State;
+
+    if (input_manager->isKeyUp(SDLK_F2)) {
+        f2 = false;
+    }
 
     
     // Debug Mode
@@ -188,6 +196,7 @@ void Engine::updating() {
     // Text recovery
     Text* text = texts[0].get();
     Text* text1 = texts[1].get();
+    Text* text2 = texts[2].get();
     text1->setDirectionRightToLeft();
     if (debugMode) {
         text->setMessage("Debugging");
@@ -195,6 +204,13 @@ void Engine::updating() {
         text->setMessage("Not debugging");
         text1->setMessage(" ");
     }
+
+    // We need to set overlap to false every update so we can
+    // freshly detect the overlap condition
+    for (const auto& shape : shapes) {
+        shape->setOverlap(false);
+    }
+
 
     // Manifold* circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
     // std::unique_ptr<Manifold> circleCollision = Collision::checkCircleCircle(*circleA, *circleB);
@@ -232,73 +248,129 @@ void Engine::updating() {
     }
     */
     
-
-    // Checking for polygons collisions
     Color red = {255, 0, 0};
     Color white = {255, 255, 255};
-
-    for (size_t i = 0; i < shapes.size(); i++) {
-        for (size_t j = 0; j < shapes.size(); j++) {
-            if (shapes[i] == shapes[j]) continue;
+    
+    
+    if (collisionMode == 0) {
+        // Checking for polygons collisions mode 0    
+        
+        for (size_t i = 0; i < shapes.size(); i++) {
+            for (size_t j = 0; j < shapes.size(); j++) {
+                if (shapes[i] == shapes[j]) continue;
+                    
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
                 
-            auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
-            auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
-            
-            auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
-            if (result) {
-                polygon1->setColor(red);
-                polygon2->setColor(red);
+                auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
+                if (result) {
+                    polygon1->setColor(red);
+                    polygon2->setColor(red);
+    
+                    // Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
+                    // text1->setMessage(str);
+                    // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
+                    Vector2 push;
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
+                    polygon2->move(push);
+    
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
+                    polygon1->move(push);   
+    
+                    if (debugMode) {
+                        std::string str = result->toString();
+                        text1->setMessage(str);
+                    }
+                    // manifolds.push_back(std::move(result));
+                } else {
+                    polygon1->setColor(white);
+                    polygon2->setColor(white);
+                    // std::string str = "Red";
+                    // text1->setMessage(str);
+                    // manifolds.clear();
+                }
+            }
+        }
+    } else if (collisionMode == 1) {
+        for (size_t i = 0; i < shapes.size(); i++) {
+            for (size_t j = i + 1; j < shapes.size(); j++) {
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
 
-                // Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
-                // text1->setMessage(str);
-                // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
-                Vector2 push;
-                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
-                polygon2->move(push);
-
-                push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
-                polygon1->move(push);   
+                bool result = Collision::checkPolygonPolygonSAT(*polygon1, *polygon2);                
+                polygon1->setOverlap(result | polygon1->getOverlap());
 
                 if (debugMode) {
                     std::string str = result->toString();
                     text1->setMessage(str);
                 }
-                // manifolds.push_back(std::move(result));
-            } else {
-                polygon1->setColor(white);
-                polygon2->setColor(white);
-                // std::string str = "Red";
-                // text1->setMessage(str);
-                // manifolds.clear();
+      
+            }
+        }
+    } else if (collisionMode == 2) {
+        for (size_t i = 0; i < shapes.size(); i++) {
+            for (size_t j = i + 1; j < shapes.size(); j++) {
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+                bool result = Collision::checkPolygonPolygonDIAG(*polygon1, *polygon2);
+                polygon1->setOverlap(result | polygon1->getOverlap());
+            }
+        }
+    } else if (collisionMode == 3) {
+        for (size_t i = 0; i < shapes.size(); i++) {
+            for (size_t j = i + 1; j < shapes.size(); j++) {
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+                bool result = Collision::resPolygonPolygonDIAG(*polygon1, *polygon2);
+                polygon1->setOverlap(result | polygon1->getOverlap());
+            }
+        }
+    } else if (collisionMode == 4) {
+        for (size_t i = 0; i < shapes.size(); i++) {
+            for (size_t j = i + 1; j < shapes.size(); j++) {
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+                bool result = Collision::resPolygonPolygonSAT(*polygon1, *polygon2);
+                polygon1->setOverlap(result | polygon1->getOverlap());
             }
         }
     }
 
 
-    // Menu/special keys    
+    // Menu/special keys  
+
+    // Reset position  
     if (f1) {
-        std::cout << "Set to initial position" << std::endl;
-
-        // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
-        // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
-
-        // Vector2 position(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4);
-        // float width = 200;
-        // float height = 80;
-        // std::vector<Vector2> newVertices = {Vector2(position.getX() - width / 2, position.getY() - height / 2),
-        //                                     Vector2(position.getX() + width / 2, position.getY() - height / 2),
-        //                                     Vector2(position.getX() + width / 2, position.getY() + height / 2),
-        //                                     Vector2(position.getX() - width / 2, position.getY() + height / 2)};
-        // shape1->setVertices(newVertices);
-
-        // Vector2 position2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4);
-        // newVertices = {Vector2(position2.getX() - width / 2, position2.getY() - height / 2),
-        //                Vector2(position2.getX() + width / 2, position2.getY() - height / 2),
-        //                Vector2(position2.getX() + width / 2, position2.getY() + height / 2),
-        //                Vector2(position2.getX() - width / 2, position2.getY() + height / 2)};
-        // shape2->setVertices(newVertices);
+        for (const auto& shape : shapes) {
+            shape->resetPosition();
+            shape->setOverlap(false);
+        }  
     }
 
+    // Collision mode - f2
+    if (f2) {
+        Color white = {255, 255, 255};
+        for (const auto& shape : shapes) 
+            shape->setColor(white);
+    }
+
+
+    std::string str = "Mode: ";
+    if (collisionMode == 0) 
+        str += "Pixel Collision";
+    else if (collisionMode == 1)
+        str += "SAT";
+    else if (collisionMode == 2)
+        str += "Diagonal";
+    else if (collisionMode == 3)
+        str += "Diagonal Resolution";
+    else if (collisionMode == 4)
+        str += "SAT Resolution";
+    text2->setMessage(str);
+    
     // Shape A/Player 1
     if (move_left) {
         movement_delta_x -= movement_speed * delta_time;
@@ -344,6 +416,7 @@ void Engine::updating() {
 
 
     // There must be a better way to do that
+    // Update movement and rotation
     for (const auto& shape : shapes) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
 
