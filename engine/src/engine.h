@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <memory>
+#include "constants.h"
 #include "../../graphics/graphics.h"
 #include "../../graphics/shape.h"
 #include "../../graphics/text.h"
@@ -27,7 +28,8 @@ private:
 	bool f1, f2, f3;
 	bool debugMode, currentF2State, previousF2State, previousF3State;
 	// int number_collision_modes = 2;
-	int collisionMode; 	// Will determine type of collision detection
+	// int collisionMode; 	// Will determine type of collision detection
+	CollisionMode collisionMode;
 
     std::unique_ptr<Graphics> graphics;  // Use unique_ptr to manage the lifetime of the Graphics object
     std::unique_ptr<InputManager> input_manager;

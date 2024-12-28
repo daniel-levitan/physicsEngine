@@ -1,7 +1,6 @@
 #include <iostream>
 #include <SDL.h>
 #include "engine.h"
-#include "constants.h"
 #include "../collision/collision.h"
 #include "../collision/manifold.h"
 #include "../utils/utils.h"
@@ -17,8 +16,9 @@ Engine::Engine()
         f1 = f2 = f3 = false;
         debugMode = previousF2State = previousF3State = false;
 
-        currentF2State = false;; 
-        collisionMode = 0;
+        currentF2State = false;
+        collisionMode = CollisionMode::PIXEL;
+
 
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
@@ -59,8 +59,12 @@ void Engine::input_processing() {
     currentF2State = input_manager->isKeyDown(SDLK_F2);
     if (currentF2State && !previousF2State) {
         f2 = true;
-        collisionMode = (collisionMode + 1) % NUM_COLLISION_MODES;
-        // collisionMode = (collisionMode + 1) % number_collision_modes;
+        // collisionMode = (collisionMode + 1) % NUM_COLLISION_MODES;
+        // collisionMode = static_cast<CollisionMode>((collisionMode + 1) % NUM_COLLISION_MODES);
+        collisionMode = static_cast<CollisionMode>((static_cast<int>(collisionMode) + 1) % NUM_COLLISION_MODES
+);
+
+     
     }
     // Update the previous state for the next frame
     previousF2State = currentF2State;
@@ -252,10 +256,8 @@ void Engine::updating() {
     Color red = {255, 0, 0};
     Color white = {255, 255, 255};
     
-    
-    if (collisionMode == 0) {
+    if (collisionMode == CollisionMode::PIXEL) {
         // Checking for polygons collisions mode 0    
-        
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = 0; j < shapes.size(); j++) {
                 if (shapes[i] == shapes[j]) continue;
@@ -292,7 +294,7 @@ void Engine::updating() {
                 }
             }
         }
-    } else if (collisionMode == 1) {
+    } else if (collisionMode == CollisionMode::SAT) {
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = i + 1; j < shapes.size(); j++) {
                 auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
@@ -303,7 +305,7 @@ void Engine::updating() {
 
             }
         }
-    } else if (collisionMode == 2) {
+    } else if (collisionMode == CollisionMode::DIAGONAL) {
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = i + 1; j < shapes.size(); j++) {
                 auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
@@ -313,7 +315,7 @@ void Engine::updating() {
                 polygon1->setOverlap(result | polygon1->getOverlap());
             }
         }
-    } else if (collisionMode == 3) {
+    } else if (collisionMode == CollisionMode::DIAGONAL_RES) {
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = i + 1; j < shapes.size(); j++) {
                 auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
@@ -323,7 +325,7 @@ void Engine::updating() {
                 polygon1->setOverlap(result | polygon1->getOverlap());
             }
         }
-    } else if (collisionMode == 4) {
+    } else if (collisionMode == CollisionMode::SAT_RES) {
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = i + 1; j < shapes.size(); j++) {
                 auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
@@ -331,7 +333,7 @@ void Engine::updating() {
 
                 float overlap = Collision::resPolygonPolygonSAT(*polygon1, *polygon2);
                 bool flag;
-                overlap ? flag = true : flag = false;
+                flag = (overlap > 0) ? true : false;
                 polygon1->setOverlap(flag | polygon1->getOverlap());
 
                 if (overlap) {
@@ -364,16 +366,38 @@ void Engine::updating() {
 
 
     std::string str = "Mode: ";
-    if (collisionMode == 0) 
+    // if (collisionMode == 0) 
+    //     str += "Pixel Collision";
+    // // else if (collisionMode == 1)
+    //     str += "SAT";
+    // // else if (collisionMode == 2)
+    //     str += "Diagonal";
+    // // else if (collisionMode == 3)
+    //     str += "Diagonal Resolution";
+    // // else if (collisionMode == 4)
+    //     str += "SAT Resolution";
+    switch (collisionMode) {
+    case CollisionMode::PIXEL:
         str += "Pixel Collision";
-    else if (collisionMode == 1)
+        break;
+    case CollisionMode::SAT:
         str += "SAT";
-    else if (collisionMode == 2)
+        break;
+    case CollisionMode::DIAGONAL:
         str += "Diagonal";
-    else if (collisionMode == 3)
+        break;
+    case CollisionMode::DIAGONAL_RES:
         str += "Diagonal Resolution";
-    else if (collisionMode == 4)
+        break;
+    case CollisionMode::SAT_RES:
         str += "SAT Resolution";
+        break;    
+    default:
+        // Handle unexpected cases
+        break;
+}
+
+
     text2->setMessage(str);
     
     // Shape A/Player 1
