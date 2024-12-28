@@ -321,7 +321,7 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
-bool Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
+float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
 
@@ -342,6 +342,7 @@ bool Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			// get the axis of projection
 			Vector2 edge = vertices1[(i + 1) % size1] - vertices1[i];
 			Vector2 axisProj = edge.getNormal();
+			axisProj.normalize();
 
 			// calculating the min and max projection for shape 1
 			float minPol1 = std::numeric_limits<float>::infinity();
@@ -370,17 +371,20 @@ bool Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			// Calculate the overlap 
 			overlap = std::min(std::min(maxPol1, maxPol2) - std::max(minPol1, minPol2), overlap);
 
-			if (!(maxPol2 >= minPol1 && maxPol1 >= minPol2)) 
-				return false;
+			if (maxPol1 < minPol2 || minPol1 > maxPol2)
+				return 0;
+
+			// if (!(maxPol2 >= minPol1 && maxPol1 >= minPol2)) 
+				// return 0;
 		}		
 	}
 
 	// If we got here, the shapes overlap and we can resolve the collision
 	Vector2 direction = pol2.getCentroid() - pol1.getCentroid();
 	direction.normalize();
-	Vector2 push = Scale(direction, -1);
+	Vector2 push = Scale(direction, -1 * overlap);
 	// Vector2 push = Scale(direction, -.4999 * overlap);
 	pol1.move(push);
 
-	return false;
+	return overlap;
 }

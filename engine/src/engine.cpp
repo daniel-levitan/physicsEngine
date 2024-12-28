@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "../collision/collision.h"
 #include "../collision/manifold.h"
+#include "../utils/utils.h"
 
 Engine::Engine() 
     : engine_is_running(false),       
@@ -300,11 +301,6 @@ void Engine::updating() {
                 bool result = Collision::checkPolygonPolygonSAT(*polygon1, *polygon2);                
                 polygon1->setOverlap(result | polygon1->getOverlap());
 
-                if (debugMode) {
-                    std::string str = result->toString();
-                    text1->setMessage(str);
-                }
-      
             }
         }
     } else if (collisionMode == 2) {
@@ -333,8 +329,17 @@ void Engine::updating() {
                 auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
                 auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
 
-                bool result = Collision::resPolygonPolygonSAT(*polygon1, *polygon2);
-                polygon1->setOverlap(result | polygon1->getOverlap());
+                float overlap = Collision::resPolygonPolygonSAT(*polygon1, *polygon2);
+                bool flag;
+                overlap ? flag = true : flag = false;
+                polygon1->setOverlap(flag | polygon1->getOverlap());
+
+                if (overlap) {
+                    if (debugMode) {
+                        std::string str = "Overlap: " + Utils::to_string_with_precision(overlap, 2);
+                        text1->setMessage(str);
+                    }
+                }
             }
         }
     }

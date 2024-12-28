@@ -22,7 +22,7 @@ namespace Collision {
     bool checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
     bool checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
     bool resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
-    bool resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
+    float resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
 }
 
 #endif
