@@ -314,6 +314,7 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
                     // If I want the two parts to move
 					// pol1.move(Scale(push, 0.5));
 					// pol2.move(Scale(push, -0.5));
+					return true;
 				}				
     		}
 		}				
