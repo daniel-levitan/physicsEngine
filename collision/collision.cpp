@@ -127,22 +127,21 @@ bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			poly2 = &pol1;
 		}
 
-		std::vector<Vector2> vertices1;
-	    for (auto v : poly1->getVertices())
-    		vertices1.push_back(v);
-		int size1 = vertices1.size();
+		std::vector<Vector2> vertices1 = poly1->getVertices();
+	    int size1 = vertices1.size();
 		for (size_t i = 0; i < size1; i++) {
 			
 			// get the axis of projection
 			Vector2 edge = vertices1[(i + 1) % size1] - vertices1[i];
 			Vector2 axisProj = edge.getNormal();
+			// axisProj.normalize();
 
 			// calculating the min and max projection for shape 1
 			float minPol1 = std::numeric_limits<float>::infinity();
 			float maxPol1 = -std::numeric_limits<float>::infinity();
 
-			for (size_t v = 0; v < size1; v++) {
-				float vertProj = vertices1[v].dotProduct(axisProj);
+			for (const auto& v : vertices1) {
+				float vertProj = v.dotProduct(axisProj);
 				minPol1 = std::min(minPol1, vertProj);
 				maxPol1 = std::max(maxPol1, vertProj);
 			}
@@ -151,12 +150,8 @@ bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			float minPol2 = std::numeric_limits<float>::infinity();
 			float maxPol2 = -std::numeric_limits<float>::infinity();
 
-			std::vector<Vector2> vertices2;
-	    	for (auto v : poly2->getVertices())
-    			vertices2.push_back(v);
-			int size2 = vertices2.size();
-			for (size_t v = 0; v < size2; v++) {
-				float vertProj = vertices2[v].dotProduct(axisProj);
+			for (const auto& v : poly2->getVertices()) {
+				float vertProj = v.dotProduct(axisProj);
 				minPol2 = std::min(minPol2, vertProj);
 				maxPol2 = std::max(maxPol2, vertProj);
 			}
@@ -200,23 +195,16 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 			poly2 = &pol1;
 		}
 
-		std::vector<Vector2> vertices1;
-	    for (auto v : poly1->getVertices())
-    		vertices1.push_back(v);
-		int size1 = vertices1.size();
-
 		// Get diagonals of polygon1
-		for (size_t i = 0; i < size1; i++) {
+		for (const auto& v1 : poly1->getVertices()) {
 
 			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
 			Vector2 line_r1s = poly1->getCentroid();
-			Vector2 line_r1e = vertices1[i];
+			Vector2 line_r1e = v1;
 
 
-			std::vector<Vector2> vertices2;
-	    	for (auto v : poly2->getVertices())
-    			vertices2.push_back(v);
-			int size2 = vertices2.size();
+			std::vector<Vector2> vertices2 = poly2->getVertices();
+	    	int size2 = vertices2.size();
 
     		// Get edges of polygon2
     		for (size_t j = 0; j < size2; j++) {
@@ -233,13 +221,9 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 
 				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) 
 					return true;
-				
 					
     		}
 		}
-
-
-		
         /*         *  *------*    In this algorithm we check every edge of one polygon 
 		          / \ |      |    against every diagonal of the other polygon.
      	         /   \|  .   |
@@ -248,8 +232,7 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
               /       *-\----*
              /           \
      	    *-------------*          
-		*/
-				
+		*/			
 	}
 	return false;
 }
@@ -266,30 +249,21 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 			poly2 = &pol1;
 		}
 
-		std::vector<Vector2> vertices1;
-	    for (auto v : poly1->getVertices())
-    		vertices1.push_back(v);
-		int size1 = vertices1.size();
-
 		// Get diagonals of polygon1
-		for (size_t i = 0; i < size1; i++) {
+		for (const auto& v : poly1->getVertices()) {
 
 			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
 			Vector2 line_r1s = poly1->getCentroid();
-			Vector2 line_r1e = vertices1[i];
+			Vector2 line_r1e = v;
 
-
-			std::vector<Vector2> vertices2;
-	    	for (auto v : poly2->getVertices())
-    			vertices2.push_back(v);
-			int size2 = vertices2.size();
+			std::vector<Vector2> vertices2 = poly2->getVertices();
+	    	int size2 = vertices2.size();
 
     		// Get edges of polygon2
     		for (size_t j = 0; j < size2; j++) {
 				// Vector2 edge = vertices2[(i + 1) % size2] - vertices2[i];	
 				Vector2 line_r2s = vertices2[j];
 				Vector2 line_r2e = vertices2[(j + 1) % size2];
-
 
 				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
 				// Check if they are crossing
@@ -334,11 +308,9 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			poly2 = &pol1;
 		}
 
-		std::vector<Vector2> vertices1;
-	    for (auto v : poly1->getVertices())
-    		vertices1.push_back(v);
-		int size1 = vertices1.size();
-		for (size_t i = 0; i < size1; i++) {
+		std::vector<Vector2> vertices1 = poly1->getVertices();
+	    int size1 = vertices1.size();
+	    for (size_t i = 0; i < size1; i++) {
 			
 			// get the axis of projection
 			Vector2 edge = vertices1[(i + 1) % size1] - vertices1[i];
@@ -349,8 +321,8 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			float minPol1 = std::numeric_limits<float>::infinity();
 			float maxPol1 = -std::numeric_limits<float>::infinity();
 
-			for (size_t v = 0; v < size1; v++) {
-				float vertProj = vertices1[v].dotProduct(axisProj);
+			for (const auto& v : vertices1) {
+				float vertProj = v.dotProduct(axisProj);
 				minPol1 = std::min(minPol1, vertProj);
 				maxPol1 = std::max(maxPol1, vertProj);
 			}
@@ -359,12 +331,8 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			float minPol2 = std::numeric_limits<float>::infinity();
 			float maxPol2 = -std::numeric_limits<float>::infinity();
 
-			std::vector<Vector2> vertices2;
-	    	for (auto v : poly2->getVertices())
-    			vertices2.push_back(v);
-			int size2 = vertices2.size();
-			for (size_t v = 0; v < size2; v++) {
-				float vertProj = vertices2[v].dotProduct(axisProj);
+			for (const auto& v : poly2->getVertices()) {
+				float vertProj = v.dotProduct(axisProj);
 				minPol2 = std::min(minPol2, vertProj);
 				maxPol2 = std::max(maxPol2, vertProj);
 			}
