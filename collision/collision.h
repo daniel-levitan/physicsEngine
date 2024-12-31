@@ -23,6 +23,10 @@ namespace Collision {
     bool checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
     bool resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
     float resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
+
+    void projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max);
+    bool intersectPolygons(Polygon& pol1, Polygon& pol2);
+    std::unique_ptr<Manifold> resIntersectPolygons(Polygon& pol1, Polygon& pol2);
 }
 
 #endif

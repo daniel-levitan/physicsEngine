@@ -23,8 +23,9 @@ const Vector2 Manifold::getPenetrationPoint() const {
 // }
 
 void Manifold::draw(SDL_Renderer* renderer) const {
-    const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -1);
-    Drawing::drawArrow(renderer, startPoint, penetrationPoint);        
+    const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -10);
+    Drawing::drawArrow(renderer, startPoint, penetrationPoint);
+
 }
 
 std::string Manifold::toString() {

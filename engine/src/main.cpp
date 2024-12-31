@@ -28,19 +28,18 @@ void setup(Engine& engine) {
 	
 	// Shapes on screen
 	Color whiteColor = {255, 255, 255};
-
-	Vector2 pos1 = Vector2(200, 200);
-	Vector2 pos2 = Vector2(400, 400);
-
-	auto pent = PolygonFactory::createPolygon(5, pos1, 80, whiteColor);
-	engine.add_shape(std::move(pent));
-	auto tri = PolygonFactory::createPolygon(3, pos2, 50, whiteColor);
-	engine.add_shape(std::move(tri));
 	
-	auto rect1 = std::make_unique<Rectangle>(Vector2(3*WINDOW_WIDTH/4, 1 * WINDOW_HEIGHT/4), 200, 80, whiteColor, "Rectangle");
+	// Vector2 pos1 = Vector2(200, 200);
+	// auto pent = PolygonFactory::createPolygon(5, pos1, 80, whiteColor);
+	// engine.add_shape(std::move(pent));
+	// Vector2 pos2 = Vector2(400, 400);
+	// auto tri = PolygonFactory::createPolygon(3, pos2, 50, whiteColor);
+	// engine.add_shape(std::move(tri));
+	
+	auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 - 120, WINDOW_HEIGHT/2), 200, 80, whiteColor, "Rectangle");
 	engine.add_shape(std::move(rect1));
-	// auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4, 3 * WINDOW_HEIGHT/4), 200, 80, whiteColor, "Rectangle");	
-	// engine.add_shape(std::move(rect2));
+	auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 + 120, WINDOW_HEIGHT/2), 200, 80, whiteColor, "Rectangle");	
+	engine.add_shape(std::move(rect2));
 
 	// Text on screen
 	SDL_Color white = {255, 255, 255, 255};

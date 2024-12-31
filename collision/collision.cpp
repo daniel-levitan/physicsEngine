@@ -40,10 +40,8 @@ std::unique_ptr<Manifold> Collision::checkCircleCircle(const Circle& c1, const C
 	return nullptr;
 }
 
-/**
- * If there is at least 1 vertice for which I cannot find a support point, the polygons
- * don't collide.
- */
+/** If there is at least 1 vertice for which I cannot find a support point, the polygons
+ *  don't collide. */
 std::unique_ptr<SupportPoint> Collision::findSupportPoint(Vector2 normal, Vector2 pointOnEdge, std::vector<Vector2> otherPolygonVertices) {
    	// float maxPenetrationDepth = -std::numeric_limits<float>::infinity();
    	float maxPenetrationDepth = 0;
@@ -65,9 +63,7 @@ std::unique_ptr<SupportPoint> Collision::findSupportPoint(Vector2 normal, Vector
     return supportPoint;
 }
 
-/**
- * Looks for the best(deepest) contact point in which the two polygons touched.
- * */
+/** Looks for the best(deepest) contact point in which the two polygons touched. **/
 std::unique_ptr<Manifold> Collision::getContactPoint(const Polygon& pol1, const Polygon& pol2) {
 	float minPenetrationDepth = std::numeric_limits<float>::infinity();
 	std::unique_ptr<Manifold> contact = nullptr;
@@ -97,7 +93,6 @@ std::unique_ptr<Manifold> Collision::getContactPoint(const Polygon& pol1, const 
 	return contact;
 }
 
-
 std::unique_ptr<Manifold> Collision::checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2) {
 	std::unique_ptr<Manifold> contactPointPol1 = getContactPoint(pol1, pol2);	
 	if (!contactPointPol1) 
@@ -115,7 +110,6 @@ std::unique_ptr<Manifold> Collision::checkPolygonPolygon(const Polygon& pol1, co
 		return std::make_unique<Manifold>(contactPointPol2->getDepth(), contactPointPol2->getNormal(), contactPointPol2->getPenetrationPoint());
 	// return true;
 }
-
 
 bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
@@ -237,65 +231,6 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
-bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
-	Polygon *poly1 = &pol1;
-	Polygon *poly2 = &pol2;
-
-	Vector2 displacement = Vector2(0, 0);
-
-	for (size_t shape = 0; shape < 2; shape++) {
-		if (shape == 1) {
-			poly1 = &pol2;
-			poly2 = &pol1;
-		}
-
-		// Get diagonals of polygon1
-		for (const auto& v : poly1->getVertices()) {
-
-			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
-			Vector2 line_r1s = poly1->getCentroid();
-			Vector2 line_r1e = v;
-
-			std::vector<Vector2> vertices2 = poly2->getVertices();
-	    	int size2 = vertices2.size();
-
-    		// Get edges of polygon2
-    		for (size_t j = 0; j < size2; j++) {
-				// Vector2 edge = vertices2[(i + 1) % size2] - vertices2[i];	
-				Vector2 line_r2s = vertices2[j];
-				Vector2 line_r2e = vertices2[(j + 1) % size2];
-
-				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
-				// Check if they are crossing
-				float h = (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r1e.getY()) - (line_r1s.getX() - line_r1e.getX()) * (line_r2e.getY() - line_r2s.getY());
-				float t1 = ((line_r2s.getY() - line_r2e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
-				float t2 = ((line_r1s.getY() - line_r1e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r1e.getX() - line_r1s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
-
-				// Now we accumulate the displacement
-				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) {
-					float newX = displacement.getX();
-					float newY = displacement.getY();
-					newX = newX + (1.0f - t1) * (line_r1e.getX() - line_r1s.getX());
-					displacement.setX(newX);
-					newY = newY + (1.0f - t1) * (line_r1e.getY() - line_r1s.getY());
-					displacement.setY(newY);
-
-                    Vector2 push = Scale(displacement, (shape == 0 ? -1 : 1));
-
-                    // If I only want the polygon to refrain from entering the other polygons
-                    pol1.move(push);
-
-                    // If I want the two parts to move
-					// pol1.move(Scale(push, 0.5));
-					// pol2.move(Scale(push, -0.5));
-					return true;
-				}				
-    		}
-		}				
-	}
-	return false;
-}
-
 float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
@@ -356,4 +291,204 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	pol1.move(push);
 
 	return overlap;
+}
+
+bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
+	Polygon *poly1 = &pol1;
+	Polygon *poly2 = &pol2;
+
+	Vector2 displacement = Vector2(0, 0);
+
+	for (size_t shape = 0; shape < 2; shape++) {
+		if (shape == 1) {
+			poly1 = &pol2;
+			poly2 = &pol1;
+		}
+
+		// Get diagonals of polygon1
+		for (const auto& v : poly1->getVertices()) {
+
+			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
+			Vector2 line_r1s = poly1->getCentroid();
+			Vector2 line_r1e = v;
+
+			std::vector<Vector2> vertices2 = poly2->getVertices();
+	    	int size2 = vertices2.size();
+
+    		// Get edges of polygon2
+    		for (size_t j = 0; j < size2; j++) {
+				// Vector2 edge = vertices2[(i + 1) % size2] - vertices2[i];	
+				Vector2 line_r2s = vertices2[j];
+				Vector2 line_r2e = vertices2[(j + 1) % size2];
+
+				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
+				// Check if they are crossing
+				float h = (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r1e.getY()) - (line_r1s.getX() - line_r1e.getX()) * (line_r2e.getY() - line_r2s.getY());
+				float t1 = ((line_r2s.getY() - line_r2e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
+				float t2 = ((line_r1s.getY() - line_r1e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r1e.getX() - line_r1s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
+
+				// Now we accumulate the displacement
+				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) {
+					float newX = displacement.getX();
+					float newY = displacement.getY();
+					newX = newX + (1.0f - t1) * (line_r1e.getX() - line_r1s.getX());
+					displacement.setX(newX);
+					newY = newY + (1.0f - t1) * (line_r1e.getY() - line_r1s.getY());
+					displacement.setY(newY);
+
+                    Vector2 push = Scale(displacement, (shape == 0 ? -1 : 1));
+
+                    // If I only want the polygon to refrain from entering the other polygons
+                    pol1.move(push);
+
+                    // If I want the two parts to move
+					// pol1.move(Scale(push, 0.5));
+					// pol2.move(Scale(push, -0.5));
+					return true;
+				}				
+    		}
+		}				
+	}
+	return false;
+}
+
+void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max) {
+	min = std::numeric_limits<float>::max();
+	max = std::numeric_limits<float>::lowest();
+
+	for (const auto& v : vertices) {
+		float proj = v.dotProduct(axis);
+
+		if (proj < min) { min = proj; }
+		if (proj > max) { max = proj; }
+	}
+}
+
+bool Collision::intersectPolygons(Polygon& pol1, Polygon& pol2) {
+	float min1, max1;
+	float min2, max2;
+
+	std::vector<Vector2> vertices2 = pol2.getVertices();
+	std::vector<Vector2> vertices1 = pol1.getVertices();
+    int size1 = vertices1.size();
+    for (size_t i = 0; i < size1; i++) {
+		Vector2 va = vertices1[i];
+		Vector2 vb = vertices1[(i + 1) % size1];
+		Vector2 edge = vb - va;
+		Vector2 axis = edge.getNormal();
+
+		Collision::projectVertices(vertices1, axis, min1, max1);
+		Collision::projectVertices(vertices2, axis, min2, max2);
+
+		if (max1 < min2 || min1 > max2)
+			return false;
+	}
+
+	int size2 = vertices2.size();
+    for (size_t i = 0; i < size2; i++) {
+		Vector2 va = vertices2[i];
+		Vector2 vb = vertices2[(i + 1) % size2];
+		Vector2 edge = vb - va;
+		Vector2 axis = edge.getNormal();
+
+		Collision::projectVertices(vertices1, axis, min1, max1);
+		Collision::projectVertices(vertices2, axis, min2, max2);
+
+		if (max1 < min2 || min1 > max2)
+			return false;
+	}
+
+	return true;
+}
+
+std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon& pol2) {
+	Vector2 normal(0,0);
+	float depth = std::numeric_limits<float>::max();
+    Vector2 contactPoint(0, 0);
+    bool contactPointFound = false;
+
+
+	float min1, max1;
+	float min2, max2;
+
+	std::vector<Vector2> vertices2 = pol2.getVertices();
+	std::vector<Vector2> vertices1 = pol1.getVertices();
+    int size1 = vertices1.size();
+    for (size_t i = 0; i < size1; i++) {
+		Vector2 va = vertices1[i];
+		Vector2 vb = vertices1[(i + 1) % size1];
+		Vector2 edge = vb - va;
+		Vector2 axis = edge.getNormal();
+
+		Collision::projectVertices(vertices1, axis, min1, max1);
+		Collision::projectVertices(vertices2, axis, min2, max2);
+
+		if (max1 < min2 || min1 > max2)
+			return nullptr;
+
+		float axisDepth = std::min(max1 - min2, max2 - min1);
+		if (axisDepth < depth) {
+			depth = axisDepth;
+			normal = axis;
+
+            // float overlapStart = std::max(min1, min2);
+            // float overlapEnd = std::min(max1, max2);
+  
+  			// for (const auto& vertex : vertices1) {
+            //     float projection = vertex.dotProduct(axis);
+            //     if (projection >= overlapStart && projection <= overlapEnd) {
+            //         contactPoint = vertex;
+            //         contactPointFound = true;
+            //         break;
+            //     }
+            // }
+		}
+	}
+
+	int size2 = vertices2.size();
+    for (size_t i = 0; i < size2; i++) {
+		Vector2 va = vertices2[i];
+		Vector2 vb = vertices2[(i + 1) % size2];
+		Vector2 edge = vb - va;
+		Vector2 axis = edge.getNormal();
+
+		Collision::projectVertices(vertices1, axis, min1, max1);
+		Collision::projectVertices(vertices2, axis, min2, max2);
+
+		if (max1 < min2 || min1 > max2)
+			return nullptr;
+		float axisDepth = std::min(max1 - min2, max2 - min1);
+		if (axisDepth < depth) {
+			depth = axisDepth;
+			normal = axis;
+
+            // float overlapStart = std::max(min1, min2);
+            // float overlapEnd = std::min(max1, max2);
+
+            // for (const auto& vertex : vertices2) {
+            //     float projection = vertex.dotProduct(axis);
+            //     if (projection >= overlapStart && projection <= overlapEnd) {
+            //         contactPoint = vertex;
+            //         contactPointFound = true;
+            //         break;
+            //     }
+            // }
+		}
+	}
+
+	depth /= normal.length();
+	normal.normalize();
+
+	Vector2 direction = pol2.getCentroid() - pol1.getCentroid();
+	if (direction.dotProduct(normal) < 0.0f) 
+		normal.scale(-1);
+	
+    if (!contactPointFound) {
+        // Default to centroid-based guess if contact point is not found
+        contactPoint = Scale((pol1.getCentroid() + pol2.getCentroid()), 0.5f);
+    }
+
+
+	// depth, normal, contactPoint
+	return std::make_unique<Manifold>(depth, normal, contactPoint);;
 }
