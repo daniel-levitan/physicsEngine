@@ -362,19 +362,34 @@ void Engine::updating() {
                 auto rect1 = dynamic_cast<Polygon*>(shapes[i].get());
                 auto rect2 = dynamic_cast<Polygon*>(shapes[j].get());
 
-                float overlap = Collision::resPolygonPolygonSAT(*rect1, *rect2);
+                auto result = Collision::resPolygonPolygonSAT(*rect1, *rect2);
                 // float overlap = Collision::resPolygonPolygonSAT(*polygon1, *polygon2);
                 bool flag;
-                flag = (overlap > 0) ? true : false;
+                flag = (result > 0) ? true : false;
                 // polygon1->setOverlap(flag | polygon1->getOverlap());
                 rect1->setOverlap(flag | rect1->getOverlap());
 
-                if (overlap) {
+                if (result) {
+
+                    Vector2 push;
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 1);
+                    rect1->move(push);   
+    
                     if (debugMode) {
-                        std::string str = "Overlap: " + Utils::to_string_with_precision(overlap, 2);
+                        std::string str = result->toString();
                         text1->setMessage(str);
                     }
+
+                    manifolds.push_back(std::move(result));                    
+                } else {
+                    
                 }
+                // if (overlap) {
+                    // if (debugMode) {
+                        // std::string str = "Overlap: " + Utils::to_string_with_precision(overlap, 2);
+                        // text1->setMessage(str);
+                    // }
+                // }
             }
         } 
     } else if (collisionMode == CollisionMode::TEST) {

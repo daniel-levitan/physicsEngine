@@ -231,11 +231,16 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
-float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
+// float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
+std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
 
 	float overlap = std::numeric_limits<float>::infinity();
+	float depth = std::numeric_limits<float>::max();
+    Vector2 contactPoint(0, 0);
+    Vector2 normal(0,0);
+    bool contactPointFound = false;
 
 	for (size_t shape = 0; shape < 2; shape++) {
 		if (shape == 1) {
@@ -276,7 +281,25 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 			overlap = std::min(std::min(maxPol1, maxPol2) - std::max(minPol1, minPol2), overlap);
 
 			if (maxPol1 < minPol2 || minPol1 > maxPol2)
-				return 0;
+				return nullptr;
+
+			float axisDepth = std::min(maxPol1 - minPol2, maxPol2 - minPol1);
+			if (axisDepth < depth) {
+				depth = axisDepth;
+				normal = axisProj;
+
+	            // float overlapStart = std::max(min1, min2);
+	            // float overlapEnd = std::min(max1, max2);
+	  
+	  			// for (const auto& vertex : vertices1) {
+	            //     float projection = vertex.dotProduct(axis);
+	            //     if (projection >= overlapStart && projection <= overlapEnd) {
+	            //         contactPoint = vertex;
+	            //         contactPointFound = true;
+	            //         break;
+	            //     }
+	            // }
+			}
 
 			// if (!(maxPol2 >= minPol1 && maxPol1 >= minPol2)) 
 				// return 0;
@@ -284,13 +307,27 @@ float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	}
 
 	// If we got here, the shapes overlap and we can resolve the collision
-	Vector2 direction = pol2.getCentroid() - pol1.getCentroid();
-	direction.normalize();
-	Vector2 push = Scale(direction, -1 * overlap);
-	// Vector2 push = Scale(direction, -.4999 * overlap);
-	pol1.move(push);
+	// Vector2 direction = pol2.getCentroid() - pol1.getCentroid();
+	// direction.normalize();
+	// Vector2 push = Scale(direction, -1 * overlap);
+	// // Vector2 push = Scale(direction, -.4999 * overlap);
+	// pol1.move(push);
 
-	return overlap;
+	depth /= normal.length();
+	normal.normalize();
+
+	Vector2 direction = pol2.getCentroid() - pol1.getCentroid();
+	if (direction.dotProduct(normal) < 0.0f) 
+		normal.scale(-1);
+	
+    if (!contactPointFound) {
+        // Default to centroid-based guess if contact point is not found
+        contactPoint = Scale((pol1.getCentroid() + pol2.getCentroid()), 0.5f);
+    }
+
+	// return overlap;
+	// depth, normal, contactPoint
+	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
 bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
@@ -490,5 +527,5 @@ std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon
 
 
 	// depth, normal, contactPoint
-	return std::make_unique<Manifold>(depth, normal, contactPoint);;
+	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
