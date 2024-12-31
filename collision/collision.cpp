@@ -97,18 +97,15 @@ std::unique_ptr<Manifold> Collision::checkPolygonPolygon(const Polygon& pol1, co
 	std::unique_ptr<Manifold> contactPointPol1 = getContactPoint(pol1, pol2);	
 	if (!contactPointPol1) 
 		return nullptr;
-		// return false;
 	
 	std::unique_ptr<Manifold> contactPointPol2 = getContactPoint(pol2, pol1);	
 	if (!contactPointPol2) 
 		return nullptr;
-		// return false;
 	
 	if (contactPointPol1->getDepth() < contactPointPol2->getDepth())
 		return std::make_unique<Manifold>(contactPointPol1->getDepth(), contactPointPol1->getNormal(), contactPointPol1->getPenetrationPoint());
 	else
 		return std::make_unique<Manifold>(contactPointPol2->getDepth(), contactPointPol2->getNormal(), contactPointPol2->getPenetrationPoint());
-	// return true;
 }
 
 bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
@@ -231,7 +228,6 @@ bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
-// float Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
@@ -331,10 +327,8 @@ std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon
 }
 
 bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
-	Polygon *poly1 = &pol1;
+Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
-
-	Vector2 displacement = Vector2(0, 0);
 
 	for (size_t shape = 0; shape < 2; shape++) {
 		if (shape == 1) {
@@ -343,12 +337,13 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 		}
 
 		// Get diagonals of polygon1
-		for (const auto& v : poly1->getVertices()) {
+		for (const auto& v1 : poly1->getVertices()) {
 
 			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
 			Vector2 line_r1s = poly1->getCentroid();
-			Vector2 line_r1e = v;
+			Vector2 line_r1e = v1;
 
+			Vector2 displacement(0, 0);
 			std::vector<Vector2> vertices2 = poly2->getVertices();
 	    	int size2 = vertices2.size();
 
@@ -358,36 +353,33 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 				Vector2 line_r2s = vertices2[j];
 				Vector2 line_r2e = vertices2[(j + 1) % size2];
 
+
 				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
 				// Check if they are crossing
 				float h = (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r1e.getY()) - (line_r1s.getX() - line_r1e.getX()) * (line_r2e.getY() - line_r2s.getY());
 				float t1 = ((line_r2s.getY() - line_r2e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
 				float t2 = ((line_r1s.getY() - line_r1e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r1e.getX() - line_r1s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
 
-				// Now we accumulate the displacement
 				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) {
+					// return true;
 					float newX = displacement.getX();
-					float newY = displacement.getY();
-					newX = newX + (1.0f - t1) * (line_r1e.getX() - line_r1s.getX());
+					newX += (1.0f - t1) * (line_r1e.getX() - line_r1s.getX());
 					displacement.setX(newX);
-					newY = newY + (1.0f - t1) * (line_r1e.getY() - line_r1s.getY());
+					// displacement.x += (1.0f - t1) * (line_r1e.x - line_r1s.x);
+
+					float newY = displacement.getY();
+					newY += (1.0f - t1) * (line_r1e.getY() - line_r1s.getY());
 					displacement.setY(newY);
-
-                    Vector2 push = Scale(displacement, (shape == 0 ? -1 : 1));
-
-                    // If I only want the polygon to refrain from entering the other polygons
-                    pol1.move(push);
-
-                    // If I want the two parts to move
-					// pol1.move(Scale(push, 0.5));
-					// pol2.move(Scale(push, -0.5));
-					return true;
-				}				
+					// displacement.y += (1.0f - t1) * (line_r1e.y - line_r1s.y);
+				}
     		}
-		}				
+    		displacement.scale(shape == 0 ? -1 : 1);
+    		poly1->move(displacement);
+		}	
 	}
 	return false;
 }
+
 
 void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max) {
 	min = std::numeric_limits<float>::max();

@@ -18,7 +18,7 @@ Engine::Engine()
         previousF2State = previousF3State = false;
 
         currentF2State = false;
-        collisionMode = CollisionMode::SAT_RES;
+        collisionMode = CollisionMode::DIAGONAL_RES;
 
 
         move_left = move_right = move_up = move_down = false;
