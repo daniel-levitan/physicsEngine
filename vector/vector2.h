@@ -52,5 +52,6 @@ public:
 Vector2 add(const Vector2& v1, const Vector2& v2);
 Vector2 sub(const Vector2& v1, const Vector2& v2);
 Vector2 Scale(const Vector2& v1, float scalar);
+Vector2 Normalize(Vector2& v);
 
 #endif

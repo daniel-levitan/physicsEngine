@@ -14,12 +14,11 @@ Engine::Engine()
         engine_is_running = true;  // If no exception, graphics initialization is successful
 
         f1 = f2 = f3 = false;
-        debugMode = true;
+        debugMode = false;
         previousF2State = previousF3State = false;
 
         currentF2State = false;
-        collisionMode = CollisionMode::DIAGONAL_RES;
-
+        collisionMode = CollisionMode::PIXEL;
 
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
@@ -60,12 +59,10 @@ void Engine::input_processing() {
     currentF2State = input_manager->isKeyDown(SDLK_F2);
     if (currentF2State && !previousF2State) {
         f2 = true;
-        // collisionMode = (collisionMode + 1) % NUM_COLLISION_MODES;
-        // collisionMode = static_cast<CollisionMode>((collisionMode + 1) % NUM_COLLISION_MODES);
+        
         int collisionModeCount = static_cast<int>(CollisionMode::COUNT);
-        collisionMode = static_cast<CollisionMode>((static_cast<int>(collisionMode) + 1) % collisionModeCount);
-
-     
+        // As of now, I'm only working with one mode
+        // collisionMode = static_cast<CollisionMode>((static_cast<int>(collisionMode) + 1) % collisionModeCount);
     }
     // Update the previous state for the next frame
     previousF2State = currentF2State;
@@ -198,8 +195,9 @@ void Engine::updating() {
     Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
     // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
     // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
-    Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
+    // Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
 
+    Circle* circleA = dynamic_cast<Circle*>(shapes[1].get());
 
     // Text recovery
     Text* text = texts[0].get();
@@ -265,45 +263,74 @@ void Engine::updating() {
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = 0; j < shapes.size(); j++) {
                 if (shapes[i] == shapes[j]) continue;
-                    
-                // auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
-                // auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
 
-                auto rect1 = dynamic_cast<Polygon*>(shapes[i].get());
-                auto rect2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+                if (shapes[i]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
+                    auto circ = dynamic_cast<Circle*>(shapes[i].get());
+                    auto pol = dynamic_cast<Polygon*>(shapes[j].get());
+                    bool result = Collision::checkCirclePolygon(*circ, *pol);
+                    if (result) {
+                        circ->setColor(red);
+                        pol->setColor(red);
+
+                        // std::string str = "Circle vs Polygon";
+                        // text1->setMessage(str);                        
+                    } else {
+                        circ->setColor(white);
+                        pol->setColor(white);
+                    }
+
+                    
+                }
+
+                // According to the order, so far I won't get here. Revert and test
+                // if (shapes[j]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
+                    // std::cout << "Pol Circle" << std::endl;
+                    // circ auto = 
+                    // checkCirclePolygon(*circ, Polygon&pol);
+
+
+                    // std::string str = "Circle vs Polygon";
+                    // text1->setMessage(str);                    
+                // }
                 
-                auto result = Collision::checkPolygonPolygon(*rect1, *rect2);
-                // auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
+
+                /*
+
+                // Polygon vs Polygon 
+                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
+                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
+
+                // auto rect1 = dynamic_cast<Polygon*>(shapes[i].get());
+                // auto rect2 = dynamic_cast<Polygon*>(shapes[j].get());
+                
+                // auto result = Collision::checkPolygonPolygon(*rect1, *rect2);
+                auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
                 if (result) {
-                    rect1->setColor(red);
-                    rect2->setColor(red);
-    
                     // Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
-                    // text1->setMessage(str);
                     // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
+
+                    polygon1->setColor(red);
+                    polygon2->setColor(red);
+
                     Vector2 push;
                     push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
-                    // polygon2->move(push);
-                    rect2->move(push);
+                    polygon2->move(push);
     
-                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
-                    rect1->move(push);   
-                    // polygon1->move(push);   
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);                    
+                    polygon1->move(push);   
     
                     if (debugMode) {
                         std::string str = result->toString();
                         text1->setMessage(str);
                     }
                     manifolds.push_back(std::move(result));
-                } else {
-                    rect1->setColor(white);
-                    // polygon1->setColor(white);
-                    // polygon2->setColor(white);
-                    rect2->setColor(white);
-                    // std::string str = "Red";
-                    // text1->setMessage(str);
+                } else {                    
+                    polygon1->setColor(white);
+                    polygon2->setColor(white);
                     // manifolds.clear();
                 }
+                */
             }
         }
     } else if (collisionMode == CollisionMode::SAT) {
@@ -449,18 +476,7 @@ void Engine::updating() {
             shape->setColor(white);
     }
 
-
     std::string str = "Mode: ";
-    // if (collisionMode == 0) 
-    //     str += "Pixel Collision";
-    // // else if (collisionMode == 1)
-    //     str += "SAT";
-    // // else if (collisionMode == 2)
-    //     str += "Diagonal";
-    // // else if (collisionMode == 3)
-    //     str += "Diagonal Resolution";
-    // // else if (collisionMode == 4)
-    //     str += "SAT Resolution";
     switch (collisionMode) {
     case CollisionMode::PIXEL:
         str += "Pixel Collision";
@@ -542,15 +558,15 @@ void Engine::updating() {
                 shape->rotate(rotate_delta);
             }
 
-            if (shape2 == &*shape) {
+            // if (shape2 == &*shape) {
+            //     shape->move(deltaB);
+            //     shape->rotate(rotate_deltaB);
+            // }
+
+            if (circleA == &*shape) {
                 shape->move(deltaB);
                 shape->rotate(rotate_deltaB);
             }
-
-            // if (circleA == &*shape) {
-            //     shape->move(deltaA);
-            //     shape->rotate(rotate_delta);
-            // }
             // if (circleB == &*shape) {
             // if (triangle == &*shape) {
             //     shape->move(deltaB);

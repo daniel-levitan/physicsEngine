@@ -18,7 +18,7 @@ namespace Collision {
     std::unique_ptr<Manifold> checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
     // bool checkPolygonPolygon(const Polygon& pol1, const Polygon& pol2);
 
-    // New functions
+    // New Polygon vs Polygon functions
     bool checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2);
     bool checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
     bool resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2);
@@ -28,6 +28,13 @@ namespace Collision {
     void projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max);
     bool intersectPolygons(Polygon& pol1, Polygon& pol2);
     std::unique_ptr<Manifold> resIntersectPolygons(Polygon& pol1, Polygon& pol2);
+
+    // Circle vs Polygon
+    bool betweenEdges(Circle& circ, Polygon& pol);
+    bool checkCirclePolygonEdges(Circle& circ, Polygon& pol);
+    bool checkCirclePolygonCorners(Circle& circ, Polygon& pol);
+    bool checkCirclePolygon(Circle& circ, Polygon& pol);
+
 }
 
 #endif

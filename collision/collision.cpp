@@ -327,7 +327,7 @@ std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon
 }
 
 bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
-Polygon *poly1 = &pol1;
+	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
 
 	for (size_t shape = 0; shape < 2; shape++) {
@@ -379,7 +379,6 @@ Polygon *poly1 = &pol1;
 	}
 	return false;
 }
-
 
 void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max) {
 	min = std::numeric_limits<float>::max();
@@ -517,7 +516,91 @@ std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon
         contactPoint = Scale((pol1.getCentroid() + pol2.getCentroid()), 0.5f);
     }
 
-
 	// depth, normal, contactPoint
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
+
+bool Collision::betweenEdges(Circle& circ, Polygon& pol) {
+	std::vector<Vector2> vertices = pol.getVertices();
+	int size = vertices.size();	
+
+	for (size_t i = 0; i < size; i++) {
+		Vector2 edge = vertices[(i + 1) % size] - vertices[i];
+		Vector2 vertToCircle = circ.getCentroid() - vertices[i];
+		float projToEdge = vertToCircle.dotProduct(Normalize(edge));
+
+		// Here I should actually check vertices against circle
+		if (projToEdge > 0 and projToEdge < edge.length()) 
+			return true;		
+ 	}
+
+ 	return false;
+}
+
+float pointToLineSegmentDistance(const Vector2& P, const Vector2& A, const Vector2& B) {
+    Vector2 AB = B - A;
+    Vector2 AP = P - A;
+
+    // Projection factor t
+    float t = AP.dotProduct(AB) / AB.dotProduct(AB);
+
+    // Clamp t to [0, 1]
+    t = std::max(0.0f, std::min(1.0f, t));
+
+    // Closest point on the segment
+    Vector2 Q = A + Scale(AB, t);
+
+    // Distance from P to Q
+    Vector2 PQ = P - Q;
+    return PQ.length();
+}
+
+bool Collision::checkCirclePolygonEdges(Circle& circ, Polygon& pol) {
+	std::vector<Vector2> normals = pol.getNormals();
+	std::vector<Vector2> vertices = pol.getVertices();
+	int size = vertices.size();	
+	Vector2 center = circ.getCentroid();
+	float radius = circ.getRadius();
+
+	// I can't do that. I need to find the closest edge and only then calculate the distance
+	int iClosest = 0;
+	float closestDistance = std::numeric_limits<float>::max();
+	for (size_t i = 0; i < size; i++) {
+		float distance = pointToLineSegmentDistance(center, vertices[(i + 1) % size], vertices[i]);
+
+		if (distance < closestDistance) {
+			closestDistance = distance;
+			iClosest = i;
+		}
+ 	}
+	
+	Vector2 direction = center - vertices[iClosest];	
+	float projToNormal = direction.dotProduct(normals[iClosest]);
+	float depth = projToNormal - radius;
+	if (depth < 0.0f)
+		return true;
+	
+	return false;
+}
+
+bool Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
+	Vector2 center = circ.getCentroid();
+
+	for (const auto& v : pol.getVertices()) {
+		Vector2 direction = center - v;
+		float directionLength = direction.length();
+
+		if (directionLength < circ.getRadius())
+			return true;
+	}
+
+	return false;
+}
+
+bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
+	if (betweenEdges(circ, pol)) 
+		return checkCirclePolygonEdges(circ, pol);	
+	
+	return checkCirclePolygonCorners(circ, pol);	
+}
+

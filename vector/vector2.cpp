@@ -119,6 +119,16 @@ Vector2 Scale(const Vector2& v1, float scalar) {
     return Vector2(v1.getX() * scalar, v1.getY() * scalar);
 }
 
+Vector2 Normalize(Vector2& v) {
+	Vector2 result(0,0);
+	double len = v.length();
+	if (len != 0) {
+		result.setX(v.getX() / len);
+    	result.setY(v.getY() / len);
+	}
+    return result;
+}
+
 // // Method to return a new scaled vector (does not mutate the original)
 // Vector2 Vector2::scale(float scalar) {
 // 	return Vector2(x * scalar, y * scalar);
