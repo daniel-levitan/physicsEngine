@@ -9,6 +9,9 @@ CXX=g++
 # This is including debug flags, I need to take out the -g option afterwards
 CXXFLAGS=-Wall -std=c++14 -g -D_THREAD_SAFE
 
+# Generate dependency files (.d)
+DEPFLAGS=-MMD -MP
+
 # Directories for SDL2 include and libraries
 SDL2_INCLUDE=-I/opt/homebrew/include/SDL2 -I/opt/homebrew/include/SDL2_ttf
 SDL2_LIB=-L/opt/homebrew/lib -lSDL2 -lSDL2_ttf
@@ -54,9 +57,12 @@ $(TARGET): $(CXXOBJS)
 
 # Pattern rule for compiling C++ files
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(SDL2_INCLUDE) $(VECTOR_INCLUDE) $(DRAWING_INCLUDE)\
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(SDL2_INCLUDE) $(VECTOR_INCLUDE) $(DRAWING_INCLUDE)\
 	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) \
        $(UTILS_INCLUDE) -c $< -o $@
+
+# Include dependency files
+-include $(CXXSRC:.cpp=.d)
 
 # Clean target: remove object files and the executable
 clean:

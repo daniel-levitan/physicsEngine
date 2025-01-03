@@ -1,8 +1,11 @@
 #include <iostream>
 #include <SDL.h>
 #include "engine.h"
+#include "../graphics/shape.h"
+#include "../graphics/circle.h"
+#include "../graphics/polygon.h"
 #include "../collision/collision.h"
-#include "../collision/manifold.h"
+// #include "../collision/manifold.h"
 #include "../utils/utils.h"
 
 Engine::Engine() 
@@ -60,8 +63,8 @@ void Engine::input_processing() {
     if (currentF2State && !previousF2State) {
         f2 = true;
         
-        int collisionModeCount = static_cast<int>(CollisionMode::COUNT);
         // As of now, I'm only working with one mode
+        // int collisionModeCount = static_cast<int>(CollisionMode::COUNT);
         // collisionMode = static_cast<CollisionMode>((static_cast<int>(collisionMode) + 1) % collisionModeCount);
     }
     // Update the previous state for the next frame
@@ -192,12 +195,13 @@ void Engine::updating() {
     // Shapes recovery
     // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
     // Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
-    Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
-    // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
-    // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
+    // Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
+    Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
+    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
     // Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
 
-    Circle* circleA = dynamic_cast<Circle*>(shapes[1].get());
+    // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
+    // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
 
     // Text recovery
     Text* text = texts[0].get();
@@ -264,24 +268,32 @@ void Engine::updating() {
             for (size_t j = 0; j < shapes.size(); j++) {
                 if (shapes[i] == shapes[j]) continue;
 
+                bool result = Collision::checkCollision(*shapes[i], *shapes[j]);
+                if (result) {
+                    shapes[i]->setColor(red);
+                    shapes[j]->setColor(red);
+                } else {
+                    shapes[i]->setColor(white);
+                    shapes[j]->setColor(white);
+                }
+                // Testing shape types
+                // if (shapes[i]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
+                //     auto circ = dynamic_cast<Circle*>(shapes[i].get());
+                //     auto pol = dynamic_cast<Polygon*>(shapes[j].get());
+                //     bool result = Collision::checkCirclePolygon(*circ, *pol);
+                //     if (result) {
+                //         circ->setColor(red);
+                //         pol->setColor(red);
 
-                if (shapes[i]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
-                    auto circ = dynamic_cast<Circle*>(shapes[i].get());
-                    auto pol = dynamic_cast<Polygon*>(shapes[j].get());
-                    bool result = Collision::checkCirclePolygon(*circ, *pol);
-                    if (result) {
-                        circ->setColor(red);
-                        pol->setColor(red);
-
-                        // std::string str = "Circle vs Polygon";
-                        // text1->setMessage(str);                        
-                    } else {
-                        circ->setColor(white);
-                        pol->setColor(white);
-                    }
+                //         // std::string str = "Circle vs Polygon";
+                //         // text1->setMessage(str);                        
+                //     } else {
+                //         circ->setColor(white);
+                //         pol->setColor(white);
+                //     }
 
                     
-                }
+                // }
 
                 // According to the order, so far I won't get here. Revert and test
                 // if (shapes[j]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
@@ -553,7 +565,9 @@ void Engine::updating() {
     for (const auto& shape : shapes) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
 
-            if (shape1 == &*shape) {
+            
+            // if (circleB == &*shape) {
+            if (shape2 == &*shape) {
                 shape->move(deltaA);
                 shape->rotate(rotate_delta);
             }
@@ -563,7 +577,8 @@ void Engine::updating() {
             //     shape->rotate(rotate_deltaB);
             // }
 
-            if (circleA == &*shape) {
+            // if (circleA == &*shape) {
+            if (shape1 == &*shape) {
                 shape->move(deltaB);
                 shape->rotate(rotate_deltaB);
             }

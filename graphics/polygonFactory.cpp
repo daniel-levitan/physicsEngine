@@ -8,15 +8,9 @@
 std::unique_ptr<Polygon> PolygonFactory::createPolygon(int numOfSides, Vector2 center, float radius, Color color) {
 	float fTheta = M_PI * 2.0f / (float)numOfSides;	
 	std::vector<Vector2> vertices;
-	std::string type = "";
 
 	for (size_t i = 0; i < numOfSides; i++) 
 		vertices.push_back(center + Vector2(radius * cos(fTheta * i), radius * sin(fTheta * i)));	
 	
-	if (numOfSides == 3) 
-		type = "Triangle";			
- 	else 
-		type = "Pentagon";	
-
-	return std::make_unique<Polygon>(vertices, color, type);	
+	return std::make_unique<Polygon>(vertices, color);	
 }

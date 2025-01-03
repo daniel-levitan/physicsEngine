@@ -6,6 +6,9 @@
 #include "../vector/vector2.h"
 #include "helper.h"
 
+class Circle;  // Forward declaration
+class Polygon; // Forward declaration
+
 class Shape {
 protected:
     std::vector<Vector2> vertices; // A collection of vertices
@@ -20,8 +23,8 @@ protected:
     float initialAngle;
 
 public:
-    Shape(const std::vector<Vector2>& verticesC, Color colorC, std::string typeC) : 
-        vertices(verticesC), color(colorC), type(typeC) {        
+    Shape(const std::vector<Vector2>& verticesC, Color colorC) : 
+        vertices(verticesC), color(colorC) {        
         angle = initialAngle = 0;
         centroid = initialCentroid = calculateCentroid();
         overlap = false;
@@ -45,6 +48,13 @@ public:
     void setOverlap(bool flag);
 
     // manipulation and calculation
+    // virtual std::unique_ptr<Manifold> acceptCollision(Shape& other) = 0;
+    // virtual std::unique_ptr<Manifold> collideWith(Circle& circle) = 0;
+    // virtual std::unique_ptr<Manifold> collideWith(Polygon& polygon) = 0;
+    virtual bool acceptCollision(Shape& other) = 0;
+    virtual bool collideWith(Circle& circle) = 0;
+    virtual bool collideWith(Polygon& polygon) = 0;
+
     Vector2 calculateCentroid() const;
     float calculateArea() const;
     const Vector2 rotateAroundPoint(Vector2 vec, Vector2 point, float angle) const;

@@ -3,7 +3,7 @@
 #include "shape.h"
 #include "drawing.h"
 
-void Circle::draw(SDL_Renderer* renderer) const {    
+void Circle::draw(SDL_Renderer* renderer) const {
     Shape::draw(renderer);
 
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
@@ -25,7 +25,6 @@ void Circle::setCentroid(const Vector2& newCentroid) {
 } 
 
 void Circle::move(Vector2 delta) {
-    // std::cout << "circle" << std::endl;
     Shape::move(delta);
     center.setX(center.getX() + delta.getX());
     center.setY(center.getY() + delta.getY());

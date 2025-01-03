@@ -1,7 +1,10 @@
 #include "collision.h"
-#include "../graphics/circle.h"
 #include "../vector/vector2.h"
 #include "supportPoint.h"
+
+#include "../graphics/circle.h"
+#include "../graphics/polygon.h"
+
 
 
 float Collision::calculatePenetrationDepthOfCircles(const Circle& c1, const Circle& c2) {
@@ -603,4 +606,27 @@ bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
 	
 	return checkCirclePolygonCorners(circ, pol);	
 }
+
+bool Collision::checkCircleCircleBool(const Circle& c1, const Circle& c2) {
+	Vector2 centroidA = c1.getCentroid();
+	Vector2 centroidB = c2.getCentroid();
+	Vector2 direction = centroidB - centroidA;
+	float directionLength = direction.length();
+
+	float radiusA = c1.getRadius();
+	float radiusB = c2.getRadius();
+	float sumRadius = radiusA + radiusB;
+
+	if (directionLength < sumRadius) {
+		return true;
+	}
+
+	return false;
+}
+
+// std::unique_ptr<Manifold> checkCollision(Shape& s1, Shape& s2) {
+bool Collision::checkCollision(Shape& s1, Shape& s2) {
+    return s1.acceptCollision(s2);
+}
+
 

@@ -16,7 +16,7 @@
 
 class Rectangle : public Polygon {
 public:
-    Rectangle(const Vector2& position, int width, int height, Color color, std::string type);
+    Rectangle(const Vector2& position, int width, int height, Color color);
 };
 
 #endif

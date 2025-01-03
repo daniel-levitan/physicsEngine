@@ -11,16 +11,16 @@
 #include <iostream>
 #include "shape.h"
 #include "../vector/vector2.h"
+#include "../collision/collision.h"
 
-// Derived class: Circle
 class Circle : public Shape {
 private:
     Vector2 center;
     float radius;
 
 public:
-    Circle(const Vector2& center, int radius, Color color, std::string type)
-        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color, type), center(center), radius(radius) {
+    Circle(const Vector2& center, int radius, Color color)
+        : Shape({ center, Vector2(center.getX() + radius, center.getY()) }, color), center(center), radius(radius) {
             initialCentroid = centroid = center;
     }
 
@@ -31,5 +31,20 @@ public:
     void setCentroid(const Vector2& newCentroid) override; 
 
     void move(Vector2 delta) override;
+
+    // std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
+    bool acceptCollision(Shape& other) override {
+        return other.collideWith(*this);
+    }
+
+    // std::unique_ptr<Manifold> collideWith(Circle& circle) override {
+    bool collideWith(Circle& circle) override {
+        return Collision::checkCircleCircleBool(*this, circle);
+    }
+
+    // std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
+    bool collideWith(Polygon& polygon) override {
+        return Collision::checkCirclePolygon(*this, polygon);               
+    }
 };
 #endif
