@@ -4,8 +4,8 @@
 #include "../graphics/shape.h"
 #include "../graphics/circle.h"
 #include "../graphics/polygon.h"
+#include "../graphics/rectangle.h"
 #include "../collision/collision.h"
-// #include "../collision/manifold.h"
 #include "../utils/utils.h"
 
 Engine::Engine() 
@@ -185,24 +185,6 @@ void Engine::updating() {
     float rotate_speed = 1.0f * ROTATION_SPEED;
     float rotate_delta = 0.0f, rotate_deltaB = 0.0f;
 
-    // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
-    // Rectangle* rect = dynamic_cast<Rectangle*>(shapes[0].get());
-    // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
-    // Polygon* pentagon = dynamic_cast<Polygon*>(shapes[0].get());
-    // Polygon* triangle = dynamic_cast<Polygon*>(shapes[1].get());
-    // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
-
-    // Shapes recovery
-    // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
-    // Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
-    // Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
-    Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
-    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
-    // Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
-
-    // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
-    // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
-
     // Text recovery
     Text* text = texts[0].get();
     Text* text1 = texts[1].get();
@@ -263,7 +245,6 @@ void Engine::updating() {
     manifolds.clear();
     
     if (collisionMode == CollisionMode::PIXEL) {
-        // Checking for polygons collisions mode 0    
         for (size_t i = 0; i < shapes.size(); i++) {
             for (size_t j = 0; j < shapes.size(); j++) {
                 if (shapes[i] == shapes[j]) continue;
@@ -560,34 +541,37 @@ void Engine::updating() {
     Vector2 deltaB(movement_delta_xB, movement_delta_yB);
 
 
-    // There must be a better way to do that
+    // Circle* circleA = dynamic_cast<Circle*>(shapes[0].get());
+    // Rectangle* rect = dynamic_cast<Rectangle*>(shapes[0].get());
+    // Circle* circleB = dynamic_cast<Circle*>(shapes[1].get());
+    // Polygon* pentagon = dynamic_cast<Polygon*>(shapes[0].get());
+    // Polygon* triangle = dynamic_cast<Polygon*>(shapes[1].get());
+    // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
+
+    // Shapes recovery
+    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
+    // Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
+    // Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
+    // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
+    // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
+    // Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
+
+    Circle* shape1 = dynamic_cast<Circle*>(shapes[0].get());
+    // Circle* shape2 = dynamic_cast<Circle*>(shapes[1].get());
+    
+    // === There must be a better way to do that ===
     // Update movement and rotation
     for (const auto& shape : shapes) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_delta || rotate_deltaB) {
-
-            
-            // if (circleB == &*shape) {
             if (shape2 == &*shape) {
                 shape->move(deltaA);
                 shape->rotate(rotate_delta);
             }
 
-            // if (shape2 == &*shape) {
-            //     shape->move(deltaB);
-            //     shape->rotate(rotate_deltaB);
-            // }
-
-            // if (circleA == &*shape) {
             if (shape1 == &*shape) {
                 shape->move(deltaB);
                 shape->rotate(rotate_deltaB);
             }
-            // if (circleB == &*shape) {
-            // if (triangle == &*shape) {
-            //     shape->move(deltaB);
-            //     shape->rotate(rotate_deltaB);
-            // }
-            // if (pentagon == &*shape) {               
         }    
     }
 

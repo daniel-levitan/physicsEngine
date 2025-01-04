@@ -19,7 +19,23 @@ float Collision::calculatePenetrationDepthOfCircles(const Circle& c1, const Circ
 	return radiusA + radiusB - direction.length();
 }
 
-// Initially this class returned a bool, now it will return a manifold
+bool Collision::checkCircleCircleBool(const Circle& c1, const Circle& c2) {
+	Vector2 centroidA = c1.getCentroid();
+	Vector2 centroidB = c2.getCentroid();
+	Vector2 direction = centroidB - centroidA;
+	float directionLength = direction.length();
+
+	float radiusA = c1.getRadius();
+	float radiusB = c2.getRadius();
+	float sumRadius = radiusA + radiusB;
+
+	if (directionLength < sumRadius) {
+		return true;
+	}
+
+	return false;
+}
+
 std::unique_ptr<Manifold> Collision::checkCircleCircle(const Circle& c1, const Circle& c2) {
 	Vector2 centroidA = c1.getCentroid();
 	Vector2 centroidB = c2.getCentroid();
@@ -43,6 +59,7 @@ std::unique_ptr<Manifold> Collision::checkCircleCircle(const Circle& c1, const C
 	return nullptr;
 }
 
+// Checking for Polygon collisions method 1
 /** If there is at least 1 vertice for which I cannot find a support point, the polygons
  *  don't collide. */
 std::unique_ptr<SupportPoint> Collision::findSupportPoint(Vector2 normal, Vector2 pointOnEdge, std::vector<Vector2> otherPolygonVertices) {
@@ -111,6 +128,7 @@ std::unique_ptr<Manifold> Collision::checkPolygonPolygon(const Polygon& pol1, co
 		return std::make_unique<Manifold>(contactPointPol2->getDepth(), contactPointPol2->getNormal(), contactPointPol2->getPenetrationPoint());
 }
 
+// Checking for Polygon collisions method 2
 bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
@@ -177,58 +195,6 @@ bool Collision::checkPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
 	 *  case, otherwise we return true.
 	 */ 
 	return true;
-}
-
-bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
-	Polygon *poly1 = &pol1;
-	Polygon *poly2 = &pol2;
-
-	for (size_t shape = 0; shape < 2; shape++) {
-		if (shape == 1) {
-			poly1 = &pol2;
-			poly2 = &pol1;
-		}
-
-		// Get diagonals of polygon1
-		for (const auto& v1 : poly1->getVertices()) {
-
-			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
-			Vector2 line_r1s = poly1->getCentroid();
-			Vector2 line_r1e = v1;
-
-
-			std::vector<Vector2> vertices2 = poly2->getVertices();
-	    	int size2 = vertices2.size();
-
-    		// Get edges of polygon2
-    		for (size_t j = 0; j < size2; j++) {
-				// Vector2 edge = vertices2[(i + 1) % size2] - vertices2[i];	
-				Vector2 line_r2s = vertices2[j];
-				Vector2 line_r2e = vertices2[(j + 1) % size2];
-
-
-				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
-				// Check if they are crossing
-				float h = (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r1e.getY()) - (line_r1s.getX() - line_r1e.getX()) * (line_r2e.getY() - line_r2s.getY());
-				float t1 = ((line_r2s.getY() - line_r2e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
-				float t2 = ((line_r1s.getY() - line_r1e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r1e.getX() - line_r1s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
-
-				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) 
-					return true;
-					
-    		}
-		}
-        /*         *  *------*    In this algorithm we check every edge of one polygon 
-		          / \ |      |    against every diagonal of the other polygon.
-     	         /   \|  .   |
-                /     \ /    |    If any diagonal crosses any edge, we have a collision.
-               /      |\     |
-              /       *-\----*
-             /           \
-     	    *-------------*          
-		*/			
-	}
-	return false;
 }
 
 std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon& pol2) {
@@ -329,6 +295,59 @@ std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
+// Checking for Polygon collisions method 3
+bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
+	Polygon *poly1 = &pol1;
+	Polygon *poly2 = &pol2;
+
+	for (size_t shape = 0; shape < 2; shape++) {
+		if (shape == 1) {
+			poly1 = &pol2;
+			poly2 = &pol1;
+		}
+
+		// Get diagonals of polygon1
+		for (const auto& v1 : poly1->getVertices()) {
+
+			// Vector2 diagonal = vertices2[i] - poly1.getCentroid();
+			Vector2 line_r1s = poly1->getCentroid();
+			Vector2 line_r1e = v1;
+
+
+			std::vector<Vector2> vertices2 = poly2->getVertices();
+	    	int size2 = vertices2.size();
+
+    		// Get edges of polygon2
+    		for (size_t j = 0; j < size2; j++) {
+				// Vector2 edge = vertices2[(i + 1) % size2] - vertices2[i];	
+				Vector2 line_r2s = vertices2[j];
+				Vector2 line_r2e = vertices2[(j + 1) % size2];
+
+
+				/*https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect*/
+				// Check if they are crossing
+				float h = (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r1e.getY()) - (line_r1s.getX() - line_r1e.getX()) * (line_r2e.getY() - line_r2s.getY());
+				float t1 = ((line_r2s.getY() - line_r2e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r2e.getX() - line_r2s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
+				float t2 = ((line_r1s.getY() - line_r1e.getY()) * (line_r1s.getX() - line_r2s.getX()) + (line_r1e.getX() - line_r1s.getX()) * (line_r1s.getY() - line_r2s.getY())) / h;
+
+				if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) 
+					return true;
+					
+    		}
+		}
+        /*         *  *------*    In this algorithm we check every edge of one polygon 
+		          / \ |      |    against every diagonal of the other polygon.
+     	         /   \|  .   |
+                /     \ /    |    If any diagonal crosses any edge, we have a collision.
+               /      |\     |
+              /       *-\----*
+             /           \
+     	    *-------------*          
+		*/			
+	}
+	return false;
+}
+
 bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
@@ -383,6 +402,7 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
+// Checking for polygon collisions method 4
 void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max) {
 	min = std::numeric_limits<float>::max();
 	max = std::numeric_limits<float>::lowest();
@@ -523,6 +543,7 @@ std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
+// Checking for collusion between circle and polygon
 bool Collision::betweenEdges(Circle& circ, Polygon& pol) {
 	std::vector<Vector2> vertices = pol.getVertices();
 	int size = vertices.size();	
@@ -601,29 +622,14 @@ bool Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
 }
 
 bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
+	// return betweenEdges(circ, pol);
 	if (betweenEdges(circ, pol)) 
 		return checkCirclePolygonEdges(circ, pol);	
 	
 	return checkCirclePolygonCorners(circ, pol);	
 }
 
-bool Collision::checkCircleCircleBool(const Circle& c1, const Circle& c2) {
-	Vector2 centroidA = c1.getCentroid();
-	Vector2 centroidB = c2.getCentroid();
-	Vector2 direction = centroidB - centroidA;
-	float directionLength = direction.length();
-
-	float radiusA = c1.getRadius();
-	float radiusB = c2.getRadius();
-	float sumRadius = radiusA + radiusB;
-
-	if (directionLength < sumRadius) {
-		return true;
-	}
-
-	return false;
-}
-
+// General check collision method
 // std::unique_ptr<Manifold> checkCollision(Shape& s1, Shape& s2) {
 bool Collision::checkCollision(Shape& s1, Shape& s2) {
     return s1.acceptCollision(s2);

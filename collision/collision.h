@@ -6,6 +6,7 @@
 // #include "../graphics/rectangle.h"
 #include "manifold.h"
 #include "supportPoint.h"
+#include "../graphics/text.h"
 
 class Shape;
 class Circle;
