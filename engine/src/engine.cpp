@@ -247,10 +247,29 @@ void Engine::updating() {
             for (size_t j = 0; j < shapes.size(); j++) {
                 if (shapes[i] == shapes[j]) continue;
 
-                bool result = Collision::checkCollision(*shapes[i], *shapes[j]);
-                shapes[i]->setOverlap(result | shapes[i]->getOverlap());
-                shapes[j]->setOverlap(result | shapes[j]->getOverlap());
+                auto result = Collision::checkCollision(*shapes[i], *shapes[j]);
+                bool flag = false;
+                if (result)
+                    flag = true;
+                shapes[i]->setOverlap(flag | shapes[i]->getOverlap());
+                shapes[j]->setOverlap(flag | shapes[j]->getOverlap());
 
+
+                if (result) {
+
+                    Vector2 push;
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
+                    shapes[i]->move(push);   
+                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);
+                    shapes[j]->move(push);   
+
+                    if (debugMode) {
+                        std::string str = result->toString();
+                        text1->setMessage(str);
+                    }
+
+                    manifolds.push_back(std::move(result));                    
+                }
             }
         }
     } else if (collisionMode == CollisionMode::SAT) {

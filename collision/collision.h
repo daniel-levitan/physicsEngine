@@ -40,14 +40,18 @@ namespace Collision {
 
     // Circle vs Polygon
     bool betweenEdges(Circle& circ, Polygon& pol);
-    bool checkCirclePolygonEdges(Circle& circ, Polygon& pol);
-    bool checkCirclePolygonCorners(Circle& circ, Polygon& pol);
-    bool checkCirclePolygon(Circle& circ, Polygon& pol);
+    bool checkCirclePolygonEdgesBool(Circle& circ, Polygon& pol);
+    std::unique_ptr<Manifold> checkCirclePolygonEdges(Circle& circ, Polygon& pol);
+    std::unique_ptr<Manifold> checkCirclePolygonCorners(Circle& circ, Polygon& pol);
+    bool checkCirclePolygonCornersBool(Circle& circ, Polygon& pol);
+    bool checkCirclePolygonBool(Circle& circ, Polygon& pol);
+    std::unique_ptr<Manifold> checkCirclePolygon(Circle& circ, Polygon& pol);
     
     bool checkCirclePolygonEdges_v2(Circle& circ, Polygon& pol);
 
     // Double dispatch/visitor
-    bool checkCollision(Shape& s1, Shape& s2);
+    bool checkCollisionBool(Shape& s1, Shape& s2);
+    std::unique_ptr<Manifold> checkCollision(Shape& s1, Shape& s2);
 
 
 }

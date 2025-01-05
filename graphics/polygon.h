@@ -11,6 +11,7 @@
 #include <iostream>
 #include "shape.h"
 #include "../vector/vector2.h"
+#include "../collision/manifold.h"
 #include "../collision/collision.h"
 
 class Polygon : public Shape {
@@ -30,19 +31,20 @@ public:
 
       std::vector<Vector2> calculateNormals() const;
 
-      // std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
-      bool acceptCollision(Shape& other) override {
+      std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
+      // bool acceptCollision(Shape& other) override {
          return other.collideWith(*this);
       }
 
-      // std::unique_ptr<Manifold> collideWith(Circle& circle) override {
-      bool collideWith(Circle& circle) override {
+      std::unique_ptr<Manifold> collideWith(Circle& circle) override {
+      // bool collideWith(Circle& circle) override {
          return Collision::checkCirclePolygon(circle, *this);
       }
 
-      // std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
-      bool collideWith(Polygon& polygon) override {
-         return Collision::intersectPolygons(*this, polygon);
+      std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
+      // bool collideWith(Polygon& polygon) override {
+         // return Collision::intersectPolygons(*this, polygon);
+         return Collision::checkPolygonPolygon(*this, polygon);
       }
 };
 

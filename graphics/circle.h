@@ -11,6 +11,7 @@
 #include <iostream>
 #include "shape.h"
 #include "../vector/vector2.h"
+#include "../collision/manifold.h"
 #include "../collision/collision.h"
 
 class Circle : public Shape {
@@ -34,18 +35,20 @@ public:
 
     void resetPosition() override;
 
-    // std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
-    bool acceptCollision(Shape& other) override {
+    std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
+    // bool acceptCollision(Shape& other) override {
         return other.collideWith(*this);
     }
 
-    // std::unique_ptr<Manifold> collideWith(Circle& circle) override {
-    bool collideWith(Circle& circle) override {
-        return Collision::checkCircleCircleBool(*this, circle);
+    std::unique_ptr<Manifold> collideWith(Circle& circle) override {
+    // bool collideWith(Circle& circle) override {
+        // return Collision::checkCircleCircleBool(*this, circle);
+        return Collision::checkCircleCircle(*this, circle);
+
     }
 
-    // std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
-    bool collideWith(Polygon& polygon) override {
+    std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
+    // bool collideWith(Polygon& polygon) override {
         return Collision::checkCirclePolygon(*this, polygon);               
     }
 };

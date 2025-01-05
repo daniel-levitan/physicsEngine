@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "../vector/vector2.h"
 #include "helper.h"
+#include "../collision/manifold.h"
 
 class Circle;  // Forward declaration
 class Polygon; // Forward declaration
@@ -46,12 +47,12 @@ public:
     void setOverlap(bool flag);
 
     // manipulation and calculation
-    // virtual std::unique_ptr<Manifold> acceptCollision(Shape& other) = 0;
-    // virtual std::unique_ptr<Manifold> collideWith(Circle& circle) = 0;
-    // virtual std::unique_ptr<Manifold> collideWith(Polygon& polygon) = 0;
-    virtual bool acceptCollision(Shape& other) = 0;
-    virtual bool collideWith(Circle& circle) = 0;
-    virtual bool collideWith(Polygon& polygon) = 0;
+    virtual std::unique_ptr<Manifold> acceptCollision(Shape& other) = 0;
+    virtual std::unique_ptr<Manifold> collideWith(Circle& circle) = 0;
+    virtual std::unique_ptr<Manifold> collideWith(Polygon& polygon) = 0;
+    // virtual bool acceptCollision(Shape& other) = 0;
+    // virtual bool collideWith(Circle& circle) = 0;
+    // virtual bool collideWith(Polygon& polygon) = 0;
 
     Vector2 calculateCentroid() const;
     float calculateArea() const;

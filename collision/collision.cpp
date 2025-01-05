@@ -579,6 +579,35 @@ float pointToLineSegmentDistance(const Vector2& P, const Vector2& A, const Vecto
     return PQ.length();
 }
 
+std::unique_ptr<Manifold> Collision::checkCirclePolygonEdges(Circle& circ, Polygon& pol) {
+	std::vector<Vector2> normals = pol.getNormals();
+	std::vector<Vector2> vertices = pol.getVertices();
+	int size = vertices.size();	
+	Vector2 center = circ.getCentroid();
+	float radius = circ.getRadius();
+
+	for (size_t i = 0; i < size; i++) {
+		Vector2 edge = vertices[(i + 1) % size] - vertices[i];
+		Vector2 vertToCircle = circ.getCentroid() - vertices[i];
+		float projToEdge = vertToCircle.dotProduct(Normalize(edge));
+
+		Vector2 direction = center - vertices[i];
+		float projToNormal = direction.dotProduct(normals[i]);
+
+		// Here I should actually check vertices against circle
+		if (projToEdge > 0 and projToEdge < edge.length() and projToNormal > 0) {
+			float depth = projToNormal - radius;
+			if (depth < 0.0f)
+				return std::make_unique<Manifold>(depth * -1, Scale(normals[i], -1), center + Scale(normals[i], radius * -1));		
+		}
+
+
+			
+ 	}
+
+ 	return nullptr;
+}
+
 bool Collision::checkCirclePolygonEdges_v2(Circle& circ, Polygon& pol) {
 	std::vector<Vector2> normals = pol.getNormals();
 	std::vector<Vector2> vertices = pol.getVertices();
@@ -606,7 +635,7 @@ bool Collision::checkCirclePolygonEdges_v2(Circle& circ, Polygon& pol) {
  	return false;
 }
 
-bool Collision::checkCirclePolygonEdges(Circle& circ, Polygon& pol) {
+bool Collision::checkCirclePolygonEdgesBool(Circle& circ, Polygon& pol) {
 	std::vector<Vector2> normals = pol.getNormals();
 	std::vector<Vector2> vertices = pol.getVertices();
 	int size = vertices.size();	
@@ -633,7 +662,7 @@ bool Collision::checkCirclePolygonEdges(Circle& circ, Polygon& pol) {
 	return false;
 }
 
-bool Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
+bool Collision::checkCirclePolygonCornersBool(Circle& circ, Polygon& pol) {
 	Vector2 center = circ.getCentroid();
 
 	for (const auto& v : pol.getVertices()) {         // For every vertice
@@ -647,20 +676,36 @@ bool Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
 	return false;
 }
 
-bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
+std::unique_ptr<Manifold> Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
+	Vector2 center = circ.getCentroid();
+
+	for (const auto& v : pol.getVertices()) {         // For every vertice
+		Vector2 direction = center - v;               
+		float directionLength = direction.length();   // Get the len from the vertice to the circle
+
+		if (directionLength < circ.getRadius())       // Check if they are on top of each other
+			return std::make_unique<Manifold>((directionLength - circ.getRadius()) * -1, Normalize(direction), v);
+	}
+
+	return nullptr;
+}
+
+std::unique_ptr<Manifold> Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
+// bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
 	// return checkCirclePolygonEdges_v2(circ, pol);
 	// return betweenEdges(circ, pol);
 	// if (betweenEdges(circ, pol)) 					
 		// return checkCirclePolygonEdges_v2(circ, pol);
 		// return checkCirclePolygonEdges(circ, pol);	
-	if (checkCirclePolygonEdges_v2(circ, pol))
-		return true;
+	auto result = checkCirclePolygonEdges(circ, pol);
+	if (result)
+		return result;
 	return checkCirclePolygonCorners(circ, pol);	
 }
 
 // General check collision method
-// std::unique_ptr<Manifold> checkCollision(Shape& s1, Shape& s2) {
-bool Collision::checkCollision(Shape& s1, Shape& s2) {
+std::unique_ptr<Manifold> Collision::checkCollision(Shape& s1, Shape& s2) {
+// bool Collision::checkCollision(Shape& s1, Shape& s2) {
     return s1.acceptCollision(s2);
 }
 
