@@ -14,7 +14,6 @@ protected:
     std::vector<Vector2> vertices; // A collection of vertices
     Vector2 centroid;
     Color color;
-    std::string type;
     float angle;
     bool overlap;
     
@@ -35,7 +34,6 @@ public:
 
     // getters
     virtual Vector2 getCentroid() const; 
-    const std::string getType() const;
     const std::vector<Vector2>& getVertices() const;
     Color getColor();
     float getAngle();
@@ -44,7 +42,7 @@ public:
     // setters
     virtual void setCentroid(const Vector2& newCentroid);
     void setColor(Color newColor);
-    void resetPosition();
+    virtual void resetPosition();
     void setOverlap(bool flag);
 
     // manipulation and calculation

@@ -17,6 +17,12 @@ using namespace std;
 void setup(Engine& engine) {
 	Color whiteColor = {255, 255, 255};
 
+	auto pent = PolygonFactory::createPolygon(5, Vector2(3*WINDOW_WIDTH/4, 3*WINDOW_HEIGHT/4), 80, whiteColor);
+	engine.add_shape(std::move(pent));
+	
+	auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 - 120, WINDOW_HEIGHT/2), 200, 80, whiteColor);
+	engine.add_shape(std::move(rect1));
+
 	// Rectangles
 	// auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 - 120, WINDOW_HEIGHT/2), 200, 80, whiteColor);
 	// engine.add_shape(std::move(rect1));
@@ -24,9 +30,8 @@ void setup(Engine& engine) {
 	// engine.add_shape(std::move(rect2));
 
 	// Circles
-    // auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/4, WINDOW_HEIGHT/4), 50, whiteColor, "Circle");
-    // auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/4), 50, whiteColor);
-	// engine.add_shape(std::move(circleA));  
+    auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/4), 50, whiteColor);
+	engine.add_shape(std::move(circleA));  
     // auto circleB = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 60, WINDOW_HEIGHT/4), 50, whiteColor);
 	// engine.add_shape(std::move(circleB));  
 
@@ -35,14 +40,12 @@ void setup(Engine& engine) {
     // line->setColor(color);
 	// engine.add_shape(std::move(line));  
 	
-	Vector2 pos1 = Vector2(200, 200);
-	auto pent = PolygonFactory::createPolygon(5, pos1, 80, whiteColor);
-	engine.add_shape(std::move(pent));
+
 	Vector2 pos2 = Vector2(400, 400);
 	auto tri = PolygonFactory::createPolygon(3, pos2, 50, whiteColor);
 	engine.add_shape(std::move(tri));
-	
-	
+
+		
 	// Text on screen
 	SDL_Color white = {255, 255, 255, 255};
 	const std::string message = " ";

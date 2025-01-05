@@ -43,8 +43,10 @@ namespace Collision {
     bool checkCirclePolygonEdges(Circle& circ, Polygon& pol);
     bool checkCirclePolygonCorners(Circle& circ, Polygon& pol);
     bool checkCirclePolygon(Circle& circ, Polygon& pol);
+    
+    bool checkCirclePolygonEdges_v2(Circle& circ, Polygon& pol);
 
-    // Trying to implement double dispatch
+    // Double dispatch/visitor
     bool checkCollision(Shape& s1, Shape& s2);
 
 

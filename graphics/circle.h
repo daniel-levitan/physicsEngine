@@ -32,6 +32,8 @@ public:
 
     void move(Vector2 delta) override;
 
+    void resetPosition() override;
+
     // std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
     bool acceptCollision(Shape& other) override {
         return other.collideWith(*this);

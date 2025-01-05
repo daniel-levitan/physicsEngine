@@ -240,8 +240,6 @@ void Engine::updating() {
     }
     */
     
-    Color red = {255, 0, 0};
-    Color white = {255, 255, 255};
     manifolds.clear();
     
     if (collisionMode == CollisionMode::PIXEL) {
@@ -250,80 +248,9 @@ void Engine::updating() {
                 if (shapes[i] == shapes[j]) continue;
 
                 bool result = Collision::checkCollision(*shapes[i], *shapes[j]);
-                if (result) {
-                    shapes[i]->setColor(red);
-                    shapes[j]->setColor(red);
-                } else {
-                    shapes[i]->setColor(white);
-                    shapes[j]->setColor(white);
-                }
-                // Testing shape types
-                // if (shapes[i]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
-                //     auto circ = dynamic_cast<Circle*>(shapes[i].get());
-                //     auto pol = dynamic_cast<Polygon*>(shapes[j].get());
-                //     bool result = Collision::checkCirclePolygon(*circ, *pol);
-                //     if (result) {
-                //         circ->setColor(red);
-                //         pol->setColor(red);
+                shapes[i]->setOverlap(result | shapes[i]->getOverlap());
+                shapes[j]->setOverlap(result | shapes[j]->getOverlap());
 
-                //         // std::string str = "Circle vs Polygon";
-                //         // text1->setMessage(str);                        
-                //     } else {
-                //         circ->setColor(white);
-                //         pol->setColor(white);
-                //     }
-
-                    
-                // }
-
-                // According to the order, so far I won't get here. Revert and test
-                // if (shapes[j]->getType() == "Circle" and shapes[j]->getType() != "Circle") {
-                    // std::cout << "Pol Circle" << std::endl;
-                    // circ auto = 
-                    // checkCirclePolygon(*circ, Polygon&pol);
-
-
-                    // std::string str = "Circle vs Polygon";
-                    // text1->setMessage(str);                    
-                // }
-                
-
-                /*
-
-                // Polygon vs Polygon 
-                auto polygon1 = dynamic_cast<Polygon*>(shapes[i].get());
-                auto polygon2 = dynamic_cast<Polygon*>(shapes[j].get());
-
-                // auto rect1 = dynamic_cast<Polygon*>(shapes[i].get());
-                // auto rect2 = dynamic_cast<Polygon*>(shapes[j].get());
-                
-                // auto result = Collision::checkPolygonPolygon(*rect1, *rect2);
-                auto result = Collision::checkPolygonPolygon(*polygon1, *polygon2);
-                if (result) {
-                    // Vector2 diff = polygon2->getCentroid() - polygon1->getCentroid();
-                    // bool polygon1IsPusher = result->getNormal().dotProduct(diff) > 0;
-
-                    polygon1->setColor(red);
-                    polygon2->setColor(red);
-
-                    Vector2 push;
-                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * 0.4999);
-                    polygon2->move(push);
-    
-                    push = Scale(Scale(result->getNormal(), -1), result->getDepth() * -0.4999);                    
-                    polygon1->move(push);   
-    
-                    if (debugMode) {
-                        std::string str = result->toString();
-                        text1->setMessage(str);
-                    }
-                    manifolds.push_back(std::move(result));
-                } else {                    
-                    polygon1->setColor(white);
-                    polygon2->setColor(white);
-                    // manifolds.clear();
-                }
-                */
             }
         }
     } else if (collisionMode == CollisionMode::SAT) {
@@ -549,14 +476,14 @@ void Engine::updating() {
     // Polygon* rect1 = dynamic_cast<Rectangle*>(shapes[0].get());
 
     // Shapes recovery
-    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
+    Polygon* shape2 = dynamic_cast<Polygon*>(shapes[3].get());
     // Polygon* rect2 = dynamic_cast<Rectangle*>(shapes[1].get());
     // Polygon* shape1 = dynamic_cast<Rectangle*>(shapes[0].get());
     // Polygon* shape1 = dynamic_cast<Polygon*>(shapes[0].get());
     // Polygon* shape2 = dynamic_cast<Polygon*>(shapes[1].get());
     // Polygon* shape2 = dynamic_cast<Rectangle*>(shapes[1].get());
 
-    Circle* shape1 = dynamic_cast<Circle*>(shapes[0].get());
+    Circle* shape1 = dynamic_cast<Circle*>(shapes[2].get());
     // Circle* shape2 = dynamic_cast<Circle*>(shapes[1].get());
     
     // === There must be a better way to do that ===

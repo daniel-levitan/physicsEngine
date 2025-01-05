@@ -139,7 +139,3 @@ void Shape::draw(SDL_Renderer* renderer) const {
     Vector2 vertice = vertices[0]; 
     SDL_RenderDrawLine(renderer, centroid.getX(), centroid.getY(), vertice.getX(), vertice.getY());
 }   
-
-const std::string Shape::getType() const {
-    return type;
-}
