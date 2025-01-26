@@ -32,8 +32,10 @@ void setup(Engine& engine) {
 	const std::string message = " ";
 	auto text = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, 10), white);
 	engine.add_text(std::move(text));
+	
 	auto text1 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(WINDOW_WIDTH/2, 10), white);	
 	engine.add_text(std::move(text1));
+	
 	auto text2 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, WINDOW_HEIGHT - 50), white);
 	engine.add_text(std::move(text2));
 }

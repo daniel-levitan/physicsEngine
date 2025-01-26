@@ -151,18 +151,19 @@ void Engine::input_processing() {
 
 void Engine::updating() {
 	float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
-        
+    
     // Calculating deltas
-    float movement_speed = 1.0f * MOVEMENT_SPEED;  
-    float movement_delta_x = 0.0f, movement_delta_y = 0.0f;
-    float movement_delta_xB = 0.0, movement_delta_yB = 0.0f;
+    // float movement_speed = 1.0f * MOVEMENT_SPEED;  
+    // float movement_delta_x = 0.0f, movement_delta_y = 0.0f;
+    // float movement_delta_xB = 0.0, movement_delta_yB = 0.0f;
 
-    float rotate_speed = 1.0f * ROTATION_SPEED;
-    float rotate_deltaA = 0.0f, rotate_deltaB = 0.0f;
+    // float rotate_speed = 1.0f * ROTATION_SPEED;
+    // float rotate_deltaA = 0.0f, rotate_deltaB = 0.0f;
 
     // Text recovery
     Text* text = texts[0].get();
     Text* text1 = texts[1].get();
+    Text* text2 = texts[2].get(); // Bottow left
 
     text1->setDirectionRightToLeft();
     if (debugMode) {
@@ -172,12 +173,6 @@ void Engine::updating() {
         text1->setMessage(" ");
     }
 
-    // We need to set overlap to false every update so we can
-    // freshly detect the overlap condition
-    for (const auto& shape : shapes) {
-        shape->setOverlap(false);
-    }
-    
     manifolds.clear();
     
     /* Collision check */
@@ -212,61 +207,75 @@ void Engine::updating() {
     
 
     // Menu/special keys  
-    // Reset position  
-    // if (f1) {
-    //     for (const auto& shape : shapes) {
-    //         shape->resetPosition();
-    //         shape->setOverlap(false);
-    //     }  
-    // }
+    // Reset force and velocity  
+    if (f1) {
+        for (const auto& rb : rigidBodies) {
+            rb->setForce(Vector2::Null);
+            rb->setVelocity(Vector2::Null);
+
+            rb->getShape()->resetPosition();
+            rb->getShape()->setOverlap(false);
+        }        
+    }
+
+    // RigidBody* rb1 = rigidBodies[0].get();
+    RigidBody* rb2 = rigidBodies[1].get();
     
     // Shape A/Player 1
     if (move_left) {
-        movement_delta_x -= movement_speed * delta_time;
+        rb2->addForce(Vector2(-FORCE, 0));
+        // movement_delta_x -= movement_speed * delta_time;
     }
     if (move_right) {
-        movement_delta_x += movement_speed * delta_time;
+        rb2->addForce(Vector2(FORCE, 0));
+        // movement_delta_x += movement_speed * delta_time;
     }
     if (move_up) {
-        movement_delta_y -= movement_speed * delta_time; 
+        rb2->addForce(Vector2(0, -FORCE));
+    //     movement_delta_y -= movement_speed * delta_time; 
     }
     if (move_down) {
-        movement_delta_y += movement_speed * delta_time; 
+        rb2->addForce(Vector2(0, FORCE));
+    //     movement_delta_y += movement_speed * delta_time; 
     }
-    if (rotate_left) {
-        rotate_deltaA -= rotate_speed * delta_time; 
-    }
-    if (rotate_right) {
-        rotate_deltaA += rotate_speed * delta_time; 
-    }
-    Vector2 deltaA(movement_delta_x, movement_delta_y);
+    // if (rotate_left) {
+    //     rotate_deltaA -= rotate_speed * delta_time; 
+    // }
+    // if (rotate_right) {
+    //     rotate_deltaA += rotate_speed * delta_time; 
+    // }
+    // Vector2 deltaA(movement_delta_x, movement_delta_y);
+    std::string str = rb2->toStringFandV();
+    text2->setMessage(str);
 
 
-    // Shape B/Player 2
-    if (move_leftB) {
-        movement_delta_xB -= movement_speed * delta_time;
-    }
-    if (move_rightB) {
-        movement_delta_xB += movement_speed * delta_time;
-    }
-    if (move_upB) {
-        movement_delta_yB -= movement_speed * delta_time; 
-    }
-    if (move_downB) {
-        movement_delta_yB += movement_speed * delta_time; 
-    }
-    if (rotate_leftB) {
-        rotate_deltaB -= rotate_speed * delta_time; 
-    }
-    if (rotate_rightB) {
-        rotate_deltaB += rotate_speed * delta_time; 
-    }
-    Vector2 deltaB(movement_delta_xB, movement_delta_yB);
+    // // Shape B/Player 2
+    // if (move_leftB) {
+    //     movement_delta_xB -= movement_speed * delta_time;
+    // }
+    // if (move_rightB) {
+    //     movement_delta_xB += movement_speed * delta_time;
+    // }
+    // if (move_upB) {
+    //     movement_delta_yB -= movement_speed * delta_time; 
+    // }
+    // if (move_downB) {
+    //     movement_delta_yB += movement_speed * delta_time; 
+    // }
+    // if (rotate_leftB) {
+    //     rotate_deltaB -= rotate_speed * delta_time; 
+    // }
+    // if (rotate_rightB) {
+    //     rotate_deltaB += rotate_speed * delta_time; 
+    // }
+    // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
 
     
-    // === There must be a better way to do that ===
+    // === There must be a better way to do that ===    
+    /*
     RigidBody* rb1 = rigidBodies[0].get();
     RigidBody* rb2 = rigidBodies[1].get();
+
 
     for (const auto& rb : rigidBodies) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_deltaA || rotate_deltaB) {
@@ -281,6 +290,13 @@ void Engine::updating() {
             }
         }
     }
+    */
+
+    for (const auto& rb : rigidBodies) {
+        rb->update(delta_time);
+    }
+    // I can simply show in a text
+    // rigidBodies[0].log();
 
     last_frame_time = SDL_GetTicks();
 }
@@ -301,7 +317,8 @@ void Engine::rendering() {
     }  
 
     for (const auto& rb : rigidBodies) {
-        rb->draw(graphics->getRenderer());
+        (rb->getShape())->draw(graphics->getRenderer());
+        // rb->draw(graphics->getRenderer());
     } 
 
     graphics->presentScreen();  // Present the screen using the Graphics object
