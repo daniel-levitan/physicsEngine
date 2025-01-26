@@ -18,6 +18,7 @@ private:
 
 public:
     static const Vector2 Null; // Null vector declaration
+    // Vector2 v = Vector2::Null;
 
 	Vector2();
 	Vector2(float xc, float yc);

@@ -15,38 +15,19 @@ using namespace std;
 
 // Mouse mouse;
 void setup(Engine& engine) {
+
+	/* Now we are going to work with rigid bodies */
 	Color whiteColor = {255, 255, 255};
 
-	auto pent = PolygonFactory::createPolygon(5, Vector2(3*WINDOW_WIDTH/4, 3*WINDOW_HEIGHT/4), 80, whiteColor);
-	engine.add_shape(std::move(pent));
+	auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/4), 50, whiteColor);
+	auto circleB = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 60, WINDOW_HEIGHT/4), 50, whiteColor);
+	auto rb1 = std::make_unique<RigidBody>(std::move(circleA), 10.0f); /* RigidBody rb(std::unique_ptr<Shape>(std::move(circle)), 10.0f); */
+	auto rb2 = std::make_unique<RigidBody>(std::move(circleB), 10.0f);	
 	
-	auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 - 120, WINDOW_HEIGHT/2), 200, 80, whiteColor);
-	engine.add_shape(std::move(rect1));
-
-	// Rectangles
-	// auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 - 120, WINDOW_HEIGHT/2), 200, 80, whiteColor);
-	// engine.add_shape(std::move(rect1));
-	// auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2 + 120, WINDOW_HEIGHT/2), 200, 80, whiteColor);
-	// engine.add_shape(std::move(rect2));
-
-	// Circles
-    auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/4), 50, whiteColor);
-	engine.add_shape(std::move(circleA));  
-    // auto circleB = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 60, WINDOW_HEIGHT/4), 50, whiteColor);
-	// engine.add_shape(std::move(circleB));  
-
-	// Line tests
-    // auto line = std::make_unique<Line>(Vector2(325.0, 427.5),Vector2(250.0+25, 300.0));	
-    // line->setColor(color);
-	// engine.add_shape(std::move(line));  
-	
-
-	Vector2 pos2 = Vector2(400, 400);
-	auto tri = PolygonFactory::createPolygon(3, pos2, 50, whiteColor);
-	engine.add_shape(std::move(tri));
-
+	engine.add_rigid_body(std::move(rb1));
+	engine.add_rigid_body(std::move(rb2));
 		
-	// Text on screen
+	/* Text on screen */
 	SDL_Color white = {255, 255, 255, 255};
 	const std::string message = " ";
 	auto text = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, 10), white);

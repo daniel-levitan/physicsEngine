@@ -25,6 +25,8 @@ INPUT_MANAGER_INCLUDE=-I../input_manager
 
 COLLISION_INCLUDE=-I../collision
 
+RIGID_BODY_INCLUDE=-I../rigid_body
+
 UTILS_INCLUDE=-I../utils
 
 # The build target executable
@@ -46,6 +48,7 @@ CXXSRC=$(wildcard ./src/*.cpp) \
        ../collision/collision.cpp \
        ../collision/manifold.cpp \
        ../collision/supportPoint.cpp \
+       ../rigid_body/rigid_body.cpp \
        ../utils/utils.cpp
 
 # Object files
@@ -58,7 +61,7 @@ $(TARGET): $(CXXOBJS)
 # Pattern rule for compiling C++ files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(SDL2_INCLUDE) $(VECTOR_INCLUDE) $(DRAWING_INCLUDE)\
-	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) \
+	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) $(RIGID_BODY_INCLUDE)\
        $(UTILS_INCLUDE) -c $< -o $@
 
 # Include dependency files

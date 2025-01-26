@@ -6,7 +6,6 @@
 #include "../graphics/polygon.h"
 
 
-
 float Collision::calculatePenetrationDepthOfCircles(const Circle& c1, const Circle& c2) {
 	Vector2 centroidA = c1.getCentroid();
 	Vector2 centroidB = c2.getCentroid();
@@ -296,6 +295,10 @@ std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon
 }
 
 // Checking for Polygon collisions method 3
+/**
+ * In this algorithm we check every edge of one polygon against every diagonal of the other polygon.
+ * If any diagonal crosses any edge, we have a collision.
+ */
 bool Collision::checkPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	Polygon *poly1 = &pol1;
 	Polygon *poly2 = &pol2;
@@ -415,6 +418,14 @@ void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, f
 	}
 }
 
+/**
+ * The algorithm look for the minimum and maximum values of projection for each polygon
+ * in all projection axis. If any gap between the two polygons is found in a projection,
+ * the polygons can be separated and then are not colliding.
+ * 
+ * There are two loops for each pair. We first project all vertices from the two polygons
+ * in each projection axis of the first polygon. Then we do the same for the second polygon.
+ * */
 bool Collision::intersectPolygons(Polygon& pol1, Polygon& pol2) {
 	float min1, max1;
 	float min2, max2;
