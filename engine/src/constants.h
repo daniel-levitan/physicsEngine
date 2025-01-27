@@ -9,7 +9,7 @@
 #define MOVEMENT_SPEED 150
 #define ROTATION_SPEED 5
 
-#define FORCE 10
+#define FORCE 500
 
 enum class CollisionMode {
 	PIXEL,

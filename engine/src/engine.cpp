@@ -215,6 +215,8 @@ void Engine::updating() {
 
             rb->getShape()->resetPosition();
             rb->getShape()->setOverlap(false);
+            // Should I reset position ?
+
         }        
     }
 
@@ -222,55 +224,27 @@ void Engine::updating() {
     RigidBody* rb2 = rigidBodies[1].get();
     
     // Shape A/Player 1
-    if (move_left) {
-        rb2->addForce(Vector2(-FORCE, 0));
-        // movement_delta_x -= movement_speed * delta_time;
-    }
-    if (move_right) {
-        rb2->addForce(Vector2(FORCE, 0));
-        // movement_delta_x += movement_speed * delta_time;
-    }
-    if (move_up) {
-        rb2->addForce(Vector2(0, -FORCE));
-    //     movement_delta_y -= movement_speed * delta_time; 
-    }
-    if (move_down) {
-        rb2->addForce(Vector2(0, FORCE));
-    //     movement_delta_y += movement_speed * delta_time; 
-    }
-    // if (rotate_left) {
-    //     rotate_deltaA -= rotate_speed * delta_time; 
-    // }
-    // if (rotate_right) {
-    //     rotate_deltaA += rotate_speed * delta_time; 
-    // }
+    if (move_left) { rb2->addForce(Vector2(-FORCE, 0)); } // movement_delta_x -= movement_speed * delta_time;
+    if (move_right) { rb2->addForce(Vector2(FORCE, 0)); } // movement_delta_x += movement_speed * delta_time;
+    if (move_up) { rb2->addForce(Vector2(0, -FORCE)); } // movement_delta_y -= movement_speed * delta_time; 
+    if (move_down) { rb2->addForce(Vector2(0, FORCE)); } // movement_delta_y += movement_speed * delta_time; 
+    // if (rotate_left) { rotate_deltaA -= rotate_speed * delta_time; }
+    // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
     // Vector2 deltaA(movement_delta_x, movement_delta_y);
+
     std::string str = rb2->toStringFandV();
     text2->setMessage(str);
 
 
-    // // Shape B/Player 2
-    // if (move_leftB) {
-    //     movement_delta_xB -= movement_speed * delta_time;
-    // }
-    // if (move_rightB) {
-    //     movement_delta_xB += movement_speed * delta_time;
-    // }
-    // if (move_upB) {
-    //     movement_delta_yB -= movement_speed * delta_time; 
-    // }
-    // if (move_downB) {
-    //     movement_delta_yB += movement_speed * delta_time; 
-    // }
-    // if (rotate_leftB) {
-    //     rotate_deltaB -= rotate_speed * delta_time; 
-    // }
-    // if (rotate_rightB) {
-    //     rotate_deltaB += rotate_speed * delta_time; 
-    // }
+    // Shape B/Player 2
+    // if (move_leftB) { movement_delta_xB -= movement_speed * delta_time; }
+    // if (move_rightB) { movement_delta_xB += movement_speed * delta_time; }
+    // if (move_upB) { movement_delta_yB -= movement_speed * delta_time; }
+    // if (move_downB) { movement_delta_yB += movement_speed * delta_time; }
+    // if (rotate_leftB) { rotate_deltaB -= rotate_speed * delta_time; }
+    // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
     // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
 
-    
     // === There must be a better way to do that ===    
     /*
     RigidBody* rb1 = rigidBodies[0].get();
@@ -292,11 +266,10 @@ void Engine::updating() {
     }
     */
 
+    // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
         rb->update(delta_time);
     }
-    // I can simply show in a text
-    // rigidBodies[0].log();
 
     last_frame_time = SDL_GetTicks();
 }

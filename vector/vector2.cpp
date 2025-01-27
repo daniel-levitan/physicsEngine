@@ -107,17 +107,19 @@ std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
     return os;
 }
 
-Vector2 add(const Vector2& v1, const Vector2& v2) {
+Vector2 Add(const Vector2& v1, const Vector2& v2) {
     return Vector2(v1.getX() + v2.getX(), v1.getY() + v2.getY());
 }
 
-Vector2 sub(const Vector2& v1, const Vector2& v2) {
+Vector2 Sub(const Vector2& v1, const Vector2& v2) {
     return Vector2(v1.getX() - v2.getX(), v1.getY() - v2.getY());
 }
 
 Vector2 Scale(const Vector2& v1, float scalar) {
     return Vector2(v1.getX() * scalar, v1.getY() * scalar);
 }
+
+
 
 Vector2 Normalize(Vector2& v) {
 	Vector2 result(0,0);

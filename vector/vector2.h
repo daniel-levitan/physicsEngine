@@ -50,8 +50,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Vector2& vec);
 };
 
-Vector2 add(const Vector2& v1, const Vector2& v2);
-Vector2 sub(const Vector2& v1, const Vector2& v2);
+Vector2 Add(const Vector2& v1, const Vector2& v2);
+Vector2 Sub(const Vector2& v1, const Vector2& v2);
 Vector2 Scale(const Vector2& v1, float scalar);
 Vector2 Normalize(Vector2& v);
 
