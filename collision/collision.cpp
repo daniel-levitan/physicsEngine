@@ -720,4 +720,29 @@ bool Collision::checkFloorCollision(Shape &s, float floorXPosition) {
 	return s.acceptFloorCollision(floorXPosition);
 }
 
+// bool Collision::collisionDetection(Shape& s1, Shape& s2) {
+// std::unique_ptr<Manifold> Collision::collisionDetection(Shape& s1, Shape& s2) {
+std::unique_ptr<Manifold> Collision::collisionDetection(RigidBody& rb1, RigidBody& rb2) {
+	Shape* s1 = rb1.getShape();
+	Shape* s2 = rb2.getShape();
+	return s1->acceptCollision(*s2);
+}
 
+void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+
+	Vector2 relativeVelocity = Sub(rb2.getVelocity(), rb1.getVelocity());
+	double relativeVelocityProjected = relativeVelocity.dotProduct(manifold.getNormal());
+
+	if (relativeVelocityProjected > 0)
+		return;
+
+	float e = 1; // restitution coeficiency
+	float j = -1 * (1 + e) * relativeVelocityProjected;
+
+	Vector2 impulse = Scale(manifold.getNormal(), j);
+	Vector2 rb1Impulse = Scale(impulse, -0.5);
+	Vector2 rb2Impulse = Scale(impulse, +0.5);
+
+	rb1.setVelocity(Add(rb1.getVelocity(), rb1Impulse));
+	rb2.setVelocity(Add(rb2.getVelocity(), rb2Impulse));
+}

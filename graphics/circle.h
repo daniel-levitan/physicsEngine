@@ -55,8 +55,6 @@ public:
     }
 
     bool acceptFloorCollision(float floorXPosition) override {
-        // std::cout << "Accept floor collision CIRCLE" << std::endl;
-        // std::cout << centroid.getY() << " + " << radius << " = " << centroid.getX() + radius  << " WINDOW " << floorXPosition << std::endl;
         if (center.getY() + radius > floorXPosition)
             return true;
         return false;

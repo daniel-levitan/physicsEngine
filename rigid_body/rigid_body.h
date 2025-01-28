@@ -17,6 +17,7 @@ protected:
     Vector2 forceAccumulator; 
     Vector2 velocityAccumulator;
 
+    Vector2 impulse;
 
 public:
     RigidBody(std::unique_ptr<Shape> shape, float mass, float bounce, float friction) : shape(std::move(shape)), mass(mass) {
@@ -40,6 +41,9 @@ public:
     void addVelocity(Vector2 velocity);
     void setVelocity(Vector2 velocity);
     Vector2 getVelocity() { return velocityAccumulator; };
+
+    void setImpulse(Vector2 impulse);
+    Vector2 getImpulse() { return impulse;};
 
     void draw(SDL_Renderer* renderer);
     Shape* getShape() { return shape.get(); }     // std::unique_ptr<Shape> getShape();

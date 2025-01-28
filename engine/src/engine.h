@@ -26,8 +26,8 @@ private:
 	 f1 -> Reset the position of the objects
 	 f3 -> debugger on/off
 	*/
-	bool f1, f3;
-	bool debugMode, previousF3State;
+	bool f1;
+	bool f3, debugMode, previousF3State;
 
     std::unique_ptr<Graphics> graphics;  /* Use unique_ptr to manage the lifetime of the Graphics object */
     std::unique_ptr<InputManager> input_manager;

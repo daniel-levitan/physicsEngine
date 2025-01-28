@@ -8,7 +8,6 @@ void RigidBody::addForce(Vector2 force) {
 
 void RigidBody::setForce(Vector2 force) {
     forceAccumulator = force.copy();
-
 }
 
 void RigidBody::addVelocity(Vector2 velocity) {
@@ -19,7 +18,11 @@ void RigidBody::setVelocity(Vector2 velocity) {
     velocityAccumulator = velocity.copy();
 }
 
-/** This functoin uses one of the integration methods right below it to calculate
+void RigidBody::setImpulse(Vector2 newImpulse) {
+    impulse = newImpulse.copy();
+}
+
+/** This function uses one of the integration methods right below it to calculate
  * 
  */
 Vector2 RigidBody::integrate(float delta_time) {

@@ -18,10 +18,6 @@ const Vector2 Manifold::getPenetrationPoint() const {
 	return penetrationPoint;
 }
 
-// bool Manifold::isNull() const {
-//     return depth == 0.0f && normal == Vector2::Null && penetrationPoint == Vector2::Null;        
-// }
-
 void Manifold::draw(SDL_Renderer* renderer) const {
     const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -10);
     Drawing::drawArrow(renderer, startPoint, penetrationPoint);
@@ -49,7 +45,3 @@ std::ostream& operator<<(std::ostream& os, const Manifold& manifold) {
     os << ", Penetration Point:" << manifold.penetrationPoint;
     return os;
 }
-
-
-// Manifold::resolveCollision()
-// Manifold::positionalCorrection()

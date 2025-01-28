@@ -16,7 +16,8 @@ Engine::Engine()
     	graphics = std::make_unique<Graphics>(WINDOW_WIDTH, WINDOW_HEIGHT, "Game Window");
         engine_is_running = true;  // If no exception, graphics initialization is successful
 
-        f1 = f3 = false;
+        f1 = false;
+        f3 = false;
         debugMode = false;
         previousF3State = false;
 
@@ -45,98 +46,45 @@ void Engine::input_processing() {
         engine_is_running = false;
     }
 
-    if (input_manager->isKeyDown(SDLK_F1)) {
-        f1 = true;
-    }
-    if (input_manager->isKeyUp(SDLK_F1)) {
-        f1 = false;
-    }
+    if (input_manager->isKeyDown(SDLK_F1)) { f1 = true; }
+    if (input_manager->isKeyUp(SDLK_F1)) { f1 = false; }
     
     // Debug Mode
     bool currentF3State = input_manager->isKeyDown(SDLK_F3);
     if (currentF3State && !previousF3State) {
-        // F3 was just pressed, toggle the debug mode
-        debugMode = !debugMode;
+        debugMode = !debugMode;     // F3 was just pressed, toggle the debug mode
     }
     // Update the previous state for the next frame
     previousF3State = currentF3State;
 
     
     // Arrow control (it may be figure A or player 1)
-    if (input_manager->isKeyDown(SDLK_LEFT)) {
-        move_left = true;
-    }
-    if (input_manager->isKeyUp(SDLK_LEFT)) {        
-        move_left = false;
-    }
-    if (input_manager->isKeyDown(SDLK_RIGHT)) {
-        move_right = true;
-    }
-    if (input_manager->isKeyUp(SDLK_RIGHT)) {        
-        move_right = false;
-    }
-    if (input_manager->isKeyDown(SDLK_UP)) {
-        move_up = true;
-    }
-    if (input_manager->isKeyUp(SDLK_UP)) {        
-        move_up = false;
-    }
-    if (input_manager->isKeyDown(SDLK_DOWN)) {
-        move_down = true;
-    }
-    if (input_manager->isKeyUp(SDLK_DOWN)) {        
-        move_down = false;
-    }
-    if (input_manager->isKeyDown(SDLK_COMMA)) {
-        rotate_left = true;
-    }
-    if (input_manager->isKeyUp(SDLK_COMMA)) {        
-        rotate_left = false;
-    }
-    if (input_manager->isKeyDown(SDLK_PERIOD)) {
-        rotate_right = true;
-    }
-    if (input_manager->isKeyUp(SDLK_PERIOD)) {        
-        rotate_right = false;
-    }
+    if (input_manager->isKeyDown(SDLK_LEFT))   { move_left = true; }
+    if (input_manager->isKeyUp(SDLK_LEFT))     { move_left = false; }
+    if (input_manager->isKeyDown(SDLK_RIGHT))  { move_right = true; }
+    if (input_manager->isKeyUp(SDLK_RIGHT))    { move_right = false; }
+    if (input_manager->isKeyDown(SDLK_UP))     { move_up = true; }
+    if (input_manager->isKeyUp(SDLK_UP))       { move_up = false; }
+    if (input_manager->isKeyDown(SDLK_DOWN))   { move_down = true; }
+    if (input_manager->isKeyUp(SDLK_DOWN))     { move_down = false; }
+    if (input_manager->isKeyDown(SDLK_COMMA))  { rotate_left = true; }
+    if (input_manager->isKeyUp(SDLK_COMMA))    { rotate_left = false; }
+    if (input_manager->isKeyDown(SDLK_PERIOD)) { rotate_right = true; }
+    if (input_manager->isKeyUp(SDLK_PERIOD))   { rotate_right = false; }
 
     // Arrow control (it may be figure A or player 1)
-    if (input_manager->isKeyDown(SDLK_a)) {
-        move_leftB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_a)) {        
-        move_leftB = false;
-    }
-    if (input_manager->isKeyDown(SDLK_d)) {
-        move_rightB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_d)) {        
-        move_rightB = false;
-    }
-    if (input_manager->isKeyDown(SDLK_w)) {
-        move_upB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_w)) {        
-        move_upB = false;
-    }
-    if (input_manager->isKeyDown(SDLK_s)) {
-        move_downB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_s)) {        
-        move_downB = false;
-    }
-    if (input_manager->isKeyDown(SDLK_q)) {
-        rotate_leftB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_q)) {        
-        rotate_leftB = false;
-    }
-    if (input_manager->isKeyDown(SDLK_e)) {
-        rotate_rightB = true;
-    }
-    if (input_manager->isKeyUp(SDLK_e)) {        
-        rotate_rightB = false;
-    }
+    if (input_manager->isKeyDown(SDLK_a))  { move_leftB = true; }
+    if (input_manager->isKeyUp(SDLK_a))    { move_leftB = false; }
+    if (input_manager->isKeyDown(SDLK_d))  { move_rightB = true; }
+    if (input_manager->isKeyUp(SDLK_d))    { move_rightB = false; }
+    if (input_manager->isKeyDown(SDLK_w))  { move_upB = true; }
+    if (input_manager->isKeyUp(SDLK_w))    { move_upB = false; }
+    if (input_manager->isKeyDown(SDLK_s))  { move_downB = true; }
+    if (input_manager->isKeyUp(SDLK_s))    { move_downB = false; }
+    if (input_manager->isKeyDown(SDLK_q))  { rotate_leftB = true; }
+    if (input_manager->isKeyUp(SDLK_q))    { rotate_leftB = false; }
+    if (input_manager->isKeyDown(SDLK_e))  { rotate_rightB = true; }
+    if (input_manager->isKeyUp(SDLK_e))    { rotate_rightB = false; }
 
     // Example of checking for mouse button presses
     if (input_manager->isMouseButtonPressed(SDL_BUTTON_LEFT)) {
@@ -171,6 +119,10 @@ void Engine::updating() {
     } else {
         text->setMessage("Not debugging");
         text1->setMessage(" ");
+    }
+    
+    for (const auto& rb : rigidBodies) {
+        rb->getShape()->setOverlap(false);
     }
 
     manifolds.clear();
@@ -215,11 +167,10 @@ void Engine::updating() {
 
             rb->getShape()->resetPosition();
             rb->getShape()->setOverlap(false);
-            // Should I reset position ?
         }        
     }
 
-    // RigidBody* rb1 = rigidBodies[0].get();
+    RigidBody* rb1 = rigidBodies[0].get();
     RigidBody* rb2 = rigidBodies[1].get();
     
     // Shape A/Player 1
@@ -231,24 +182,24 @@ void Engine::updating() {
     // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
     // Vector2 deltaA(movement_delta_x, movement_delta_y);
 
-    std::string str = rb2->toStringFandV();
-    text2->setMessage(str);    
-
     // Shape B/Player 2
-    // if (move_leftB) { movement_delta_xB -= movement_speed * delta_time; }
-    // if (move_rightB) { movement_delta_xB += movement_speed * delta_time; }
-    // if (move_upB) { movement_delta_yB -= movement_speed * delta_time; }
-    // if (move_downB) { movement_delta_yB += movement_speed * delta_time; }
+    if (move_leftB) { rb1->addForce(Vector2(-FORCE, 0)); }   // movement_delta_xB -= movement_speed * delta_time;
+    if (move_rightB) { rb1->addForce(Vector2(FORCE, 0)); }   // movement_delta_xB += movement_speed * delta_time;
+    if (move_upB) { rb1->addForce(Vector2(0, -FORCE)); }   // movement_delta_yB -= movement_speed * delta_time;
+    if (move_downB) { rb1->addForce(Vector2(0, FORCE)); }   // movement_delta_yB += movement_speed * delta_time;
     // if (rotate_leftB) { rotate_deltaB -= rotate_speed * delta_time; }
     // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
     // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
 
-    // === There must be a better way to do that ===    
+    if (debugMode) {
+        std::string str = rb2->toStringFandV();
+        text2->setMessage(str);
+    } else {
+        std::string str = " ";
+        text2->setMessage(str);
+    }
+
     /*
-    RigidBody* rb1 = rigidBodies[0].get();
-    RigidBody* rb2 = rigidBodies[1].get();
-
-
     for (const auto& rb : rigidBodies) {
         if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_deltaA || rotate_deltaB) {
             if (rb2 == &*rb) {
@@ -266,26 +217,38 @@ void Engine::updating() {
 
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
-        rb->addForce(gravity);
+        // rb->addForce(gravity);
         rb->update(delta_time);
 
         if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
             rb->setVelocity(Scale(rb->getVelocity(), -1 * rb->getMaterial()->getBounce()));
 
-        // if (rb->getShape()->getCentroid().getY() + rb->getShape()->getDistanceFromCentroidToFloor() >= WINDOW_HEIGHT) {
-        //     float x = rb->getShape()->getCentroid().getX();
-        //     float height = rb->getShape()->getDistanceFromCentroidToFloor();
-        //     rb->getShape()->setCentroid(Vector2(x, height));    
+        // if (std::abs(rb->getVelocity().getY()) < 1.0f) {
+        //     rb->setVelocity(Vector2::Null);            
         // }
+    }
 
-        //     rb->getShape()->setCentroid(Vector2::Null);
 
-        if (std::abs(rb->getVelocity().getY()) < 1.0f) {
-            rb->setVelocity(Vector2::Null);
-            // rb->setForce(Vector2::Null);
-        //     float x = rb->getShape()->getCentroid().getX();
-        //     float height = rb->getShape()->getDistanceFromCentroidToFloor();
-        //     rb->getShape()->setCentroid(Vector2(x, height));
+     for (size_t i = 0; i < rigidBodies.size(); i++) {
+        for (size_t j = 0; j < rigidBodies.size(); j++) {
+            if (rigidBodies[i] == rigidBodies[j]) continue;
+
+            // bool flag = false;
+            auto result = Collision::collisionDetection(*rigidBodies[i].get(), *rigidBodies[j].get());
+            if (result) {
+                // flag = true;                
+                // Collision::positionCorrection();
+                Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                if (debugMode) {
+                    std::string str = result->toString();
+                    text1->setMessage(str);
+                }
+                manifolds.push_back(std::move(result));
+            }
+
+            // rigidBodies[i]->getShape()->setOverlap(flag | rigidBodies[i]->getShape()->getOverlap());
+            // rigidBodies[j]->getShape()->setOverlap(flag | rigidBodies[j]->getShape()->getOverlap());
+
         }
     }
 

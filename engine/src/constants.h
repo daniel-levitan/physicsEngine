@@ -9,9 +9,10 @@
 #define MOVEMENT_SPEED 150
 #define ROTATION_SPEED 5
 
-#define FORCE 500
+#define FORCE 5000
 
 #define DAMPING 0.99f
+// #define DAMPING 1
 
 enum class CollisionMode {
 	PIXEL,
