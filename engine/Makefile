@@ -27,6 +27,8 @@ COLLISION_INCLUDE=-I../collision
 
 RIGID_BODY_INCLUDE=-I../rigid_body
 
+MATERIAL_INCLUDE=-I../material
+
 UTILS_INCLUDE=-I../utils
 
 # The build target executable
@@ -62,7 +64,7 @@ $(TARGET): $(CXXOBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(SDL2_INCLUDE) $(VECTOR_INCLUDE) $(DRAWING_INCLUDE)\
 	$(GRAPHICS_INCLUDE) $(INPUT_MANAGER_INCLUDE) $(COLLISION_INCLUDE) $(RIGID_BODY_INCLUDE)\
-       $(UTILS_INCLUDE) -c $< -o $@
+       $(MATERIAL_INCLUDE) $(UTILS_INCLUDE) -c $< -o $@
 
 # Include dependency files
 -include $(CXXSRC:.cpp=.d)

@@ -19,13 +19,16 @@ void setup(Engine& engine) {
 	/* Now we are going to work with rigid bodies */
 	Color whiteColor = {255, 255, 255};
 
-	auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 60, WINDOW_HEIGHT/4), 50, whiteColor);
-	auto circleB = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 60, WINDOW_HEIGHT/4), 50, whiteColor);
-	auto rb1 = std::make_unique<RigidBody>(std::move(circleA), 10.0f); /* RigidBody rb(std::unique_ptr<Shape>(std::move(circle)), 10.0f); */
-	auto rb2 = std::make_unique<RigidBody>(std::move(circleB), 10.0f);	
+	auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 - 160, WINDOW_HEIGHT/4), 70, whiteColor);
+	auto circleB = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 0, WINDOW_HEIGHT/4), 30, whiteColor);
+	auto circleC = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 160, WINDOW_HEIGHT/4), 50, whiteColor);
+	auto rb1 = std::make_unique<RigidBody>(std::move(circleA), 10.0f, 1.5f, 0.0f); /* RigidBody rb(std::unique_ptr<Shape>(std::move(circle)), 10.0f); */
+	auto rb2 = std::make_unique<RigidBody>(std::move(circleB), 10.0f, 1.0f, 0.0f);	
+	auto rb3 = std::make_unique<RigidBody>(std::move(circleC), 10.0f, 0.8f, 0.0f);	
 	
 	engine.add_rigid_body(std::move(rb1));
 	engine.add_rigid_body(std::move(rb2));
+	engine.add_rigid_body(std::move(rb3));
 		
 	/* Text on screen */
 	SDL_Color white = {255, 255, 255, 255};

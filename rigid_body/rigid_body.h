@@ -3,6 +3,7 @@
 
 #include "../graphics/shape.h"
 #include "../vector/vector2.h"
+#include "../material/material.h"
 
 class RigidBody {
 protected:
@@ -10,15 +11,21 @@ protected:
     float mass;
     float invertedMass;
 
+    Material material;
+    // std::unique_ptr<Material> material;
+
     Vector2 forceAccumulator; 
     Vector2 velocityAccumulator;
 
 
 public:
-    RigidBody(std::unique_ptr<Shape> shape, float mass) : shape(std::move(shape)), mass(mass) {
+    RigidBody(std::unique_ptr<Shape> shape, float mass, float bounce, float friction) : shape(std::move(shape)), mass(mass) {
         forceAccumulator = Vector2::Null;
         velocityAccumulator = Vector2::Null;
         invertedMass = 0.0f;
+        material = Material(bounce, friction);
+        // material = std::make_unique<Material>(bounce, friction);  
+
 
         if (mass > 0) {
             invertedMass = 1.0f / mass;
@@ -36,6 +43,8 @@ public:
 
     void draw(SDL_Renderer* renderer);
     Shape* getShape() { return shape.get(); }     // std::unique_ptr<Shape> getShape();
+    Material* getMaterial() { return &material; };
+    // Material* getMaterial() { return material.get(); };
 
     // Methods for updating the position
     void update(float delta_time);

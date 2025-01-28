@@ -11,6 +11,8 @@
 
 #define FORCE 500
 
+#define DAMPING 0.99f
+
 enum class CollisionMode {
 	PIXEL,
 	SAT,

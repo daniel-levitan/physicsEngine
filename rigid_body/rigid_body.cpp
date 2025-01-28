@@ -1,5 +1,6 @@
 #include "rigid_body.h"
 #include "../utils/utils.h"
+#include "../engine/src/constants.h"
 
 void RigidBody::addForce(Vector2 force) {
     forceAccumulator.add(force);
@@ -116,7 +117,7 @@ void RigidBody::update(float delta_time) {
     forceAccumulator = Vector2::Null;
     // This will slow down the velocity
     // It is like the air resistance
-    velocityAccumulator = Scale(velocityAccumulator, 0.99);
+    velocityAccumulator = Scale(velocityAccumulator, DAMPING);
 
 }
 

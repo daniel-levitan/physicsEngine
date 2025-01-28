@@ -270,7 +270,7 @@ void Engine::updating() {
         rb->update(delta_time);
 
         if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
-            rb->setVelocity(Scale(rb->getVelocity(), -1));
+            rb->setVelocity(Scale(rb->getVelocity(), -1 * rb->getMaterial()->getBounce()));
 
         // if (rb->getShape()->getCentroid().getY() + rb->getShape()->getDistanceFromCentroidToFloor() >= WINDOW_HEIGHT) {
         //     float x = rb->getShape()->getCentroid().getX();
@@ -280,18 +280,13 @@ void Engine::updating() {
 
         //     rb->getShape()->setCentroid(Vector2::Null);
 
-        // if (std::abs(rb->getVelocity().getY()) < 1.0f) {
-        //     rb->setVelocity(Vector2::Null);
-
+        if (std::abs(rb->getVelocity().getY()) < 1.0f) {
+            rb->setVelocity(Vector2::Null);
+            // rb->setForce(Vector2::Null);
         //     float x = rb->getShape()->getCentroid().getX();
         //     float height = rb->getShape()->getDistanceFromCentroidToFloor();
         //     rb->getShape()->setCentroid(Vector2(x, height));
-        // }
-
-
-
-
-        
+        }
     }
 
     last_frame_time = SDL_GetTicks();
