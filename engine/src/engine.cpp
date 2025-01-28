@@ -209,14 +209,13 @@ void Engine::updating() {
     // Menu/special keys  
     // Reset force and velocity  
     if (f1) {
-        for (const auto& rb : rigidBodies) {
+        for (const auto& rb : rigidBodies) {            
             rb->setForce(Vector2::Null);
             rb->setVelocity(Vector2::Null);
 
             rb->getShape()->resetPosition();
             rb->getShape()->setOverlap(false);
             // Should I reset position ?
-
         }        
     }
 
@@ -233,8 +232,7 @@ void Engine::updating() {
     // Vector2 deltaA(movement_delta_x, movement_delta_y);
 
     std::string str = rb2->toStringFandV();
-    text2->setMessage(str);
-
+    text2->setMessage(str);    
 
     // Shape B/Player 2
     // if (move_leftB) { movement_delta_xB -= movement_speed * delta_time; }
@@ -268,7 +266,32 @@ void Engine::updating() {
 
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
+        rb->addForce(gravity);
         rb->update(delta_time);
+
+        if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
+            rb->setVelocity(Scale(rb->getVelocity(), -1));
+
+        // if (rb->getShape()->getCentroid().getY() + rb->getShape()->getDistanceFromCentroidToFloor() >= WINDOW_HEIGHT) {
+        //     float x = rb->getShape()->getCentroid().getX();
+        //     float height = rb->getShape()->getDistanceFromCentroidToFloor();
+        //     rb->getShape()->setCentroid(Vector2(x, height));    
+        // }
+
+        //     rb->getShape()->setCentroid(Vector2::Null);
+
+        // if (std::abs(rb->getVelocity().getY()) < 1.0f) {
+        //     rb->setVelocity(Vector2::Null);
+
+        //     float x = rb->getShape()->getCentroid().getX();
+        //     float height = rb->getShape()->getDistanceFromCentroidToFloor();
+        //     rb->getShape()->setCentroid(Vector2(x, height));
+        // }
+
+
+
+
+        
     }
 
     last_frame_time = SDL_GetTicks();

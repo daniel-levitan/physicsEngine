@@ -38,6 +38,9 @@ private:
 
 	std::vector<std::unique_ptr<Text>> texts;
 
+
+	Vector2 gravity = {0, DEFAULT_GRAVITY}; // + or -?
+
 public:
 	Engine();
 	~Engine();	

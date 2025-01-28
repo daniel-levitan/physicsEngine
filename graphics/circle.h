@@ -35,6 +35,8 @@ public:
 
     void resetPosition() override;
 
+    float getDistanceFromCentroidToFloor() override { return center.getY() + radius; };
+
     std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
     // bool acceptCollision(Shape& other) override {
         return other.collideWith(*this);
@@ -50,6 +52,14 @@ public:
     std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
     // bool collideWith(Polygon& polygon) override {
         return Collision::checkCirclePolygon(*this, polygon);               
+    }
+
+    bool acceptFloorCollision(float floorXPosition) override {
+        // std::cout << "Accept floor collision CIRCLE" << std::endl;
+        // std::cout << centroid.getY() << " + " << radius << " = " << centroid.getX() + radius  << " WINDOW " << floorXPosition << std::endl;
+        if (center.getY() + radius > floorXPosition)
+            return true;
+        return false;
     }
 };
 #endif

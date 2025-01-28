@@ -29,6 +29,10 @@ public:
 
       void rotate(float radiansDelta) override;
 
+
+      // The following function is WRONG. I will change it later.
+      float getDistanceFromCentroidToFloor() override { return centroid.getY(); };
+
       std::vector<Vector2> calculateNormals() const;
 
       std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
@@ -45,6 +49,10 @@ public:
       // bool collideWith(Polygon& polygon) override {
          // return Collision::intersectPolygons(*this, polygon);
          return Collision::checkPolygonPolygon(*this, polygon);
+      }
+
+      bool acceptFloorCollision(float floorXPosition) override {
+         return false;
       }
 };
 

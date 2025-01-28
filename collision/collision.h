@@ -54,6 +54,10 @@ namespace Collision {
     std::unique_ptr<Manifold> checkCollision(Shape& s1, Shape& s2);
 
 
+    bool checkFloorCollision(Shape &s, float floorXPosition);
+    // Soon I will have wall 
+
+
 }
 
 #endif

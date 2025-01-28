@@ -21,4 +21,8 @@ enum class CollisionMode {
     COUNT  
 };
 
+// constexpr float DEFAULT_GRAVITY = 9.81f;  // m/s^2
+constexpr float DEFAULT_GRAVITY = 5000;  // Instead of using the acceleration, we use a force
+
+
 #endif

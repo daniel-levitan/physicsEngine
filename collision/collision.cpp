@@ -294,7 +294,7 @@ std::unique_ptr<Manifold> Collision::resPolygonPolygonSAT(Polygon& pol1, Polygon
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
-// Checking for Polygon collisions method 3
+// Checking for Polygon collisions method #3
 /**
  * In this algorithm we check every edge of one polygon against every diagonal of the other polygon.
  * If any diagonal crosses any edge, we have a collision.
@@ -405,7 +405,7 @@ bool Collision::resPolygonPolygonDIAG(Polygon& pol1, Polygon& pol2) {
 	return false;
 }
 
-// Checking for polygon collisions method 4
+// Checking for polygon collisions method #4
 void Collision::projectVertices(std::vector<Vector2>& vertices, Vector2& axis, float& min, float& max) {
 	min = std::numeric_limits<float>::max();
 	max = std::numeric_limits<float>::lowest();
@@ -554,7 +554,7 @@ std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
-// Checking for collusion between circle and polygon
+// Checking for collision between circle and polygon
 bool Collision::betweenEdges(Circle& circ, Polygon& pol) {
 	std::vector<Vector2> vertices = pol.getVertices();
 	int size = vertices.size();	
@@ -610,10 +610,7 @@ std::unique_ptr<Manifold> Collision::checkCirclePolygonEdges(Circle& circ, Polyg
 			float depth = projToNormal - radius;
 			if (depth < 0.0f)
 				return std::make_unique<Manifold>(depth * -1, Scale(normals[i], -1), center + Scale(normals[i], radius * -1));		
-		}
-
-
-			
+		}	
  	}
 
  	return nullptr;
@@ -639,8 +636,7 @@ bool Collision::checkCirclePolygonEdges_v2(Circle& circ, Polygon& pol) {
 			float depth = projToNormal - radius;
 			if (depth < 0.0f)
 				return true;
-		}
-			
+		}		
  	}
 
  	return false;
@@ -718,6 +714,10 @@ std::unique_ptr<Manifold> Collision::checkCirclePolygon(Circle& circ, Polygon& p
 std::unique_ptr<Manifold> Collision::checkCollision(Shape& s1, Shape& s2) {
 // bool Collision::checkCollision(Shape& s1, Shape& s2) {
     return s1.acceptCollision(s2);
+}
+
+bool Collision::checkFloorCollision(Shape &s, float floorXPosition) {
+	return s.acceptFloorCollision(floorXPosition);
 }
 
 

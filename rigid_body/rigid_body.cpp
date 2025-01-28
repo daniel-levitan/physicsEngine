@@ -24,10 +24,10 @@ void RigidBody::setVelocity(Vector2 velocity) {
 Vector2 RigidBody::integrate(float delta_time) {
     Vector2 deltaPosition = Vector2::Null;  
     
-    // deltaPosition = semiImplicitEuler(delta_time);
+    deltaPosition = semiImplicitEuler(delta_time);
     // deltaPosition = forwardEuler(delta_time);
     // deltaPosition = midPointMethod(delta_time);
-    deltaPosition = rungeKutta4(delta_time);
+    // deltaPosition = rungeKutta4(delta_time);
 
     return deltaPosition;
 }
@@ -99,6 +99,8 @@ Vector2 RigidBody::rungeKutta4(float delta_time) {
     Vector2 k4 = Scale(acceleration, delta_time);
 
     // Calculating velocity
+    // (((k2 x 2) + k1) + ((k3 x 2) + k4)) / 6
+    // (k1 + 2K2 + 2K3 + k4) / 6
     Vector2 deltaVelocity = Scale( Add( Add( k1, Scale(k2, 2) ), Add( Scale(k3, 2), k4) ), 1 / 6.0f );
     velocityAccumulator = velocityAccumulator + deltaVelocity;
 
@@ -110,7 +112,12 @@ Vector2 RigidBody::rungeKutta4(float delta_time) {
 void RigidBody::update(float delta_time) {
     Vector2 deltaPos = integrate(delta_time);
     shape->move(deltaPos);
+
     forceAccumulator = Vector2::Null;
+    // This will slow down the velocity
+    // It is like the air resistance
+    velocityAccumulator = Scale(velocityAccumulator, 0.99);
+
 }
 
 void RigidBody::draw(SDL_Renderer* renderer) {

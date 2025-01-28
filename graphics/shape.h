@@ -39,6 +39,7 @@ public:
     Color getColor();
     float getAngle();
     bool getOverlap();
+    virtual float getDistanceFromCentroidToFloor() = 0;
 
     // setters
     virtual void setCentroid(const Vector2& newCentroid);
@@ -53,6 +54,8 @@ public:
     // virtual bool acceptCollision(Shape& other) = 0;
     // virtual bool collideWith(Circle& circle) = 0;
     // virtual bool collideWith(Polygon& polygon) = 0;
+
+    virtual bool acceptFloorCollision(float floorXPosition) = 0;
 
     Vector2 calculateCentroid() const;
     float calculateArea() const;
