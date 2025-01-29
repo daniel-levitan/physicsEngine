@@ -171,7 +171,7 @@ void Engine::updating() {
     }
 
     RigidBody* rb1 = rigidBodies[0].get();
-    RigidBody* rb2 = rigidBodies[1].get();
+    RigidBody* rb2 = rigidBodies[5].get();
     
     // Shape A/Player 1
     if (move_left) { rb2->addForce(Vector2(-FORCE, 0)); } // movement_delta_x -= movement_speed * delta_time;
@@ -199,29 +199,14 @@ void Engine::updating() {
         text2->setMessage(str);
     }
 
-    /*
-    for (const auto& rb : rigidBodies) {
-        if ((deltaA != Vector2(0,0)) || (deltaB != Vector2(0,0)) || rotate_deltaA || rotate_deltaB) {
-            if (rb2 == &*rb) {
-                rb->move(deltaA);
-                rb->rotate(rotate_deltaA);
-            }
-
-            if (rb1 == &*rb) {
-                rb->move(deltaB);
-                rb->rotate(rotate_deltaB);
-            }
-        }
-    }
-    */
 
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
         // rb->addForce(gravity);
         rb->update(delta_time);
 
-        if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
-            rb->setVelocity(Scale(rb->getVelocity(), -1 * rb->getMaterial()->getBounce()));
+        // if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
+            // rb->setVelocity(Scale(rb->getVelocity(), -1 * rb->getMaterial()->getBounce()));
 
         // if (std::abs(rb->getVelocity().getY()) < 1.0f) {
         //     rb->setVelocity(Vector2::Null);            
@@ -233,24 +218,27 @@ void Engine::updating() {
         for (size_t j = 0; j < rigidBodies.size(); j++) {
             if (rigidBodies[i] == rigidBodies[j]) continue;
 
-            // bool flag = false;
+            bool flag = false;
             auto result = Collision::collisionDetection(*rigidBodies[i].get(), *rigidBodies[j].get());
+            // auto result = Collision::checkCollision(*rigidBodies[i]->getShape(), *rigidBodies[j]->getShape());
             if (result) {
-                // flag = true;                
+                flag = true;                
                 // Collision::positionCorrection();
                 Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+
                 if (debugMode) {
                     std::string str = result->toString();
                     text1->setMessage(str);
                 }
-                manifolds.push_back(std::move(result));
+
+                manifolds.push_back(std::move(result));                
             }
 
-            // rigidBodies[i]->getShape()->setOverlap(flag | rigidBodies[i]->getShape()->getOverlap());
-            // rigidBodies[j]->getShape()->setOverlap(flag | rigidBodies[j]->getShape()->getOverlap());
-
+            rigidBodies[i]->getShape()->setOverlap(flag | rigidBodies[i]->getShape()->getOverlap());
+            rigidBodies[j]->getShape()->setOverlap(flag | rigidBodies[j]->getShape()->getOverlap());
         }
     }
+
 
     last_frame_time = SDL_GetTicks();
 }

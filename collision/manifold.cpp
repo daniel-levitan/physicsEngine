@@ -19,8 +19,10 @@ const Vector2 Manifold::getPenetrationPoint() const {
 }
 
 void Manifold::draw(SDL_Renderer* renderer) const {
-    const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -10);
+    // const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -10);
+    const Vector2& startPoint = Add(penetrationPoint, Scale(normal, depth * -1));
     Drawing::drawArrow(renderer, startPoint, penetrationPoint);
+    Drawing::DrawFilledCircle(renderer, startPoint.getX(), startPoint.getY(), 3);
 
 }
 

@@ -6,6 +6,9 @@
 #include "../graphics/polygon.h"
 
 
+/*********************
+ * Circle vs Circle  *
+ *********************/
 float Collision::calculatePenetrationDepthOfCircles(const Circle& c1, const Circle& c2) {
 	Vector2 centroidA = c1.getCentroid();
 	Vector2 centroidB = c2.getCentroid();
@@ -38,26 +41,36 @@ bool Collision::checkCircleCircleBool(const Circle& c1, const Circle& c2) {
 std::unique_ptr<Manifold> Collision::checkCircleCircle(const Circle& c1, const Circle& c2) {
 	Vector2 centroidA = c1.getCentroid();
 	Vector2 centroidB = c2.getCentroid();
-	Vector2 direction = centroidB - centroidA;
+	// Vector2 direction = centroidB - centroidA;
+	Vector2 direction = Sub(centroidB, centroidA);
+
 	float directionLength = direction.length();
 
 	float radiusA = c1.getRadius();
 	float radiusB = c2.getRadius();
 	float sumRadius = radiusA + radiusB;
 
+	float depth = directionLength - sumRadius;
+
 	if (directionLength < sumRadius) {
+	// if (depth < 0) {
 		// Normalizing with scale to get a new vector
 		Vector2 penetrationNormal = Scale(direction, 1 / directionLength); 
-		float penetrationDepth = directionLength - sumRadius; 
-		Vector2 penetrationPoint = centroidA + Scale(penetrationNormal, radiusA);
+		// float penetrationDepth = directionLength - sumRadius; 
+		// Vector2 penetrationPoint = centroidA + Scale(penetrationNormal, radiusA);
+		Vector2 penetrationPoint = Add(centroidA, Scale(penetrationNormal, radiusA));
 
 		// return new Manifold(penetrationDepth * -1, penetrationNormal, penetrationPoint);
-		return std::make_unique<Manifold>(penetrationDepth * -1, penetrationNormal, penetrationPoint);
+		return std::make_unique<Manifold>(depth * -1, penetrationNormal, penetrationPoint);
 	}
 
 	return nullptr;
 }
 
+
+/************************
+ *  Polygon vs Polygon  *
+ ************************/
 // Checking for Polygon collisions method 1
 /** If there is at least 1 vertice for which I cannot find a support point, the polygons
  *  don't collide. */
@@ -68,7 +81,7 @@ std::unique_ptr<SupportPoint> Collision::findSupportPoint(Vector2 normal, Vector
 
 	// int i = 0;
     for (const auto& vertex : otherPolygonVertices) {
-        Vector2 verticeToEdge = vertex - pointOnEdge;
+        Vector2 verticeToEdge = Sub(vertex, pointOnEdge); // vertex - pointOnEdge;
         float depth = verticeToEdge.dotProduct(Scale(normal, -1));
 
         // std::cout << "Other polygon vertice " << vertex << " " << i++ << ": " << depth << std::endl;
@@ -554,6 +567,10 @@ std::unique_ptr<Manifold> Collision::resIntersectPolygons(Polygon& pol1, Polygon
 	return std::make_unique<Manifold>(depth, normal, contactPoint);
 }
 
+
+/**********************
+ * Circle vs Polygon  *
+ **********************/
 // Checking for collision between circle and polygon
 bool Collision::betweenEdges(Circle& circ, Polygon& pol) {
 	std::vector<Vector2> vertices = pol.getVertices();
@@ -683,6 +700,46 @@ bool Collision::checkCirclePolygonCornersBool(Circle& circ, Polygon& pol) {
 	return false;
 }
 
+/*
+	static circleVsPolygonCorners(shapeCircle, shapePolygon){
+		
+		let verticesLength = shapePolygon.vertices.length;
+		
+		for(let i=0; i<verticesLength;i++){
+		
+			let currVertex = shapePolygon.vertices[i];
+			let dirToCentroidCircle = Sub(currVertex, shapeCircle.centroid);
+		
+			if(dirToCentroidCircle.Length2() < shapeCircle.radius*shapeCircle.radius){
+				let penetration = shapeCircle.radius - dirToCentroidCircle.Length();
+				dirToCentroidCircle.Normalize();
+		
+				return new CollisionManifold(penetration, Scale(dirToCentroidCircle,1),currVertex );
+			}
+		}
+		return null;
+	}
+*/
+std::unique_ptr<Manifold> Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
+	float penetration;
+
+	Vector2 center = circ.getCentroid();
+	for (const auto& v : pol.getVertices()) {         // For every vertice
+		Vector2 direction = Sub(v, center);               
+		// float directionLength = direction.length();   // Get the len from the vertice to the circle
+
+		float radius = circ.getRadius();
+		if (direction.length2() < radius * radius) {    // Check if they are on top of each other
+			penetration = radius - direction.length();
+			direction.normalize();
+			return std::make_unique<Manifold>(penetration * -1, direction, v);
+		}
+	}
+
+	return nullptr;
+}
+
+/*
 std::unique_ptr<Manifold> Collision::checkCirclePolygonCorners(Circle& circ, Polygon& pol) {
 	Vector2 center = circ.getCentroid();
 
@@ -696,6 +753,7 @@ std::unique_ptr<Manifold> Collision::checkCirclePolygonCorners(Circle& circ, Pol
 
 	return nullptr;
 }
+*/
 
 std::unique_ptr<Manifold> Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
 // bool Collision::checkCirclePolygon(Circle& circ, Polygon& pol) {
@@ -710,6 +768,10 @@ std::unique_ptr<Manifold> Collision::checkCirclePolygon(Circle& circ, Polygon& p
 	return checkCirclePolygonCorners(circ, pol);	
 }
 
+
+/**************************************
+ * General collision checking methods *
+ **************************************/ 
 // General check collision method
 std::unique_ptr<Manifold> Collision::checkCollision(Shape& s1, Shape& s2) {
 // bool Collision::checkCollision(Shape& s1, Shape& s2) {
@@ -729,8 +791,8 @@ std::unique_ptr<Manifold> Collision::collisionDetection(RigidBody& rb1, RigidBod
 }
 
 void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
-
-	Vector2 relativeVelocity = Sub(rb2.getVelocity(), rb1.getVelocity());
+	// For some reason I had to invert this here and the impulse direction
+	Vector2 relativeVelocity = Sub(rb1.getVelocity(), rb2.getVelocity());
 	double relativeVelocityProjected = relativeVelocity.dotProduct(manifold.getNormal());
 
 	if (relativeVelocityProjected > 0)
@@ -740,8 +802,8 @@ void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manif
 	float j = -1 * (1 + e) * relativeVelocityProjected;
 
 	Vector2 impulse = Scale(manifold.getNormal(), j);
-	Vector2 rb1Impulse = Scale(impulse, -0.5);
-	Vector2 rb2Impulse = Scale(impulse, +0.5);
+	Vector2 rb1Impulse = Scale(impulse, +0.5);
+	Vector2 rb2Impulse = Scale(impulse, -0.5);
 
 	rb1.setVelocity(Add(rb1.getVelocity(), rb1Impulse));
 	rb2.setVelocity(Add(rb2.getVelocity(), rb2Impulse));

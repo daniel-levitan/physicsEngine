@@ -45,10 +45,11 @@ public:
          return Collision::checkCirclePolygon(circle, *this);
       }
 
-      std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
       // bool collideWith(Polygon& polygon) override {
+      std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
          // return Collision::intersectPolygons(*this, polygon);
-         return Collision::checkPolygonPolygon(*this, polygon);
+         return Collision::resPolygonPolygonSAT(*this, polygon);
+         // return Collision::checkPolygonPolygon(*this, polygon);  
       }
 
       bool acceptFloorCollision(float floorXPosition) override {
