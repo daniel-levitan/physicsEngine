@@ -38,13 +38,16 @@ private:
 
 	std::vector<std::unique_ptr<Text>> texts;
 
-
-	Vector2 gravity = {0, DEFAULT_GRAVITY}; // + or -?
+	Vector2 gravitationalForce;
+	// Vector2 gravitationalForce = {0, DEFAULT_GRAVITY_FORCE};
 
 public:
 	Engine();
 	~Engine();	
 
+	void setupWorldConstraints();
+	void setupPlayers();
+	void setupScenario();
 	bool initialization();
 
 	void input_processing();

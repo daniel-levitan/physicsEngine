@@ -54,10 +54,8 @@ public:
         return Collision::checkCirclePolygon(*this, polygon);               
     }
 
-    bool acceptFloorCollision(float floorXPosition) override {
-        if (center.getY() + radius > floorXPosition)
-            return true;
-        return false;
+    float calculateInertia(float mass) override {
+        return 0.5 * mass * radius * radius;
     }
 };
 #endif

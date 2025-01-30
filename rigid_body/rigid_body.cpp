@@ -118,10 +118,11 @@ void RigidBody::update(float delta_time) {
     shape->move(deltaPos);
 
     forceAccumulator = Vector2::Null;
-    // This will slow down the velocity
-    // It is like the air resistance
     velocityAccumulator = Scale(velocityAccumulator, DAMPING);
+    angularVelocity *= DAMPING;
 
+    float deltaRotation = angularVelocity * delta_time;
+    shape->rotate(deltaRotation);
 }
 
 void RigidBody::draw(SDL_Renderer* renderer) {
@@ -147,3 +148,11 @@ void RigidBody::move(Vector2 delta) {
 void RigidBody::rotate(float radiansDelta) {
     shape->rotate(radiansDelta);
 }
+
+void RigidBody::calculateInertia(Shape& s) {
+    inertia = s.calculateInertia(mass);
+}
+// std::unique_ptr<Manifold> Collision::checkCollision(Shape& s1, Shape& s2) {
+// // bool Collision::checkCollision(Shape& s1, Shape& s2) {
+//     return s1.acceptCollision(s2);
+// }

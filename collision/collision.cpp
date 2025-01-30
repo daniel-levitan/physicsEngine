@@ -778,10 +778,6 @@ std::unique_ptr<Manifold> Collision::checkCollision(Shape& s1, Shape& s2) {
     return s1.acceptCollision(s2);
 }
 
-bool Collision::checkFloorCollision(Shape &s, float floorXPosition) {
-	return s.acceptFloorCollision(floorXPosition);
-}
-
 // bool Collision::collisionDetection(Shape& s1, Shape& s2) {
 // std::unique_ptr<Manifold> Collision::collisionDetection(Shape& s1, Shape& s2) {
 std::unique_ptr<Manifold> Collision::collisionDetection(RigidBody& rb1, RigidBody& rb2) {
@@ -791,6 +787,8 @@ std::unique_ptr<Manifold> Collision::collisionDetection(RigidBody& rb1, RigidBod
 }
 
 void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+
+	// Calculating the linear impulse
 	// For some reason I had to invert this here and the impulse direction
 	Vector2 relativeVelocity = Sub(rb1.getVelocity(), rb2.getVelocity());
 	double relativeVelocityProjected = relativeVelocity.dotProduct(manifold.getNormal());
@@ -798,13 +796,45 @@ void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manif
 	if (relativeVelocityProjected > 0)
 		return;
 
-	float e = 1; // restitution coeficiency
+	// This controls if the body is able to move or not
+	if (rb1.isKinematic() && rb2.isKinematic())
+		return;
+
+	float invertedMassSum = rb1.getInvertedMass() + rb2.getInvertedMass();
+
+	// Restitution Coeficiency - There are two ways to calculate it
+	// float e = 1; 
+	// float e = std::min(rb1.getMaterial()->getBounce(), rb2.getMaterial()->getBounce());
+	float bounceSum = rb1.getMaterial()->getBounce() + rb2.getMaterial()->getBounce();
+	float e = (2 * rb1.getMaterial()->getBounce() * rb2.getMaterial()->getBounce()) / bounceSum;
+	
+
 	float j = -1 * (1 + e) * relativeVelocityProjected;
 
+	j /= invertedMassSum;
+
 	Vector2 impulse = Scale(manifold.getNormal(), j);
-	Vector2 rb1Impulse = Scale(impulse, +0.5);
-	Vector2 rb2Impulse = Scale(impulse, -0.5);
+	Vector2 rb1Impulse = Scale(impulse, rb1.getInvertedMass());
+	Vector2 rb2Impulse = Scale(impulse, -1 * rb2.getInvertedMass());
 
 	rb1.setVelocity(Add(rb1.getVelocity(), rb1Impulse));
 	rb2.setVelocity(Add(rb2.getVelocity(), rb2Impulse));
 }
+
+void Collision::positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+	float correctionPercentage = .2f;
+	float amount = manifold.getDepth() / (rb1.getInvertedMass() + rb2.getInvertedMass() * correctionPercentage);
+	Vector2 correctionVector = Scale(manifold.getNormal(), amount); 
+
+	Vector2 rb1Movement = Scale(correctionVector, rb1.getInvertedMass() * +1);
+	Vector2 rb2Movement = Scale(correctionVector, rb2.getInvertedMass() * -1);
+
+
+	float correctionScale = 0.4;
+	if (!rb1.isKinematic())
+		rb1.getShape()->move(Scale(rb1Movement, correctionScale));
+
+	if (!rb2.isKinematic())
+		rb2.getShape()->move(Scale(rb2Movement, correctionScale));
+}
+

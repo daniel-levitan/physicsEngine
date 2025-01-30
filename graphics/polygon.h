@@ -52,9 +52,9 @@ public:
          // return Collision::checkPolygonPolygon(*this, polygon);  
       }
 
-      bool acceptFloorCollision(float floorXPosition) override {
-         return false;
-      }
+      float calculateInertia(float mass) override {
+        return mass;
+    }
 };
 
 #endif

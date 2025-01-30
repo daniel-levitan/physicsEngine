@@ -71,14 +71,10 @@ namespace Collision {
     /**
      *  Functions related to rigid body 
      * */
-    bool checkFloorCollision(Shape &s, float floorXPosition);
-    // Soon I will have wall 
-
-    // bool collisionDetection(Shape& s1, Shape& s2);
     // bool collisionDetection(Shape& s1, Shape& s2);
     // std::unique_ptr<Manifold> collisionDetection(Shape& s1, Shape& s2);
     std::unique_ptr<Manifold> collisionDetection(RigidBody& rb1, RigidBody& rb2);
-    void positionCorrection();
+    void positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
     void resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
 
 }

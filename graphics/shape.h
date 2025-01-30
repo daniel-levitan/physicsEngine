@@ -54,8 +54,8 @@ public:
     // virtual bool acceptCollision(Shape& other) = 0;
     // virtual bool collideWith(Circle& circle) = 0;
     // virtual bool collideWith(Polygon& polygon) = 0;
-
-    virtual bool acceptFloorCollision(float floorXPosition) = 0;
+    
+    virtual float calculateInertia(float mass) = 0;
 
     Vector2 calculateCentroid() const;
     float calculateArea() const;

@@ -17,6 +17,10 @@
 class Rectangle : public Polygon {
 public:
     Rectangle(const Vector2& position, int width, int height, Color color);
+
+    float calculateInertia(float mass) override {
+        return mass;
+    }
 };
 
 #endif

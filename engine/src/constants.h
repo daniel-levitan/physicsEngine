@@ -9,9 +9,9 @@
 #define MOVEMENT_SPEED 150
 #define ROTATION_SPEED 5
 
-#define FORCE 5000
+#define FORCE 10000
 
-#define DAMPING 0.99f
+#define DAMPING 0.9999f // This will slow down the velocity. It is like the air resistance
 // #define DAMPING 1
 
 enum class CollisionMode {
@@ -25,7 +25,8 @@ enum class CollisionMode {
 };
 
 // constexpr float DEFAULT_GRAVITY = 9.81f;  // m/s^2
-constexpr float DEFAULT_GRAVITY = 5000;  // Instead of using the acceleration, we use a force
+constexpr float DEFAULT_GRAVITY = 200;
+constexpr float DEFAULT_GRAVITY_FORCE = 5000;  // Instead of using the acceleration, we use a force
 
 
 #endif
