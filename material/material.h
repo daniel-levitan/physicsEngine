@@ -9,7 +9,7 @@ protected:
 public:
     Material(float bounce, float friction) : bounce(bounce), friction(friction) {};
     Material() {
-        bounce = 1.0;
+        bounce = 0.5;
         friction = 0.0;
     };
 
