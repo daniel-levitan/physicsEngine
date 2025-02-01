@@ -225,7 +225,7 @@ void Engine::updating() {
     if (debugMode) {
         text->setMessage("Debugging");
     } else {
-        text->setMessage("Not debugging");
+        text->setMessage(" "); // Not debugging
         text1->setMessage(" ");
     }
     
@@ -252,20 +252,37 @@ void Engine::updating() {
     RigidBody* rb2 = rigidBodies[1].get();
     
     // Shape A/Player 1
-    if (move_left) { rb2->addForce(Vector2(-FORCE, 0)); } // movement_delta_x -= movement_speed * delta_time;
-    if (move_right) { rb2->addForce(Vector2(FORCE, 0)); } // movement_delta_x += movement_speed * delta_time;
-    if (move_up) { rb2->addForce(Vector2(0, -FORCE)); } // movement_delta_y -= movement_speed * delta_time; 
-    if (move_down) { rb2->addForce(Vector2(0, FORCE)); } // movement_delta_y += movement_speed * delta_time; 
-    // if (rotate_left) { rotate_deltaA -= rotate_speed * delta_time; }
+    if (move_left)    { rb2->addForce(Vector2(-FORCE, 0)); }
+    if (move_right)   { rb2->addForce(Vector2(FORCE, 0)); }
+    if (move_up)      { rb2->addForce(Vector2(0, -FORCE)); } 
+    if (move_down)    { rb2->addForce(Vector2(0, FORCE)); }
+    // if (rotate_left)  { rotate_deltaA -= rotate_speed * delta_time; }
     // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
     // Vector2 deltaA(movement_delta_x, movement_delta_y);
 
+    // if (move_left)    { movement_delta_x -= movement_speed * delta_time; }
+    // if (move_right)   { movement_delta_x += movement_speed * delta_time; }
+    // if (move_up)      { movement_delta_y -= movement_speed * delta_time;  }
+    // if (move_down)    { movement_delta_y += movement_speed * delta_time; }
+    // if (rotate_left)  { rotate_deltaA -= rotate_speed * delta_time; }
+    // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
+    // Vector2 deltaA(movement_delta_x, movement_delta_y); 
+
+
     // Shape B/Player 2
-    if (move_leftB) { rb1->addForce(Vector2(-FORCE, 0)); }   // movement_delta_xB -= movement_speed * delta_time;
-    if (move_rightB) { rb1->addForce(Vector2(FORCE, 0)); }   // movement_delta_xB += movement_speed * delta_time;
-    if (move_upB) { rb1->addForce(Vector2(0, -FORCE)); }   // movement_delta_yB -= movement_speed * delta_time;
-    if (move_downB) { rb1->addForce(Vector2(0, FORCE)); }   // movement_delta_yB += movement_speed * delta_time;
-    // if (rotate_leftB) { rotate_deltaB -= rotate_speed * delta_time; }
+    if (move_leftB)    { rb1->addForce(Vector2(-FORCE, 0)); }
+    if (move_rightB)   { rb1->addForce(Vector2(FORCE, 0)); }
+    if (move_upB)      { rb1->addForce(Vector2(0, -FORCE)); }
+    if (move_downB)    { rb1->addForce(Vector2(0, FORCE)); }
+    // if (rotate_leftB)  { rotate_deltaB -= rotate_speed * delta_time; }
+    // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
+    // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
+
+    // if (move_leftB)    { movement_delta_xB -= movement_speed * delta_time; }
+    // if (move_rightB)   { movement_delta_xB += movement_speed * delta_time; }
+    // if (move_upB)      { movement_delta_yB -= movement_speed * delta_time; }
+    // if (move_downB)    { movement_delta_yB += movement_speed * delta_time; }
+    // if (rotate_leftB)  { rotate_deltaB -= rotate_speed * delta_time; }
     // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
     // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
 
@@ -283,25 +300,17 @@ void Engine::updating() {
         gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
         rb->addForce(gravitationalForce);
         rb->update(delta_time);
-
-        // if (Collision::checkFloorCollision(*rb->getShape(), WINDOW_HEIGHT))
-            // rb->setVelocity(Scale(rb->getVelocity(), -1 * rb->getMaterial()->getBounce()));
-
-        // if (std::abs(rb->getVelocity().getY()) < 1.0f) {
-        //     rb->setVelocity(Vector2::Null);            
-        // }
     }
-
 
      for (size_t i = 0; i < rigidBodies.size(); i++) {
         for (size_t j = 0; j < rigidBodies.size(); j++) {
             if (rigidBodies[i] == rigidBodies[j]) continue;
  
-            // bool flag = false;
+            bool flag = false;
             auto result = Collision::collisionDetection(*rigidBodies[i].get(), *rigidBodies[j].get());
             // auto result = Collision::checkCollision(*rigidBodies[i]->getShape(), *rigidBodies[j]->getShape());
             if (result) {
-                // flag = true;                
+                flag = true;                
                 Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
                 Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
 
@@ -313,8 +322,10 @@ void Engine::updating() {
                 manifolds.push_back(std::move(result));
             }
 
-            // rigidBodies[i]->getShape()->setOverlap(flag | rigidBodies[i]->getShape()->getOverlap());
-            // rigidBodies[j]->getShape()->setOverlap(flag | rigidBodies[j]->getShape()->getOverlap());
+            if (debugMode) {
+                rigidBodies[i]->getShape()->setOverlap(flag | rigidBodies[i]->getShape()->getOverlap());
+                rigidBodies[j]->getShape()->setOverlap(flag | rigidBodies[j]->getShape()->getOverlap());
+            }
         }
     }
 
@@ -329,11 +340,11 @@ void Engine::rendering() {
         shape->draw(graphics->getRenderer());  // Use Graphics renderer to draw shapes
     }
 
-    /*
-    for (const auto& manifold : manifolds) {
-        manifold->draw(graphics->getRenderer());  // Draw the manifold (collision details)
-    } 
-    */  
+    if (debugMode) {
+        for (const auto& manifold : manifolds) {
+            manifold->draw(graphics->getRenderer());  // Draw the manifold (collision details)
+        } 
+    }
 
     for (const auto& text : texts) {
         text->render(graphics->getRenderer());  // Draw the manifold (collision details)

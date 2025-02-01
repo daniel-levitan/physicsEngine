@@ -831,12 +831,17 @@ void Collision::positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& man
 	Vector2 rb1Movement = Scale(correctionVector, rb1.getInvertedMass() * +1);
 	Vector2 rb2Movement = Scale(correctionVector, rb2.getInvertedMass() * -1);
 
-
-	float correctionScale = 0.4;
 	if (!rb1.isKinematic())
-		rb1.getShape()->move(Scale(rb1Movement, correctionScale));
+		rb1.getShape()->move(rb1Movement);
 
 	if (!rb2.isKinematic())
-		rb2.getShape()->move(Scale(rb2Movement, correctionScale));
+		rb2.getShape()->move(rb2Movement);
+
+	// float correctionScale = 0.4;
+	// if (!rb1.isKinematic())
+	// 	rb1.getShape()->move(Scale(rb1Movement, correctionScale));
+
+	// if (!rb2.isKinematic())
+	// 	rb2.getShape()->move(Scale(rb2Movement, correctionScale));
 }
 
