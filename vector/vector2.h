@@ -21,14 +21,14 @@ public:
     // Vector2 v = Vector2::Null;
 
 	Vector2();
-	Vector2(float xc, float yc);
+	Vector2(float x, float y);
 
 	float getX() const;
 	float getY() const;
 	Vector2 getNormal() const;
 	
-	void setX(float xc);
-	void setY(float yc);
+	void setX(float x);
+	void setY(float y);
 
 	double length2();
 	double length();
@@ -46,7 +46,9 @@ public:
 	bool operator==(const Vector2& other) const;
 	bool operator!=(const Vector2& other) const;
 	Vector2 operator+(const Vector2& other) const;
+	Vector2& operator+=(const Vector2& other);
 	Vector2 operator-(const Vector2& other) const; 
+	Vector2& operator-=(const Vector2& other);
 	friend std::ostream& operator<<(std::ostream& os, const Vector2& vec);
 };
 

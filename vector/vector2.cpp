@@ -14,20 +14,16 @@ const Vector2 Vector2::Null(0.0f, 0.0f);
 
 Vector2::Vector2() : x(0), y(0) {}
 
-Vector2::Vector2(float xc, float yc) : x(xc), y(yc) {} 
+Vector2::Vector2(float x, float y) : x(x), y(y) {} 
 
 float Vector2::getX() const { return x; }
 
 float Vector2::getY() const { return y; }
 
-void Vector2::setX(float xc) {
-	x = xc;
-}
+void Vector2::setX(float x) { this->x = x; }
 
-void Vector2::setY(float yc) {
-	y = yc;
-}
-
+void Vector2::setY(float y) { this->y = y; }
+	
 double Vector2::length2() { 
 	return x * x + y * y; 
 	// return pow(x, 2) + pow(y, 2); 
@@ -77,7 +73,6 @@ void Vector2::scale(float scalar) {
 	y *= scalar;
 }
 
-
 float Vector2::cross(Vector2 other) {
 	return x * other.y - y * other.x;
 }
@@ -98,8 +93,20 @@ Vector2 Vector2::operator+(const Vector2& other) const {
 	return Vector2(x + other.x, y + other.y);
 }
 
+Vector2& Vector2::operator+=(const Vector2& other) {
+    this->x += other.x;
+    this->y += other.y;
+    return *this; // Return *this to allow chaining (e.g., v1 += v2 += v3)
+}
+
 Vector2 Vector2::operator-(const Vector2& other) const {
 	return Vector2(x - other.x, y - other.y);
+}
+
+Vector2& Vector2::operator-=(const Vector2& other) {
+    this->x -= other.x;
+    this->y -= other.y;
+    return *this; // Return *this to allow chaining (e.g., v1 += v2 += v3)
 }
 
 std::ostream& operator<<(std::ostream& os, const Vector2& vec) {
@@ -119,7 +126,6 @@ Vector2 Scale(const Vector2& v1, float scalar) {
     return Vector2(v1.getX() * scalar, v1.getY() * scalar);
 }
 
-
 Vector2 Normalize(Vector2& v) {
 	Vector2 result(0,0);
 	double len = v.length();
@@ -129,9 +135,4 @@ Vector2 Normalize(Vector2& v) {
 	}
     return result;
 }
-
-// // Method to return a new scaled vector (does not mutate the original)
-// Vector2 Vector2::scale(float scalar) {
-// 	return Vector2(x * scalar, y * scalar);
-// }
 
