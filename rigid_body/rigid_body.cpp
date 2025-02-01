@@ -2,6 +2,28 @@
 #include "../utils/utils.h"
 #include "../engine/src/constants.h"
 
+
+RigidBody::RigidBody(std::unique_ptr<Shape> shape, float mass, float bounce, float friction) 
+    : shape(std::move(shape)), mass(mass), forceAccumulator(Vector2::Null), velocityAccumulator(Vector2::Null),
+      angularVelocity(0), material(bounce, friction), isKinematicState(false) {
+    
+    if (mass > 0.00001) {
+        invertedMass = 1.0f / mass;
+    } else {
+        mass = 0.0f;
+        invertedMass = 0.0f;
+        isKinematicState = true;
+    }
+    
+    inertia = this->shape->calculateInertia(mass);
+    if (inertia > 0.00001) {
+        invertedInertia = 1 / inertia;
+    } else {
+        invertedInertia = 0;
+    }
+    
+};
+
 void RigidBody::addForce(Vector2 force) {
     forceAccumulator.add(force);
 }

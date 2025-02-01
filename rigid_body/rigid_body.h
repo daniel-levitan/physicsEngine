@@ -5,6 +5,7 @@
 #include "../vector/vector2.h"
 #include "../material/material.h"
 
+
 class RigidBody {
 protected:
     std::unique_ptr<Shape> shape;
@@ -12,43 +13,18 @@ protected:
     float invertedMass;
     float inertia;
     float invertedInertia;
-    float angularVelocity;
-
-    Material material;
 
     Vector2 forceAccumulator; 
     Vector2 velocityAccumulator;
+    float angularVelocity;
+
+    Material material;
+    bool isKinematicState = false;
 
     Vector2 impulse;
 
-    bool isKinematicState = false;
-
 public:
-    RigidBody(std::unique_ptr<Shape> shape, float mass = 1.0f, float bounce = 1.0f, float friction = 0.0f) : shape(std::move(shape)), mass(mass) {
-        forceAccumulator = Vector2::Null;
-        velocityAccumulator = Vector2::Null;
-        angularVelocity = 0;
-        
-        material = Material(bounce, friction);
-        // material = std::make_unique<Material>(bounce, friction);  
-
-        if (mass > 0.00001) {
-            invertedMass = 1.0f / mass;
-        } else {
-            mass = 0.0f;
-            invertedMass = 0.0f;
-            isKinematicState = true;
-        }
-        
-        // calculateInertia(*this->shape);
-        inertia = (*this->shape).calculateInertia(mass);
-        if (inertia > 0.00001) {
-            invertedInertia = 1 / inertia;
-        } else {
-            invertedInertia = 0;
-        }
-        
-    };
+    RigidBody(std::unique_ptr<Shape> shape, float mass = 1.0f, float bounce = 1.0f, float friction = 0.0f);
 
     // Force and velocity methods
     void addForce(Vector2 force);
