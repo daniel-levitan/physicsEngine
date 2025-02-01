@@ -790,7 +790,11 @@ void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manif
 
 	// Calculating the linear impulse
 	// For some reason I had to invert this here and the impulse direction
-	Vector2 relativeVelocity = Sub(rb1.getVelocity(), rb2.getVelocity());
+	Vector2 direction = Sub(rb1.getShape()->getCentroid(), rb2.getShape()->getCentroid());
+	if (direction.dotProduct(manifold.getNormal()) > 0)
+		manifold.setNormal(Scale(manifold.getNormal(), -1));
+
+	Vector2 relativeVelocity = Sub(rb2.getVelocity(), rb1.getVelocity());
 	double relativeVelocityProjected = relativeVelocity.dotProduct(manifold.getNormal());
 
 	if (relativeVelocityProjected > 0)
@@ -803,19 +807,17 @@ void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manif
 	float invertedMassSum = rb1.getInvertedMass() + rb2.getInvertedMass();
 
 	// Restitution Coeficiency - There are two ways to calculate it
-	// float e = 1; 
+	float e = 1; 
 	// float e = std::min(rb1.getMaterial()->getBounce(), rb2.getMaterial()->getBounce());
-	float bounceSum = rb1.getMaterial()->getBounce() + rb2.getMaterial()->getBounce();
-	float e = (2 * rb1.getMaterial()->getBounce() * rb2.getMaterial()->getBounce()) / bounceSum;
+	// float bounceSum = rb1.getMaterial()->getBounce() + rb2.getMaterial()->getBounce();
+	// float e = (2 * rb1.getMaterial()->getBounce() * rb2.getMaterial()->getBounce()) / bounceSum;
 	
-
 	float j = -1 * (1 + e) * relativeVelocityProjected;
-
 	j /= invertedMassSum;
 
 	Vector2 impulse = Scale(manifold.getNormal(), j);
-	Vector2 rb1Impulse = Scale(impulse, rb1.getInvertedMass());
-	Vector2 rb2Impulse = Scale(impulse, -1 * rb2.getInvertedMass());
+	Vector2 rb1Impulse = Scale(impulse, -1 * rb1.getInvertedMass());
+	Vector2 rb2Impulse = Scale(impulse, 1 * rb2.getInvertedMass());
 
 	rb1.setVelocity(Add(rb1.getVelocity(), rb1Impulse));
 	rb2.setVelocity(Add(rb2.getVelocity(), rb2Impulse));

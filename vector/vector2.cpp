@@ -120,7 +120,6 @@ Vector2 Scale(const Vector2& v1, float scalar) {
 }
 
 
-
 Vector2 Normalize(Vector2& v) {
 	Vector2 result(0,0);
 	double len = v.length();

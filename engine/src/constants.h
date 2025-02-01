@@ -11,8 +11,8 @@
 
 #define FORCE 10000
 
-#define DAMPING 0.9999f // This will slow down the velocity. It is like the air resistance
-// #define DAMPING 1
+// #define DAMPING 0.9999f // This will slow down the velocity. It is like the air resistance
+#define DAMPING 1
 
 enum class CollisionMode {
 	PIXEL,

@@ -21,6 +21,8 @@ public:
     const Vector2 getNormal() const;
     const Vector2 getPenetrationPoint() const;
 
+    void setNormal(Vector2 newNormal);
+
     void draw(SDL_Renderer* renderer) const;
 
     std::string toString();

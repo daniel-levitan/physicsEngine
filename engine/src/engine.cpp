@@ -40,7 +40,7 @@ void Engine::setupPlayers() {
     Color whiteColor = {255, 255, 255};
     Color blueColor = {0, 0, 255};
     auto rectA = std::make_unique<Rectangle>(Vector2(300, 300), 200, 100, blueColor);
-    auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 0.9f, 0.0f);
+    auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 1.0f, 0.0f);
 
     auto rectB = std::make_unique<Rectangle>(Vector2(400, 150), 200, 100, whiteColor);
     auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 0.5f, 0.0f);
@@ -53,7 +53,7 @@ void Engine::setupPlayers() {
     add_rigid_body(std::move(rb3));
 
     auto circleA = std::make_unique<Circle>(Vector2(600, 300), 60, whiteColor);
-    auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 0.5f, 0.0f);
+    auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
     add_rigid_body(std::move(rb4));
 
     /*
@@ -92,6 +92,11 @@ void Engine::setupPlayers() {
     engine.add_rigid_body(std::move(rb1));
     engine.add_rigid_body(std::move(rb2));
     */
+    
+    // Color green = {0, 255, 0};
+    // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100), 50, 50, green);
+    // auto staticRb = std::make_unique<RigidBody>(std::move(staticRect), 0.0f);
+    // add_rigid_body(std::move(staticRb));
 }
 
 void Engine::setupWorldConstraints() {
@@ -106,7 +111,7 @@ void Engine::setupWorldConstraints() {
     add_rigid_body(std::move(rbRightWall));
 
     auto rectFloor = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT + 5), WINDOW_WIDTH, 10, green);
-    auto rbFloor = std::make_unique<RigidBody>(std::move(rectFloor), 0.0f, 0.9f);
+    auto rbFloor = std::make_unique<RigidBody>(std::move(rectFloor), 0.0f);
     add_rigid_body(std::move(rbFloor));
 
     auto rectCeiling = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, 0 - 6), WINDOW_WIDTH, 10, green);

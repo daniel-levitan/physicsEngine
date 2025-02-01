@@ -14,6 +14,10 @@ const Vector2 Manifold::getNormal() const {
 	return normal;
 }
 
+void Manifold::setNormal(Vector2 newNormal) {
+    normal = newNormal;
+}
+
 const Vector2 Manifold::getPenetrationPoint() const {
 	return penetrationPoint;
 }
