@@ -19,24 +19,26 @@ protected:
     float angularVelocity;
 
     Material material;
-    bool isKinematicState = false;
+    bool isStaticState = false;
 
     Vector2 impulse;
 
 public:
-    RigidBody(std::unique_ptr<Shape> shape, float mass = 1.0f, float bounce = 1.0f, float friction = 0.0f);
+    RigidBody(std::unique_ptr<Shape> shape, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
 
     // Force and velocity methods
     void addForce(Vector2 force);
     void setForce(Vector2 force);
-    void addVelocity(Vector2 velocity);
-    void setVelocity(Vector2 velocity);
-    Vector2 getVelocity() { return velocityAccumulator; };
+    void addLinearVelocity(Vector2 velocity);
+    void setLinearVelocity(Vector2 velocity);
+    Vector2 getLinearVelocity() { return velocityAccumulator; };
 
     float getMass() { return mass; };
     float getInvertedMass() { return invertedMass; };
+    float getInvertedInertia() { return invertedInertia; };
 
     float getAngularVelocity() { return angularVelocity; };
+    void setAngularVelocity(float newAngularVelocity);
 
     void setImpulse(Vector2 impulse);
     Vector2 getImpulse() { return impulse;};
@@ -49,7 +51,7 @@ public:
     // Methods for updating the position
     void update(float delta_time);
     Vector2 integrate(float delta_time);
-    bool isKinematic() { return isKinematicState; };
+    bool isStatic() { return isStaticState; };
 
     // Inertia
     void calculateInertia(Shape& s);

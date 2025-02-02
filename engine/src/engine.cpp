@@ -45,53 +45,20 @@ void Engine::setupPlayers() {
     auto rectB = std::make_unique<Rectangle>(Vector2(400, 150), 200, 100, whiteColor);
     auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 0.5f, 0.0f);
     
-    auto rectC = std::make_unique<Rectangle>(Vector2(180, 150), 200, 100, whiteColor);
-    auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 0.5f, 0.0f);
+    // auto rectC = std::make_unique<Rectangle>(Vector2(180, 150), 200, 100, whiteColor);
+    // auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 0.5f, 0.0f);
 
     add_rigid_body(std::move(rb1));
     add_rigid_body(std::move(rb2));
-    add_rigid_body(std::move(rb3));
+    // add_rigid_body(std::move(rb3));
 
     auto circleA = std::make_unique<Circle>(Vector2(600, 300), 60, whiteColor);
     auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
     add_rigid_body(std::move(rb4));
 
-    /*
-    // auto circleA = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 0, WINDOW_HEIGHT/4), 70, whiteColor);
-    auto circleA = std::make_unique<Circle>(Vector2(100, 300), 30, whiteColor);
-    auto rb1 = std::make_unique<RigidBody>(std::move(circleA), 10.0f, 1.0f, 0.0f);
-
-    auto circleB = std::make_unique<Circle>(Vector2(300, 300), 60, whiteColor);
-    auto rb2 = std::make_unique<RigidBody>(std::move(circleB), 50.0f, 1.0f, 0.0f);
-    */
-
-    /*
-    auto circleC = std::make_unique<Circle>(Vector2(500, 300), 50, whiteColor);
-    auto rb3 = std::make_unique<RigidBody>(std::move(circleC), 10.0f, 1.0f, 0.0f);
-
-    auto circleD = std::make_unique<Circle>(Vector2(700, 300), 50, whiteColor);
-    auto rb4 = std::make_unique<RigidBody>(std::move(circleD), 10.0f, 1.0f, 0.0f);
-    // auto circleC = std::make_unique<Circle>(Vector2(WINDOW_WIDTH/2 + 160, WINDOW_HEIGHT/4), 50, whiteColor);
-    // auto rb3 = std::make_unique<RigidBody>(std::move(circleC), 10.0f, 0.8f, 0.0f);   
-    */
-
-    /*
-    engine.add_rigid_body(std::move(rb4));
-    engine.add_rigid_body(std::move(rb5));
-    engine.add_rigid_body(std::move(rb6));
-    */
-
-    /*
-    auto rectA = std::make_unique<Rectangle>(Vector2(200, 500), 200, 80, whiteColor);
-    auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 10.0f, 1.0f, 0.0f);
-
-    auto rectB = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/4 + 20, WINDOW_HEIGHT/2), 80, 200, whiteColor);
-    rectB->rotate(1.3);
-    auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 10.0f, 1.0f, 0.0f);
-                                            
-    engine.add_rigid_body(std::move(rb1));
-    engine.add_rigid_body(std::move(rb2));
-    */
+    auto circleB = std::make_unique<Circle>(Vector2(600, 100), 60, whiteColor);
+    auto rb5 = std::make_unique<RigidBody>(std::move(circleB), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb5));
     
     // Color green = {0, 255, 0};
     // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100), 50, 50, green);
@@ -141,7 +108,7 @@ bool Engine::initialization() {
 	last_frame_time = 0;
     
     setupPlayers();
-    setupWorldConstraints();
+    // setupWorldConstraints();
     setupScenario();
 	return true;
 }
@@ -241,7 +208,7 @@ void Engine::updating() {
     if (f1) {
         for (const auto& rb : rigidBodies) {            
             rb->setForce(Vector2::Null);
-            rb->setVelocity(Vector2::Null);
+            rb->setLinearVelocity(Vector2::Null);
 
             rb->getShape()->resetPosition();
             rb->getShape()->setOverlap(false);
@@ -249,7 +216,7 @@ void Engine::updating() {
     }
 
     RigidBody* rb1 = rigidBodies[0].get();
-    RigidBody* rb2 = rigidBodies[1].get();
+    RigidBody* rb2 = rigidBodies[2].get();
     
     // Shape A/Player 1
     if (move_left)    { rb2->addForce(Vector2(-FORCE, 0)); }
@@ -297,23 +264,24 @@ void Engine::updating() {
 
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
-        gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
-        rb->addForce(gravitationalForce);
+        // gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
+        // rb->addForce(gravitationalForce);
         rb->update(delta_time);
     }
 
-     for (size_t i = 0; i < rigidBodies.size(); i++) {
-        for (size_t j = 0; j < rigidBodies.size(); j++) {
-            if (rigidBodies[i] == rigidBodies[j]) continue;
+     for (size_t i = 0; i < rigidBodies.size() - 1; i++) {
+        for (size_t j = i + 1; j < rigidBodies.size(); j++) {
  
             bool flag = false;
             auto result = Collision::collisionDetection(*rigidBodies[i].get(), *rigidBodies[j].get());
             // auto result = Collision::checkCollision(*rigidBodies[i]->getShape(), *rigidBodies[j]->getShape());
             if (result) {
                 flag = true;                
-                Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
-                Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                // Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                // Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
 
+                Collision::simplePositionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                
                 if (debugMode) {
                     std::string str = result->toString();
                     text1->setMessage(str);

@@ -3,16 +3,16 @@
 #include "../engine/src/constants.h"
 
 
-RigidBody::RigidBody(std::unique_ptr<Shape> shape, float mass, float bounce, float friction) 
+RigidBody::RigidBody(std::unique_ptr<Shape> shape, float mass, float restitution, float friction) 
     : shape(std::move(shape)), mass(mass), forceAccumulator(Vector2::Null), velocityAccumulator(Vector2::Null),
-      angularVelocity(0), material(bounce, friction), isKinematicState(false) {
+      angularVelocity(0), material(restitution, friction), isStaticState(false) {
     
     if (mass > 0.00001) {
         invertedMass = 1.0f / mass;
     } else {
         mass = 0.0f;
         invertedMass = 0.0f;
-        isKinematicState = true;
+        isStaticState = true;
     }
     
     inertia = this->shape->calculateInertia(mass);
@@ -32,12 +32,16 @@ void RigidBody::setForce(Vector2 force) {
     forceAccumulator = force.copy();
 }
 
-void RigidBody::addVelocity(Vector2 velocity) {
+void RigidBody::addLinearVelocity(Vector2 velocity) {
     velocityAccumulator.add(velocity);
 }
 
-void RigidBody::setVelocity(Vector2 velocity) {
+void RigidBody::setLinearVelocity(Vector2 velocity) {
     velocityAccumulator = velocity.copy();
+}
+
+void RigidBody::setAngularVelocity(float newAngularVelocity) {
+    angularVelocity = newAngularVelocity;
 }
 
 void RigidBody::setImpulse(Vector2 newImpulse) {

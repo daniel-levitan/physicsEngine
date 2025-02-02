@@ -76,7 +76,7 @@ namespace Collision {
     std::unique_ptr<Manifold> collisionDetection(RigidBody& rb1, RigidBody& rb2);
     void positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
     void resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
-
+    void simplePositionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
 }
 
 #endif

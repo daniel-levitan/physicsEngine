@@ -787,40 +787,64 @@ std::unique_ptr<Manifold> Collision::collisionDetection(RigidBody& rb1, RigidBod
 }
 
 void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
-
+	// This controls if the body is able to move or not
+	if (rb1.isStatic() && rb2.isStatic())
+		return;
+	
 	// Calculating the linear impulse
 	// For some reason I had to invert this here and the impulse direction
-	Vector2 direction = Sub(rb1.getShape()->getCentroid(), rb2.getShape()->getCentroid());
-	if (direction.dotProduct(manifold.getNormal()) > 0)
-		manifold.setNormal(Scale(manifold.getNormal(), -1));
+	// Vector2 direction = Sub(rb1.getShape()->getCentroid(), rb2.getShape()->getCentroid());
+	// if (direction.dotProduct(manifold.getNormal()) > 0)
+	// 	manifold.setNormal(Scale(manifold.getNormal(), -1));
 
-	Vector2 relativeVelocity = Sub(rb2.getVelocity(), rb1.getVelocity());
-	double relativeVelocityProjected = relativeVelocity.dotProduct(manifold.getNormal());
+	
+	Vector2 penetrationToCentroidRb1 = Sub(manifold.getPenetrationPoint(), rb1.getShape()->getCentroid());
+	Vector2 penetrationToCentroidRb2 = Sub(manifold.getPenetrationPoint(), rb2.getShape()->getCentroid());
 
-	if (relativeVelocityProjected > 0)
+	Vector2 angularVelocityPenetretationCentroidRb1 = 
+			Vector2(-1 * rb1.getAngularVelocity() * penetrationToCentroidRb1.getY(),
+					rb1.getAngularVelocity() * penetrationToCentroidRb1.getX());
+	Vector2 angularVelocityPenetretationCentroidRb2 = 
+			Vector2(-1 * rb2.getAngularVelocity() * penetrationToCentroidRb2.getY(),
+					rb2.getAngularVelocity() * penetrationToCentroidRb2.getX());
+
+	Vector2 relativeVelocityRb1 = Add(rb1.getLinearVelocity(), angularVelocityPenetretationCentroidRb1);
+	Vector2 relativeVelocityRb2 = Add(rb2.getLinearVelocity(), angularVelocityPenetretationCentroidRb2);
+
+	Vector2 relativeVelocity = Sub(relativeVelocityRb2, relativeVelocityRb1);
+
+	float velocityOnNormal = relativeVelocity.dotProduct(manifold.getNormal());
+
+	if (velocityOnNormal > 0)
 		return;
 
-	// This controls if the body is able to move or not
-	if (rb1.isKinematic() && rb2.isKinematic())
-		return;
-
-	float invertedMassSum = rb1.getInvertedMass() + rb2.getInvertedMass();
 
 	// Restitution Coeficiency - There are two ways to calculate it
 	// float e = 1; 
 	float e = std::min(rb1.getMaterial()->getBounce(), rb2.getMaterial()->getBounce());
-	// float bounceSum = rb1.getMaterial()->getBounce() + rb2.getMaterial()->getBounce();
-	// float e = (2 * rb1.getMaterial()->getBounce() * rb2.getMaterial()->getBounce()) / bounceSum;
-	
-	float j = -1 * (1 + e) * relativeVelocityProjected;
-	j /= invertedMassSum;
+	float penetrationToCentroidCrossNormalRb1 = penetrationToCentroidRb1.cross(manifold.getNormal());
+	float penetrationToCentroidCrossNormalRb2 = penetrationToCentroidRb2.cross(manifold.getNormal());
+
+	float invertedMassSum = rb1.getInvertedMass() + rb2.getInvertedMass();
+
+	float rb1InvertedInertia = rb1.getInvertedInertia();
+	float rb2InvertedInertia = rb2.getInvertedInertia();
+	float crossNSum = penetrationToCentroidCrossNormalRb1 * penetrationToCentroidCrossNormalRb1 * rb1InvertedInertia +
+					  penetrationToCentroidCrossNormalRb2 * penetrationToCentroidCrossNormalRb2 * rb2InvertedInertia;
+
+	float j = -(1 + e) * velocityOnNormal;
+	j /= (invertedMassSum + crossNSum);
 
 	Vector2 impulse = Scale(manifold.getNormal(), j);
-	Vector2 rb1Impulse = Scale(impulse, -1 * rb1.getInvertedMass());
-	Vector2 rb2Impulse = Scale(impulse, +1 * rb2.getInvertedMass());
+	
+	Vector2 rb1Impulse = Scale(impulse, rb1.getInvertedMass());
+	Vector2 rb2Impulse = Scale(impulse, rb2.getInvertedMass());
 
-	rb1.setVelocity(Add(rb1.getVelocity(), rb1Impulse));
-	rb2.setVelocity(Add(rb2.getVelocity(), rb2Impulse));
+	rb1.setLinearVelocity(Sub(rb1.getLinearVelocity(), rb1Impulse));
+	rb2.setLinearVelocity(Add(rb2.getLinearVelocity(), rb2Impulse));
+
+	rb1.setAngularVelocity(rb1.getAngularVelocity() * -penetrationToCentroidCrossNormalRb1 * j * rb1.getInvertedInertia());
+	rb2.setAngularVelocity(rb2.getAngularVelocity() * penetrationToCentroidCrossNormalRb2 * j * rb2.getInvertedInertia());
 }
 
 void Collision::positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
@@ -831,17 +855,28 @@ void Collision::positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& man
 	Vector2 rb1Movement = Scale(correctionVector, rb1.getInvertedMass() * +1);
 	Vector2 rb2Movement = Scale(correctionVector, rb2.getInvertedMass() * -1);
 
-	// if (!rb1.isKinematic())
+	// if (!rb1.isStatic())
 		// rb1.getShape()->move(rb1Movement);
 
-	// if (!rb2.isKinematic())
+	// if (!rb2.isStatic())
 		// rb2.getShape()->move(rb2Movement);
 
 	float correctionScale = 0.6;
-	if (!rb1.isKinematic())
+	if (!rb1.isStatic())
 		rb1.getShape()->move(Scale(rb1Movement, correctionScale));
 
-	if (!rb2.isKinematic())
+	if (!rb2.isStatic())
 		rb2.getShape()->move(Scale(rb2Movement, correctionScale));
 }
+
+
+void Collision::simplePositionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+	Vector2 push;
+    push = Scale(manifold.getNormal(), manifold.getDepth() * 0.5);
+    rb1.getShape()->move(push);
+
+    push = Scale(manifold.getNormal(), manifold.getDepth() * -0.5);
+    rb2.getShape()->move(push);
+}
+	
 
