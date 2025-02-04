@@ -22,6 +22,7 @@ public:
     const Vector2 getPenetrationPoint() const;
 
     void setNormal(Vector2 newNormal);
+    void setDepth(float newDepth);
 
     void draw(SDL_Renderer* renderer) const;
 

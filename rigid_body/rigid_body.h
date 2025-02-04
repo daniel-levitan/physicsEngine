@@ -10,7 +10,7 @@ class RigidBody {
 protected:
     std::unique_ptr<Shape> shape;
     float mass;
-    float invertedMass;
+    float invertMass;
     float inertia;
     float invertedInertia;
 
@@ -29,16 +29,18 @@ public:
     // Force and velocity methods
     void addForce(Vector2 force);
     void setForce(Vector2 force);
+    
     void addLinearVelocity(Vector2 velocity);
     void setLinearVelocity(Vector2 velocity);
     Vector2 getLinearVelocity() { return velocityAccumulator; };
 
     float getMass() { return mass; };
-    float getInvertedMass() { return invertedMass; };
+    float getInvertMass() { return invertMass; };
     float getInvertedInertia() { return invertedInertia; };
 
+    void addAngularVelocity(float velocity);
     float getAngularVelocity() { return angularVelocity; };
-    void setAngularVelocity(float newAngularVelocity);
+    void setAngularVelocity(float angularVelocity);
 
     void setImpulse(Vector2 impulse);
     Vector2 getImpulse() { return impulse;};
@@ -46,7 +48,6 @@ public:
     void draw(SDL_Renderer* renderer);
     Shape* getShape() { return shape.get(); }     // std::unique_ptr<Shape> getShape();
     Material* getMaterial() { return &material; };
-    // Material* getMaterial() { return material.get(); };
 
     // Methods for updating the position
     void update(float delta_time);

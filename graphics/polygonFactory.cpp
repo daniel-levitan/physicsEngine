@@ -5,7 +5,8 @@
 #include "../engine/src/constants.h"
 #include <math.h>
 
-std::unique_ptr<Polygon> PolygonFactory::createPolygon(int numOfSides, Vector2 center, float radius, Color color) {
+// std::unique_ptr<Polygon> PolygonFactory::createPolygon(int numOfSides, Vector2 center, float radius, Color color) {
+std::unique_ptr<Polygon> PolygonFactory::createPolygon(int numOfSides, Vector2 center, float radius, SDL_Color color) {
 	float fTheta = M_PI * 2.0f / (float)numOfSides;	
 	std::vector<Vector2> vertices;
 

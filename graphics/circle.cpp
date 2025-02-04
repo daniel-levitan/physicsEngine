@@ -2,18 +2,19 @@
 #include "circle.h"
 #include "shape.h"
 #include "drawing.h"
+#include "../engine/src/constants.h"
+
 
 void Circle::draw(SDL_Renderer* renderer) const {
     Shape::draw(renderer);
 
-    // SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
-    
     if (overlap) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
+        SDL_Color temp_color = OVERLAP_COLOR;
+        SDL_SetRenderDrawColor(renderer, temp_color.r, temp_color.g, temp_color.b, 255); // Redish
     } else {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
     }
-
+    
     for (int angle = 0; angle < 360; angle++) {
         float rad = angle * (M_PI / 180);  // Convert angle to radians
         int x = center.getX() + radius * cos(rad);
@@ -32,10 +33,6 @@ void Circle::resetPosition() {
 const float Circle::getRadius() const {
     return radius;
 }
-
-void Circle::setCentroid(const Vector2& newCentroid) {
-    centroid = newCentroid;
-} 
 
 void Circle::move(Vector2 delta) {
     Shape::move(delta);

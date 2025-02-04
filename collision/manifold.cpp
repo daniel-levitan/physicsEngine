@@ -6,28 +6,31 @@
 #include "../graphics/drawing.h"
 #include "../utils/utils.h"
 
-const float Manifold::getDepth() const {
-	return depth;
-}
+const float Manifold::getDepth() const { return depth; }
     
-const Vector2 Manifold::getNormal() const {
-	return normal;
-}
+const Vector2 Manifold::getNormal() const { return normal; }
 
-void Manifold::setNormal(Vector2 newNormal) {
-    normal = newNormal;
-}
+void Manifold::setNormal(Vector2 newNormal) { normal = newNormal; }
+
+void Manifold::setDepth(float newDepth) { depth = newDepth; }
 
 const Vector2 Manifold::getPenetrationPoint() const {
 	return penetrationPoint;
 }
 
+/** The normal vector is draw from a start point which is calculated from the
+ *  contact point. Start Point = Contact Point - (Depth * -Normal)
+ *  The minus indicate that we are going in the opposite direction of the 
+ *  normal.
+ * 
+ *  The normal vector always points from a point within the shape towards 
+ *  the contact point. It has magnitude of depth and its direction
+ *  follows the normal.
+ */
 void Manifold::draw(SDL_Renderer* renderer) const {
-    // const Vector2& startPoint = penetrationPoint + Scale(normal, depth * -10);
     const Vector2& startPoint = Add(penetrationPoint, Scale(normal, depth * -1));
     Drawing::drawArrow(renderer, startPoint, penetrationPoint);
     Drawing::DrawFilledCircle(renderer, startPoint.getX(), startPoint.getY(), 3);
-
 }
 
 std::string Manifold::toString() {

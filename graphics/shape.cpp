@@ -1,23 +1,38 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-#include <SDL.h>
+// #include <SDL.h>
 #include "shape.h"
 #include "drawing.h"
 #include "helper.h"
+#include "colors.h"
+#include "../engine/src/constants.h"
 
-// Shape::~Shape() {
-// }
+int Shape::instances = 0;
 
 const std::vector<Vector2>& Shape::getVertices() const {
     return vertices;
+}
+
+void Shape::setCentroid(const Vector2& newCentroid) {
+    if (centroid == Vector2::Null) {
+        centroid = newCentroid;
+    }
+
+    
+    if (!text) {  // Create the text object only if it doesn't exist
+        const std::string message = std::to_string(instances);
+        text = new Text("../assets/fonts/Arial-Unicode.ttf", message, 10, centroid, color);
+    } else {
+        text->setPosition(centroid); // Update existing text position
+    }
 }
 
 Vector2 Shape::getCentroid() const {
     return centroid;
 }
 
-Color Shape::getColor() {
+SDL_Color Shape::getColor() {
     return color;
 }
 
@@ -29,11 +44,7 @@ bool Shape::getOverlap() {
     return overlap;
 }
 
-void Shape::setCentroid(const Vector2& newCentroid) {
-    centroid = newCentroid;    
-}
-
-void Shape::setColor(Color newColor) {
+void Shape::setColor(SDL_Color newColor) {
     color = newColor;
 }
 
@@ -84,7 +95,7 @@ Vector2 Shape::calculateCentroid() const {
     centroid.setX(Cx / (6.0f * area));
     centroid.setY(Cy / (6.0f * area));
 
-    return centroid;    
+    return centroid;
 }
 
 const Vector2 Shape::rotateAroundPoint(Vector2 vec, Vector2 point, float radians) const {
@@ -104,6 +115,8 @@ void Shape::move(Vector2 delta) {
         vertices[i] = vertices[i] + delta;
     }
     centroid = centroid + delta;
+    if (text)
+        text->setPosition(centroid); // Update existing text position
 }
 
 void Shape::rotate(float radiansDelta) {
@@ -116,9 +129,14 @@ void Shape::rotate(float radiansDelta) {
 
 // Default draw implementation
 void Shape::draw(SDL_Renderer* renderer) const {
+
+    if (text)
+        text->render(renderer);
+
     // Selecting the color depending on state
     if (overlap) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
+        SDL_Color temp_color = OVERLAP_COLOR;
+        SDL_SetRenderDrawColor(renderer, temp_color.r, temp_color.g, temp_color.b, 255); // Redish
     } else {
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
     }

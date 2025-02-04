@@ -37,8 +37,6 @@ public:
         leftToRight = 1; 
     }
 
-
-
     void render(SDL_Renderer* renderer);    // , SDL_Color color, int x, int y);
 };
 

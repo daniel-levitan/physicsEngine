@@ -9,6 +9,7 @@
 #define _polygon_h
 
 #include <iostream>
+#include <SDL.h>
 #include "shape.h"
 #include "../vector/vector2.h"
 #include "../collision/manifold.h"
@@ -19,7 +20,8 @@ private:
       std::vector<Vector2> normals;
 
 public:
-      Polygon(const std::vector<Vector2>& vertices, Color color) : Shape(vertices, color) {
+      // Polygon(const std::vector<Vector2>& vertices, Color color) : Shape(vertices, color) {
+      Polygon(const std::vector<Vector2>& vertices, SDL_Color color) : Shape(vertices, color) {
          normals = calculateNormals();
       }
 
@@ -29,27 +31,18 @@ public:
 
       void rotate(float radiansDelta) override;
 
-
-      // The following function is WRONG. I will change it later.
-      float getDistanceFromCentroidToFloor() override { return centroid.getY(); };
-
       std::vector<Vector2> calculateNormals() const;
 
       std::unique_ptr<Manifold> acceptCollision(Shape& other) override {
-      // bool acceptCollision(Shape& other) override {
          return other.collideWith(*this);
       }
 
       std::unique_ptr<Manifold> collideWith(Circle& circle) override {
-      // bool collideWith(Circle& circle) override {
-         return Collision::checkCirclePolygon(circle, *this);
+         return Collision::checkCirclePolygon(circle, *this);         
       }
 
-      // bool collideWith(Polygon& polygon) override {
       std::unique_ptr<Manifold> collideWith(Polygon& polygon) override {
-         // return Collision::intersectPolygons(*this, polygon);
          return Collision::resPolygonPolygonSAT(*this, polygon);
-         // return Collision::checkPolygonPolygon(*this, polygon);  
       }
 
       float calculateInertia(float mass) override {

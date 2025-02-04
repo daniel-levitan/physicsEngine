@@ -1,13 +1,16 @@
 #include <iostream>
 #include <SDL.h>
 #include "engine.h"
+#include "../graphics/colors.h"
 #include "../graphics/shape.h"
 #include "../graphics/circle.h"
 #include "../graphics/polygon.h"
+#include "../graphics/polygonFactory.h"
 #include "../graphics/rectangle.h"
 #include "../collision/collision.h"
 #include "../utils/utils.h"
 #include "../../vector/vector2.h"
+
 
 Engine::Engine() 
     : engine_is_running(false),       
@@ -16,12 +19,11 @@ Engine::Engine()
 	try {
     	graphics = std::make_unique<Graphics>(WINDOW_WIDTH, WINDOW_HEIGHT, "Game Window");
         engine_is_running = true;  // If no exception, graphics initialization is successful
-        // initialization();
 
         f1 = false;
         f3 = false;
         debugMode = false;
-        previousF3State = false;
+        previousF3State = true;
 
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
@@ -36,69 +38,159 @@ Engine::Engine()
 }
 
 void Engine::setupPlayers() {
-    /* Now we are going to work with rigid bodies */
-    Color whiteColor = {255, 255, 255};
-    Color blueColor = {0, 0, 255};
-    auto rectA = std::make_unique<Rectangle>(Vector2(300, 300), 200, 100, blueColor);
-    auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 1.0f, 0.0f);
-
-    auto rectB = std::make_unique<Rectangle>(Vector2(400, 150), 200, 100, whiteColor);
-    auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 0.5f, 0.0f);
-    
-    // auto rectC = std::make_unique<Rectangle>(Vector2(180, 150), 200, 100, whiteColor);
-    // auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 0.5f, 0.0f);
-
+    // Testing rotation
+    auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT/2), 200, 100, BRIGHT_BLUE);
+    auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
     add_rigid_body(std::move(rb1));
+
+    auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
     add_rigid_body(std::move(rb2));
-    // add_rigid_body(std::move(rb3));
 
-    auto circleA = std::make_unique<Circle>(Vector2(600, 300), 60, whiteColor);
-    auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
-    add_rigid_body(std::move(rb4));
+    auto rect3 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT/2 + 130), 200, 100, WHITE);
+    auto rb3 = std::make_unique<RigidBody>(std::move(rect3), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb3));
 
-    auto circleB = std::make_unique<Circle>(Vector2(600, 100), 60, whiteColor);
-    auto rb5 = std::make_unique<RigidBody>(std::move(circleB), 40.0f, 1.0f, 0.0f);
-    add_rigid_body(std::move(rb5));
-    
-    // Color green = {0, 255, 0};
-    // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100), 50, 50, green);
+
+    // Testing positional correction
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 4 + 80, WINDOW_HEIGHT/4), 44, 44, LIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 4 * 3, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb2));
+
+    // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 200), 50, 50, GREEN);
     // auto staticRb = std::make_unique<RigidBody>(std::move(staticRect), 0.0f);
     // add_rigid_body(std::move(staticRb));
+
+
+    // Polygon vs Polygon
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT/2), 200, 100, BRIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb2));
+
+    // auto rect3 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/4), 200, 100, GOLDEN_YELLOW);
+    // auto rb3 = std::make_unique<RigidBody>(std::move(rect3), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb3));
+
+
+    // Circle vs Circle
+    // auto circ1 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 - 80, WINDOW_HEIGHT/2), 60, BRIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(circ1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto circ2 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 + 50, WINDOW_HEIGHT/2), 60, GOLD_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(circ2), 40.0f, 1.0f, 0.0f);    
+    // add_rigid_body(std::move(rb2));
+
+
+    // Polygon vs Circle
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT/2), 200, 100, BRIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto circ2 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 + 50, WINDOW_HEIGHT/2), 60, GOLD_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(circ2), 40.0f, 1.0f, 0.0f);    
+    // add_rigid_body(std::move(rb2));
+
+
+    // Circle vs Polygon
+    // auto circ1 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 - 80, WINDOW_HEIGHT/2), 60, BRIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(circ1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb2));
+
+
+    // Polygon vs Circle vs Polygon
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 4, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
+
+    // auto circ1 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 , WINDOW_HEIGHT/2), 60, BRIGHT_BLUE);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(circ1), 40.0f, 1.0f, 0.0f);    
+
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 4 * 3, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb3 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
+    
+    // auto circ2 = std::make_unique<Circle>(Vector2(WINDOW_WIDTH / 2 , WINDOW_HEIGHT/4), 60, BLUE_GREEN);
+    // auto rb4 = std::make_unique<RigidBody>(std::move(circ2), 40.0f, 1.0f, 0.0f);    
+    // add_rigid_body(std::move(rb1)); // Polígono
+    // add_rigid_body(std::move(rb2)); // Círculo
+    // add_rigid_body(std::move(rb3)); // Polígono
+    // add_rigid_body(std::move(rb4)); // Círculo
+
+
+    // Bodies coliding simulation
+    // auto rectA = std::make_unique<Rectangle>(Vector2(300, 400), 44, 44, LIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
+
+    // auto rectB = std::make_unique<Rectangle>(Vector2(400, 250), 44, 44, GOLDEN_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb2));
+
+    // auto rectC = std::make_unique<Rectangle>(Vector2(180, 250), 44, 44, ACQUAMARINE);
+    // auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb3));
+
+    // auto circleA = std::make_unique<Circle>(Vector2(600, 300), 25, LEMON_YELLOW);
+    // auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb4));
+
+    // auto circleB = std::make_unique<Circle>(Vector2(600, 100), 25, SAFFRON_YELLOW);
+    // auto rb5 = std::make_unique<RigidBody>(std::move(circleB), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb5));
+ 
+    // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 200), 50, 50, GREEN);
+    // auto staticRb = std::make_unique<RigidBody>(std::move(staticRect), 0.0f);
+    // add_rigid_body(std::move(staticRb));
+
+    // auto pent = PolygonFactory::createPolygon(5, Vector2(200, 200), 60, WHITE);
+    // auto rb6 =  std::make_unique<RigidBody>(std::move(pent), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb6));
+
+    // auto tri = PolygonFactory::createPolygon(3, Vector2(400, 400), 60, WHITE);
+    // auto rb7 =  std::make_unique<RigidBody>(std::move(tri), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb7));
 }
 
 void Engine::setupWorldConstraints() {
     /* The following lines add the boundaries to the "world" */
-    Color green = {0, 255, 0};
-    auto rectLeftWall = std::make_unique<Rectangle>(Vector2(0 - 6, WINDOW_HEIGHT/2), 10, WINDOW_HEIGHT, green);
+    auto rectLeftWall = std::make_unique<Rectangle>(Vector2(0 - 6, WINDOW_HEIGHT/2), 10, WINDOW_HEIGHT, GREEN);
     auto rbLeftWall = std::make_unique<RigidBody>(std::move(rectLeftWall), 0.0f);
     add_rigid_body(std::move(rbLeftWall));
 
-    auto rectRightWall = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH + 6, WINDOW_HEIGHT/2), 10, WINDOW_HEIGHT, green);
+    auto rectRightWall = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH + 6, WINDOW_HEIGHT/2), 10, WINDOW_HEIGHT, GREEN);
     auto rbRightWall = std::make_unique<RigidBody>(std::move(rectRightWall), 0.0f);
     add_rigid_body(std::move(rbRightWall));
 
-    auto rectFloor = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT + 5), WINDOW_WIDTH, 10, green);
+    auto rectFloor = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT + 5), WINDOW_WIDTH, 10, GREEN);
     auto rbFloor = std::make_unique<RigidBody>(std::move(rectFloor), 0.0f);
     add_rigid_body(std::move(rbFloor));
 
-    auto rectCeiling = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, 0 - 6), WINDOW_WIDTH, 10, green);
+    auto rectCeiling = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, 0 - 6), WINDOW_WIDTH, 10, GREEN);
     auto rbCeiling = std::make_unique<RigidBody>(std::move(rectCeiling), 0.0f);
     add_rigid_body(std::move(rbCeiling));
 }
 
 
-
 void Engine::setupScenario() {
-    SDL_Color white = {255, 255, 255, 255};
-    /* Text on screen */
     const std::string message = " ";
-    auto text = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, 10), white);
+    auto text = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, 10), WHITE);
     add_text(std::move(text));
     
-    auto text1 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(WINDOW_WIDTH/2, 10), white);  
+    auto text1 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(WINDOW_WIDTH/2, 10), WHITE);  
     add_text(std::move(text1));
 
-    auto text2 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, WINDOW_HEIGHT - 70), white);
+    auto text2 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, WINDOW_HEIGHT - 70), WHITE);
     add_text(std::move(text2));
 }
 
@@ -106,9 +198,9 @@ void Engine::setupScenario() {
 bool Engine::initialization() {
     std::cout << "initialization called" << std::endl;
 	last_frame_time = 0;
-    
+        
     setupPlayers();
-    // setupWorldConstraints();
+    setupWorldConstraints();
     setupScenario();
 	return true;
 }
@@ -174,26 +266,18 @@ void Engine::input_processing() {
 
 void Engine::updating() {
 	float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
-    
-    // Calculating deltas
-    // float movement_speed = 1.0f * MOVEMENT_SPEED;  
-    // float movement_delta_x = 0.0f, movement_delta_y = 0.0f;
-    // float movement_delta_xB = 0.0, movement_delta_yB = 0.0f;
-
-    // float rotate_speed = 1.0f * ROTATION_SPEED;
-    // float rotate_deltaA = 0.0f, rotate_deltaB = 0.0f;
 
     // Text recovery
-    Text* text = texts[0].get();
+    // Text* text = texts[0].get();  // Upper right
     Text* text1 = texts[1].get();
     Text* text2 = texts[2].get(); // Bottow left
 
     text1->setDirectionRightToLeft();
     if (debugMode) {
-        text->setMessage("Debugging");
+        // text->setMessage("Debugging");
     } else {
-        text->setMessage(" "); // Not debugging
-        text1->setMessage(" ");
+        // text->setMessage(" "); // Not debugging
+        // text1->setMessage(" ");
     }
     
     for (const auto& rb : rigidBodies) {
@@ -208,6 +292,7 @@ void Engine::updating() {
     if (f1) {
         for (const auto& rb : rigidBodies) {            
             rb->setForce(Vector2::Null);
+            rb->setAngularVelocity(0.0f);
             rb->setLinearVelocity(Vector2::Null);
 
             rb->getShape()->resetPosition();
@@ -215,43 +300,25 @@ void Engine::updating() {
         }        
     }
 
-    RigidBody* rb1 = rigidBodies[0].get();
-    RigidBody* rb2 = rigidBodies[2].get();
+
+    RigidBody* rb1 = rigidBodies[0].get();    
+    RigidBody* rb2 = rigidBodies[1].get();
     
     // Shape A/Player 1
     if (move_left)    { rb2->addForce(Vector2(-FORCE, 0)); }
     if (move_right)   { rb2->addForce(Vector2(FORCE, 0)); }
     if (move_up)      { rb2->addForce(Vector2(0, -FORCE)); } 
     if (move_down)    { rb2->addForce(Vector2(0, FORCE)); }
-    // if (rotate_left)  { rotate_deltaA -= rotate_speed * delta_time; }
-    // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
-    // Vector2 deltaA(movement_delta_x, movement_delta_y);
-
-    // if (move_left)    { movement_delta_x -= movement_speed * delta_time; }
-    // if (move_right)   { movement_delta_x += movement_speed * delta_time; }
-    // if (move_up)      { movement_delta_y -= movement_speed * delta_time;  }
-    // if (move_down)    { movement_delta_y += movement_speed * delta_time; }
-    // if (rotate_left)  { rotate_deltaA -= rotate_speed * delta_time; }
-    // if (rotate_right) { rotate_deltaA += rotate_speed * delta_time; }
-    // Vector2 deltaA(movement_delta_x, movement_delta_y); 
-
+    if (rotate_left)  { rb2->addAngularVelocity(-ANGULAR_F); }
+    if (rotate_right) { rb2->addAngularVelocity(ANGULAR_F); }
 
     // Shape B/Player 2
     if (move_leftB)    { rb1->addForce(Vector2(-FORCE, 0)); }
     if (move_rightB)   { rb1->addForce(Vector2(FORCE, 0)); }
     if (move_upB)      { rb1->addForce(Vector2(0, -FORCE)); }
     if (move_downB)    { rb1->addForce(Vector2(0, FORCE)); }
-    // if (rotate_leftB)  { rotate_deltaB -= rotate_speed * delta_time; }
-    // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
-    // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
-
-    // if (move_leftB)    { movement_delta_xB -= movement_speed * delta_time; }
-    // if (move_rightB)   { movement_delta_xB += movement_speed * delta_time; }
-    // if (move_upB)      { movement_delta_yB -= movement_speed * delta_time; }
-    // if (move_downB)    { movement_delta_yB += movement_speed * delta_time; }
-    // if (rotate_leftB)  { rotate_deltaB -= rotate_speed * delta_time; }
-    // if (rotate_rightB) { rotate_deltaB += rotate_speed * delta_time; }
-    // Vector2 deltaB(movement_delta_xB, movement_delta_yB);
+    if (rotate_leftB)  { rb1->addAngularVelocity(-ANGULAR_F); }
+    if (rotate_rightB) { rb1->addAngularVelocity(ANGULAR_F); }
 
     if (debugMode) {
         std::string str = rb2->toStringFandV();
@@ -261,11 +328,10 @@ void Engine::updating() {
         text2->setMessage(str);
     }
 
-
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
-        // gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
-        // rb->addForce(gravitationalForce);
+        gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
+        rb->addForce(gravitationalForce);
         rb->update(delta_time);
     }
 
@@ -276,12 +342,18 @@ void Engine::updating() {
             auto result = Collision::collisionDetection(*rigidBodies[i].get(), *rigidBodies[j].get());
             // auto result = Collision::checkCollision(*rigidBodies[i]->getShape(), *rigidBodies[j]->getShape());
             if (result) {
-                flag = true;                
-                // Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
-                // Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
-
-                Collision::simplePositionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                flag = true;           
                 
+                if (!debugMode) {
+                    // To be used when moving without physics
+                    // Collision::simplePositionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+    
+                    // Resolving linear collisions(no angular movement)
+                    Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                    Collision::resolveLinearCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                    // Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                }
+
                 if (debugMode) {
                     std::string str = result->toString();
                     text1->setMessage(str);
@@ -302,7 +374,7 @@ void Engine::updating() {
 }
 
 void Engine::rendering() {
-	graphics->clearScreen(0, 0, 0, 255);  // Clear screen using the Graphics object
+	graphics->clearScreen(BLACK.r, BLACK.g, BLACK.b, 255);  // Clear screen using the Graphics object
 
     for (const auto& shape : shapes) {
         shape->draw(graphics->getRenderer());  // Use Graphics renderer to draw shapes

@@ -1,8 +1,12 @@
 #ifndef _constants_h
 #define _constants_h
 
+#include "../../graphics/colors.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+#define OVERLAP_COLOR CORAL_PINK_RED
 
 #define SPEED 150
 
@@ -10,9 +14,10 @@
 #define ROTATION_SPEED 5
 
 #define FORCE 10000
+#define ANGULAR_F 0.5f
 
-#define DAMPING 0.99f // This will slow down the velocity. It is like the air resistance
-// #define DAMPING 1
+// #define DAMPING 0.99f // This will slow down the velocity. It is like the air resistance
+#define DAMPING 1
 
 enum class CollisionMode {
 	PIXEL,

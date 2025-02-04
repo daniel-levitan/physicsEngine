@@ -8,7 +8,8 @@
 class PolygonFactory : public Polygon {
 
 public:
-    static std::unique_ptr<Polygon> createPolygon(int numOfSides, Vector2 center, float radius, Color color);
+    // static std::unique_ptr<Polygon> createPolygon(int numOfSides, Vector2 center, float radius, Color color);
+    static std::unique_ptr<Polygon> createPolygon(int numOfSides, Vector2 center, float radius, SDL_Color color);
 
 };
 

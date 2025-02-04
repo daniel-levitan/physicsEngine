@@ -3,17 +3,17 @@
 
 class Material {
 protected:
-    float bounce;
+    float restitution;
     float friction;
 
 public:
-    Material(float bounce, float friction) : bounce(bounce), friction(friction) {};
+    Material(float restitution, float friction) : restitution(restitution), friction(friction) {};
     Material() {
-        bounce = 0.5;
-        friction = 0.0;
+        restitution = 1.0f;
+        friction = 0.0f;
     };
 
-    float getBounce() { return bounce; };
+    float getRestitution() { return restitution; };
     float getFriction() { return friction; };
 
 };

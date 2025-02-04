@@ -8,10 +8,10 @@ RigidBody::RigidBody(std::unique_ptr<Shape> shape, float mass, float restitution
       angularVelocity(0), material(restitution, friction), isStaticState(false) {
     
     if (mass > 0.00001) {
-        invertedMass = 1.0f / mass;
+        invertMass = 1.0f / mass;
     } else {
         mass = 0.0f;
-        invertedMass = 0.0f;
+        invertMass = 0.0f;
         isStaticState = true;
     }
     
@@ -40,8 +40,12 @@ void RigidBody::setLinearVelocity(Vector2 velocity) {
     velocityAccumulator = velocity.copy();
 }
 
-void RigidBody::setAngularVelocity(float newAngularVelocity) {
-    angularVelocity = newAngularVelocity;
+void RigidBody::addAngularVelocity(float angularVelocity) {
+    this->angularVelocity += angularVelocity;
+}
+
+void RigidBody::setAngularVelocity(float angularVelocity) {
+    this->angularVelocity = angularVelocity;
 }
 
 void RigidBody::setImpulse(Vector2 newImpulse) {
@@ -70,7 +74,7 @@ Vector2 RigidBody::integrate(float delta_time) {
   *    3. S = S_0 + v_0 * t + (a * t^2) / 2
   */
 Vector2 RigidBody::semiImplicitEuler(float delta_time) {
-    Vector2 acceleration = Scale(forceAccumulator, invertedMass); // F = m * a -> a = F * 1 / m
+    Vector2 acceleration = Scale(forceAccumulator, invertMass); // F = m * a -> a = F * 1 / m
     velocityAccumulator.add(Scale(acceleration, delta_time));     // v_1 = v_0 + a * t
     Vector2 deltaPosition = Scale(velocityAccumulator, delta_time); // s = s_0 + v_0 * t + (a * t^2) / 2
     forceAccumulator = Vector2::Null;
@@ -82,7 +86,7 @@ Vector2 RigidBody::semiImplicitEuler(float delta_time) {
  * The order of the velocity update is changed.
  * */
 Vector2 RigidBody::forwardEuler(float delta_time) {
-    Vector2 acceleration = Scale(forceAccumulator, invertedMass); 
+    Vector2 acceleration = Scale(forceAccumulator, invertMass); 
     Vector2 deltaPosition = Scale(velocityAccumulator, delta_time);
     
     velocityAccumulator.add(Scale(acceleration, delta_time));    
@@ -93,7 +97,7 @@ Vector2 RigidBody::forwardEuler(float delta_time) {
 /** This method is a cross between the previous two.
  * */
 Vector2 RigidBody::midPointMethod(float delta_time) {
-    Vector2 acceleration = Scale(forceAccumulator, invertedMass); 
+    Vector2 acceleration = Scale(forceAccumulator, invertMass); 
     Vector2 halfAcceleration = Scale(acceleration, 0.5f);
     velocityAccumulator.add(Scale(halfAcceleration, delta_time));     
     Vector2 deltaPosition = Scale(velocityAccumulator, delta_time);
@@ -103,29 +107,29 @@ Vector2 RigidBody::midPointMethod(float delta_time) {
     return deltaPosition;
 }
 
-Vector2 computeAcceleration(Vector2 force, float invertedMass) {
-    return Scale(force, invertedMass);
+Vector2 computeAcceleration(Vector2 force, float invertMass) {
+    return Scale(force, invertMass);
 }
 
 Vector2 RigidBody::rungeKutta4(float delta_time) {
 
     // k1
-    Vector2 acceleration = computeAcceleration(forceAccumulator, invertedMass);
+    Vector2 acceleration = computeAcceleration(forceAccumulator, invertMass);
     Vector2 k1 = Scale(acceleration, delta_time);
 
     // k2
     Vector2 temporaryForce = Add(forceAccumulator, Scale(k1, 0.5));
-    acceleration = computeAcceleration(forceAccumulator, invertedMass);
+    acceleration = computeAcceleration(forceAccumulator, invertMass);
     Vector2 k2 = Scale(acceleration, delta_time);
 
     // k3
     temporaryForce = Add(forceAccumulator, Scale(k2, 0.5));
-    acceleration = computeAcceleration(forceAccumulator, invertedMass);
+    acceleration = computeAcceleration(forceAccumulator, invertMass);
     Vector2 k3 = Scale(acceleration, delta_time);
 
     // k4
     temporaryForce = Add(forceAccumulator, Scale(k3, 0.5));
-    acceleration = computeAcceleration(forceAccumulator, invertedMass);
+    acceleration = computeAcceleration(forceAccumulator, invertMass);
     Vector2 k4 = Scale(acceleration, delta_time);
 
     // Calculating velocity

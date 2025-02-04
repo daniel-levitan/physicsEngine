@@ -10,13 +10,15 @@
 
 #include <iostream>
 #include <vector>
+#include <SDL.h>
 #include "../vector/vector2.h"
 #include "shape.h"
 #include "polygon.h"
 
 class Rectangle : public Polygon {
 public:
-    Rectangle(const Vector2& position, int width, int height, Color color);
+    // Rectangle(const Vector2& position, int width, int height, Color color);
+    Rectangle(const Vector2& position, int width, int height, SDL_Color color);
 
     float calculateInertia(float mass) override {
         return mass;
