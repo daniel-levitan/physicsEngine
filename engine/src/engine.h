@@ -27,7 +27,9 @@ private:
 	 f3 -> debugger on/off
 	*/
 	bool f1;
+	bool f2, passThroughMode, previousF2State;
 	bool f3, debugMode, previousF3State;
+	bool f4, gravityMode, previousF4State;
 
     std::unique_ptr<Graphics> graphics;  /* Use unique_ptr to manage the lifetime of the Graphics object */
     std::unique_ptr<InputManager> input_manager;

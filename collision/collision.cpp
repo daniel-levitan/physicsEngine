@@ -200,8 +200,13 @@ void Collision::resolveLinearCollision(RigidBody& rb1, RigidBody& rb2, Manifold&
 	j /= (rb1.getInvertMass() + rb2.getInvertMass());
 
 	Vector2 impulse = Scale(manifold.getNormal(), j);
+
+	// Should I divide the impulse if the two bodies move?
+	// Scale(impulse, 0.5);
 	rb1.addLinearVelocity(Scale(impulse, -1 * rb1.getInvertMass()));
 	rb2.addLinearVelocity(Scale(impulse, +1 * rb2.getInvertMass()));
+
+
 }
 
 
@@ -238,7 +243,7 @@ void Collision::resolveLinearCollisionOriginal(RigidBody& rb1, RigidBody& rb2, M
 	rb2.setLinearVelocity(Add(rb2.getLinearVelocity(), rb2Impulse));
 }
 
-void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+void Collision::resolveCollision_v1(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
 	// This controls if the body is able to move or not
 	if (rb1.isStatic() && rb2.isStatic())
 		return;
@@ -294,6 +299,9 @@ void Collision::resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manif
 }
 
 void Collision::positionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold) {
+	if (manifold.getNormal().dotProduct(rb2.getShape()->getCentroid() - rb1.getShape()->getCentroid()) < 0) {
+		manifold.setNormal(Scale(manifold.getNormal(), -1));
+	}
 	float correctionPercentage = .2f;
 	float amount = manifold.getDepth() / (rb1.getInvertMass() + rb2.getInvertMass() * correctionPercentage);
 	Vector2 correctionVector = Scale(manifold.getNormal(), amount); 

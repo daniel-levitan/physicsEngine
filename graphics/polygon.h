@@ -46,7 +46,7 @@ public:
       }
 
       float calculateInertia(float mass) override {
-        return mass;
+         return mass;
     }
 };
 

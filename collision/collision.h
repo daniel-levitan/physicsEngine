@@ -50,7 +50,8 @@ namespace Collision {
     void resolveLinearCollisionOriginal(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
     void resolveLinearCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
     // void resolveLinearCollision_v1(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
-    void resolveCollision(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
+
+    void resolveCollision_v1(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
     void simplePositionCorrection(RigidBody& rb1, RigidBody& rb2, Manifold& manifold);
 }
 

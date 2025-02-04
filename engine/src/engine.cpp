@@ -21,10 +21,10 @@ Engine::Engine()
         engine_is_running = true;  // If no exception, graphics initialization is successful
 
         f1 = false;
-        f3 = false;
-        debugMode = false;
-        previousF3State = true;
-
+        f2 = passThroughMode = previousF2State = false;
+        f3 = debugMode = previousF3State = false;
+        f4 = gravityMode = previousF4State = false;
+        
         move_left = move_right = move_up = move_down = false;
         rotate_left = rotate_right = false;
         move_leftB = move_rightB = move_upB = move_downB = false;
@@ -39,17 +39,17 @@ Engine::Engine()
 
 void Engine::setupPlayers() {
     // Testing rotation
-    auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT/2), 200, 100, BRIGHT_BLUE);
-    auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
-    add_rigid_body(std::move(rb1));
+    // auto rect1 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT/2), 200, 100, BRIGHT_BLUE);
+    // auto rb1 = std::make_unique<RigidBody>(std::move(rect1), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb1));
 
-    auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
-    auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
-    add_rigid_body(std::move(rb2));
+    // auto rect2 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2 + 120, WINDOW_HEIGHT/2), 200, 100, GOLDEN_YELLOW);
+    // auto rb2 = std::make_unique<RigidBody>(std::move(rect2), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb2));
 
-    auto rect3 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT/2 + 130), 200, 100, WHITE);
-    auto rb3 = std::make_unique<RigidBody>(std::move(rect3), 40.0f, 1.0f, 0.0f);
-    add_rigid_body(std::move(rb3));
+    // auto rect3 = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT/2 + 130), 200, 100, WHITE);
+    // auto rb3 = std::make_unique<RigidBody>(std::move(rect3), 40.0f, 1.0f, 0.0f);
+    // add_rigid_body(std::move(rb3));
 
 
     // Testing positional correction
@@ -129,30 +129,33 @@ void Engine::setupPlayers() {
 
 
     // Bodies coliding simulation
-    // auto rectA = std::make_unique<Rectangle>(Vector2(300, 400), 44, 44, LIGHT_BLUE);
-    // auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 1.0f, 0.0f);
-    // add_rigid_body(std::move(rb1));
+    
+    auto rectA = std::make_unique<Rectangle>(Vector2(300, 400), 44, 44, LIGHT_BLUE);
+    auto rb1 = std::make_unique<RigidBody>(std::move(rectA), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb1));
 
-    // auto rectB = std::make_unique<Rectangle>(Vector2(400, 250), 44, 44, GOLDEN_YELLOW);
-    // auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 1.0f, 0.0f);
-    // add_rigid_body(std::move(rb2));
+    auto rectB = std::make_unique<Rectangle>(Vector2(400, 250), 44, 44, GOLDEN_YELLOW);
+    auto rb2 = std::make_unique<RigidBody>(std::move(rectB), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb2));
 
-    // auto rectC = std::make_unique<Rectangle>(Vector2(180, 250), 44, 44, ACQUAMARINE);
-    // auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 1.0f, 0.0f);
-    // add_rigid_body(std::move(rb3));
+    auto rectC = std::make_unique<Rectangle>(Vector2(180, 250), 44, 44, ACQUAMARINE);
+    auto rb3 = std::make_unique<RigidBody>(std::move(rectC), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb3));
 
-    // auto circleA = std::make_unique<Circle>(Vector2(600, 300), 25, LEMON_YELLOW);
-    // auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
-    // add_rigid_body(std::move(rb4));
+    auto circleA = std::make_unique<Circle>(Vector2(600, 300), 25, LEMON_YELLOW);
+    auto rb4 = std::make_unique<RigidBody>(std::move(circleA), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb4));
 
-    // auto circleB = std::make_unique<Circle>(Vector2(600, 100), 25, SAFFRON_YELLOW);
-    // auto rb5 = std::make_unique<RigidBody>(std::move(circleB), 40.0f, 1.0f, 0.0f);
-    // add_rigid_body(std::move(rb5));
+    auto circleB = std::make_unique<Circle>(Vector2(600, 100), 25, SAFFRON_YELLOW);
+    auto rb5 = std::make_unique<RigidBody>(std::move(circleB), 40.0f, 1.0f, 0.0f);
+    add_rigid_body(std::move(rb5));
  
-    // auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 200), 50, 50, GREEN);
-    // auto staticRb = std::make_unique<RigidBody>(std::move(staticRect), 0.0f);
-    // add_rigid_body(std::move(staticRb));
+    auto staticRect = std::make_unique<Rectangle>(Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 200), 50, 50, GREEN);
+    auto staticRb = std::make_unique<RigidBody>(std::move(staticRect), 0.0f);
+    add_rigid_body(std::move(staticRb));
+    
 
+    // Different Polygons
     // auto pent = PolygonFactory::createPolygon(5, Vector2(200, 200), 60, WHITE);
     // auto rb6 =  std::make_unique<RigidBody>(std::move(pent), 40.0f, 1.0f, 0.0f);
     // add_rigid_body(std::move(rb6));
@@ -192,6 +195,9 @@ void Engine::setupScenario() {
 
     auto text2 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(10, WINDOW_HEIGHT - 70), WHITE);
     add_text(std::move(text2));
+
+    auto text3 = std::make_unique<Text>("../assets/fonts/Arial-Unicode.ttf", message, 24, Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT - 70), WHITE);
+    add_text(std::move(text3));
 }
 
 
@@ -213,9 +219,18 @@ void Engine::input_processing() {
         engine_is_running = false;
     }
 
+    // Fnum keys
     if (input_manager->isKeyDown(SDLK_F1)) { f1 = true; }
     if (input_manager->isKeyUp(SDLK_F1)) { f1 = false; }
-    
+
+    // Pass Through Mode
+    bool currentF2State = input_manager->isKeyDown(SDLK_F2);
+    if (currentF2State && !previousF2State) {
+        passThroughMode = !passThroughMode;     // F3 was just pressed, toggle the debug mode
+    }
+    // Update the previous state for the next frame
+    previousF2State = currentF2State;
+
     // Debug Mode
     bool currentF3State = input_manager->isKeyDown(SDLK_F3);
     if (currentF3State && !previousF3State) {
@@ -223,6 +238,14 @@ void Engine::input_processing() {
     }
     // Update the previous state for the next frame
     previousF3State = currentF3State;
+
+    // Gavity Mode
+    bool currentF4State = input_manager->isKeyDown(SDLK_F4);
+    if (currentF4State && !previousF4State) {
+        gravityMode = !gravityMode;     // F3 was just pressed, toggle the debug mode
+    }
+    // Update the previous state for the next frame
+    previousF4State = currentF4State;
 
     
     // Arrow control (it may be figure A or player 1)
@@ -268,17 +291,12 @@ void Engine::updating() {
 	float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
     // Text recovery
-    // Text* text = texts[0].get();  // Upper right
+    Text* text = texts[0].get();  // Upper right
     Text* text1 = texts[1].get();
     Text* text2 = texts[2].get(); // Bottow left
-
+    Text* text3 = texts[3].get(); // Bottow left
     text1->setDirectionRightToLeft();
-    if (debugMode) {
-        // text->setMessage("Debugging");
-    } else {
-        // text->setMessage(" "); // Not debugging
-        // text1->setMessage(" ");
-    }
+    text3->setDirectionRightToLeft();
     
     for (const auto& rb : rigidBodies) {
         rb->getShape()->setOverlap(false);
@@ -290,19 +308,36 @@ void Engine::updating() {
     // Menu/special keys  
     // Reset force and velocity  
     if (f1) {
-        for (const auto& rb : rigidBodies) {            
+        for (const auto& rb : rigidBodies) {
             rb->setForce(Vector2::Null);
             rb->setAngularVelocity(0.0f);
             rb->setLinearVelocity(Vector2::Null);
 
             rb->getShape()->resetPosition();
             rb->getShape()->setOverlap(false);
-        }        
+        }
+        text1->setMessage(" ");
     }
 
+    if (passThroughMode) 
+        text->setMessage("Pass Through");
+    else 
+        text->setMessage(" ");
+
+    if (gravityMode) 
+        text3->setMessage("Gravity");
+    else 
+        text3->setMessage(" ");
 
     RigidBody* rb1 = rigidBodies[0].get();    
     RigidBody* rb2 = rigidBodies[1].get();
+
+    if (debugMode) {
+        std::string str = rb2->toStringFandV();
+        text2->setMessage(str);
+    } else {
+        text2->setMessage(" ");
+    }
     
     // Shape A/Player 1
     if (move_left)    { rb2->addForce(Vector2(-FORCE, 0)); }
@@ -320,18 +355,13 @@ void Engine::updating() {
     if (rotate_leftB)  { rb1->addAngularVelocity(-ANGULAR_F); }
     if (rotate_rightB) { rb1->addAngularVelocity(ANGULAR_F); }
 
-    if (debugMode) {
-        std::string str = rb2->toStringFandV();
-        text2->setMessage(str);
-    } else {
-        std::string str = " ";
-        text2->setMessage(str);
-    }
 
     // Update bodies(shapes) positions
     for (const auto& rb : rigidBodies) {
-        gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
-        rb->addForce(gravitationalForce);
+        if (gravityMode) {
+            gravitationalForce = Vector2(0, rb->getMass() * DEFAULT_GRAVITY);
+            rb->addForce(gravitationalForce);
+        }
         rb->update(delta_time);
     }
 
@@ -344,14 +374,14 @@ void Engine::updating() {
             if (result) {
                 flag = true;           
                 
-                if (!debugMode) {
+                if (!passThroughMode) {
                     // To be used when moving without physics
                     // Collision::simplePositionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
     
                     // Resolving linear collisions(no angular movement)
                     Collision::positionCorrection(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
                     Collision::resolveLinearCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
-                    // Collision::resolveCollision(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
+                    // Collision::resolveCollision_v1(*rigidBodies[i].get(), *rigidBodies[j].get(), *result.get());
                 }
 
                 if (debugMode) {
